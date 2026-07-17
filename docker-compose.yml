@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:17
+    image: postgres:17.7
     container_name: hanrolink-postgres
     restart: unless-stopped
 
