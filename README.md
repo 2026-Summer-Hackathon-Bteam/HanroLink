@@ -38,7 +38,6 @@ hanrolink/
 
 * Git
 * Docker Desktop
-* Java 25
 * Visual Studio Code（推奨）
 
 Docker Desktopは起動した状態で作業してください。
@@ -110,13 +109,9 @@ docker exec -it hanrolink-postgres psql -U hanrolink
 
 ### 停止方法
 
-Spring Boot
-
 ```text
 Ctrl + C
 ```
-
-PostgreSQL
 
 ```bash
 docker compose down
@@ -139,7 +134,7 @@ docker compose down -v
 | Language   | Java 25           |
 | Framework  | Spring Boot 4.1.0 |
 | Build Tool | Maven Wrapper     |
-| Database   | PostgreSQL 17     |
+| Database   | PostgreSQL 17.7     |
 | Container  | Docker Compose    |
 | Frontend   | 技術選定中             |
 
