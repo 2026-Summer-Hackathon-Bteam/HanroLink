@@ -11,10 +11,8 @@ build/
 # ===== Node =====
 node_modules/
 dist/
-
-# ===== IDE =====
-.vscode/
-.idea/
+dist-ssr
+*.local
 
 # ===== macOS =====
 .DS_Store
@@ -29,6 +27,21 @@ logs/
 npm-debug.log*
 yarn-debug.log*
 pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# ====== Editor directories and files ======
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # ===== hanrolink-backend specific =====
 HELP.md
@@ -62,5 +75,3 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### VS Code ###
-.vscode/
