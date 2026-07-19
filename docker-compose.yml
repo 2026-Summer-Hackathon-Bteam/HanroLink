@@ -39,14 +39,14 @@ services:
           condition: service_healthy
 
   frontend:
-      build: ./frontend
+      build: ./hanrolink-frontend
       container_name: hanrolink-frontend
 
       ports:
         - "${FRONTEND_PORT}:5173"
 
       volumes:
-        - ./frontend:/app
+        - ./hanrolink-frontend:/app
         - /app/node_modules
 
       depends_on:
