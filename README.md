@@ -15,21 +15,36 @@
 
 ### Frontend
 
-* 技術選定中
-
-  * React（候補）
-  * Vite（候補）
-  * Tailwind CSS（候補）
+* React 19.x
+* Vite 8.1.x
+* Tailwind CSS 5.x
 
 
 ### ディレクトリ構成
 
 ```text
-hanrolink/
-├── hanrolink-backend/
-├── frontend/
+hanrolink
+│
 ├── docker-compose.yml
-└── README.md
+├── .env
+│
+├── hanrolink-backend
+│   ├── Dockerfile
+│   ├── pom.xml
+│   └── src
+│       └── main
+│           ├── java
+│           │   └── com
+│           │       └── hanrolink
+│           └── resources
+│               └── application.yml
+│
+└── hanrolink-frontend
+    ├── package.json
+    ├── vite.config.ts
+    ├── tsconfig.json
+    ├── .env
+    └── src
 ```
 
 ### 前提条件
@@ -74,6 +89,7 @@ docker ps
 ```text
 hanrolink-postgres
 hanrolink-backend
+hanrolink-frontend
 ```
 
 起動後
@@ -86,6 +102,13 @@ http://localhost:8080
 
 へアクセスし、Spring Bootが正常に起動していることを確認してください。
 
+### React(Vite)の起動確認
+
+```text
+http://localhost:5173
+```
+
+へアクセスし、React(Vite)が正常に起動していることを確認してください。
 
 ### PostgreSQLへの接続確認
 
@@ -126,21 +149,3 @@ docker compose down
 ```bash
 docker compose down -v
 ```
-
-### 現在の技術スタック
-
-| 項目         | 技術                |
-| ---------- | ----------------- |
-| Language   | Java 25           |
-| Framework  | Spring Boot 4.1.0 |
-| Build Tool | Maven Wrapper     |
-| Database   | PostgreSQL 17.7     |
-| Container  | Docker Compose    |
-| Frontend   | 技術選定中             |
-
-
-### 今後追加予定
-
-* React（Vite）
-* Tailwind CSS
-* JWT認証
