@@ -23,6 +23,7 @@ import jakarta.validation.Valid;
 @RestController
 public class BuyerProcurementRequestController {
 
+  // バイヤーのみ利用可能
   @ApiResponse(
     responseCode = "201",
     description = "Created"
@@ -32,29 +33,29 @@ public class BuyerProcurementRequestController {
     @Valid @RequestBody BuyerProcurementRequestCreateRequest request
   ) {
 
-    // バイヤーのみ利用可能
     // TODO: Service接続後、new BuyerProcurementRequestCreateResponse(procurementRequestId)をbodyに入れて201 Createdで返す
     return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
   }
 
+  // 募集を登録したBuyerアカウントのみ利用可能
   @GetMapping(BuyerProcurementRequestApi.V1.BY_ID)
   public ResponseEntity<ProcurementRequestDetailResponse> getDetail(
     @PathVariable Long procurementRequestId
   ) {
 
-    // 募集を登録したBuyerアカウントのみ利用可能
     // TODO: Serviceから募集情報詳細を取得し、ResponseEntity.ok(response)で返す
     return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
   }
 
+  // 認証中のBuyerアカウントが登録した募集のみ取得可能
   @GetMapping(BuyerProcurementRequestApi.V1.BASE)
   public ResponseEntity<BuyerProcurementRequestListResponse> list() {
 
-    // 認証中のBuyerアカウントが登録した募集のみ取得可能
     // TODO: Serviceから募集情報リストを取得し、ResponseEntity.ok(response)で返す
     return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
   }
 
+  // 募集を登録したBuyerアカウントのみ利用可能
   @ApiResponse(
     responseCode = "204",
     description = "No Content"
@@ -65,11 +66,11 @@ public class BuyerProcurementRequestController {
     @Valid @RequestBody BuyerProcurementRequestUpdateRequest request
   ) {
 
-    // 募集を登録したBuyerアカウントのみ利用可能
     // TODO: Serviceで募集情報を更新し、204 No Contentを返す
     return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
   }
 
+  // 募集を登録したBuyerアカウントのみ利用可能
   @ApiResponse(
     responseCode = "204",
     description = "No Content"
@@ -79,7 +80,6 @@ public class BuyerProcurementRequestController {
     @PathVariable Long procurementRequestId
   ) {
 
-    // 募集を登録したBuyerアカウントのみ利用可能
     // TODO: Serviceで登録元Buyerの募集情報を削除し、204 No Contentを返す
     return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
   }

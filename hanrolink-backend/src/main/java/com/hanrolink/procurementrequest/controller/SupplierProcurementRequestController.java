@@ -13,20 +13,20 @@ import com.hanrolink.procurementrequest.response.SupplierProcurementRequestListR
 @RestController
 public class SupplierProcurementRequestController {
 
+  // サプライヤーのみ利用可能
   @GetMapping(SupplierProcurementRequestApi.V1.BY_ID)
   public ResponseEntity<ProcurementRequestDetailResponse> getDetail(
     @PathVariable Long procurementRequestId
   ) {
 
-    // サプライヤーのみ利用可能
     // TODO: Serviceから募集情報詳細を取得し、ResponseEntity.ok(response)で返す
     return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
   }
 
+  // サプライヤーのみ利用可能
   @GetMapping(SupplierProcurementRequestApi.V1.BASE)
   public ResponseEntity<SupplierProcurementRequestListResponse> list() {
 
-    // サプライヤーのみ利用可能
     // TODO: Serviceから募集情報リストを取得し、ResponseEntity.ok(response)で返す
     return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
   }
