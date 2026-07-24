@@ -6,15 +6,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hanrolink.procurementrequest.api.SupplierProcurementRequestApi;
+import com.hanrolink.procurementrequest.api.ProcurementRequestApi;
 import com.hanrolink.procurementrequest.response.ProcurementRequestDetailResponse;
-import com.hanrolink.procurementrequest.response.SupplierProcurementRequestListResponse;
+import com.hanrolink.procurementrequest.response.ProcurementRequestListResponse;
 
+/**
+ * Supplier・Admin向けの募集情報閲覧API。
+ * Buyerによる自社募集の管理は {@link BuyerProcurementRequestController}で扱う。
+ */
 @RestController
-public class SupplierProcurementRequestController {
+public class ProcurementRequestReadController {
 
-  // サプライヤーのみ利用可能
-  @GetMapping(SupplierProcurementRequestApi.V1.BY_ID)
+  // 管理者、サプライヤー利用可能
+  @GetMapping(ProcurementRequestApi.V1.BY_ID)
   public ResponseEntity<ProcurementRequestDetailResponse> getDetail(
     @PathVariable Long procurementRequestId
   ) {
@@ -23,9 +27,9 @@ public class SupplierProcurementRequestController {
     return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
   }
 
-  // サプライヤーのみ利用可能
-  @GetMapping(SupplierProcurementRequestApi.V1.BASE)
-  public ResponseEntity<SupplierProcurementRequestListResponse> list() {
+  // 管理者、サプライヤー利用可能
+  @GetMapping(ProcurementRequestApi.V1.BASE)
+  public ResponseEntity<ProcurementRequestListResponse> list() {
 
     // TODO: Serviceから募集情報リストを取得し、ResponseEntity.ok(response)で返す
     return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
