@@ -13,3 +13,9 @@ logging:
   level:
     org.springframework.security: DEBUG
     org.springframework.security.web.csrf: TRACE
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
