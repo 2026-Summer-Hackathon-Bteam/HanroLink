@@ -36,6 +36,7 @@ CREATE TYPE business_user_account_review_status AS ENUM (
 CREATE TABLE business_user_accounts (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   business_id BIGINT NOT NULL,
+  public_id UUID UNIQUE NOT NULL,
   identity_provider_subject VARCHAR(255) UNIQUE NOT NULL,
   role business_user_account_role NOT NULL,
   review_status business_user_account_review_status DEFAULT 'PENDING' NOT NULL,
@@ -179,7 +180,7 @@ CREATE TABLE procurement_requests (
   title VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
   required_trade_terms TEXT,
-  unit_price INT,
+  desired_unit_price INT,
   delivery_shelf_life_days SMALLINT,
   deleted_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,

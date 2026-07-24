@@ -1,6 +1,10 @@
 package com.hanrolink.businessuseraccount.entity;
 
 import java.time.Instant;
+import java.util.UUID;
+
+import com.hanrolink.businessuseraccount.enums.BusinessUserAccountReviewStatus;
+import com.hanrolink.businessuseraccount.enums.BusinessUserAccountRole;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,6 +22,9 @@ public class BusinessUserAccount {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Column(name = "public_id", updatable = false, nullable = false)
+  private UUID publicId = UUID.randomUUID();
 
   @Column(
     name = "identity_provider_subject",

@@ -34,8 +34,8 @@ public class ProcurementRequest {
   @Column(name = "required_trade_terms")
   private String requiredTradeTerms;
 
-  @Column(name = "unit_price")
-  private Integer unitPrice;
+  @Column(name = "desired_unit_price")
+  private Integer desiredUnitPrice;
 
   @Column(name = "delivery_shelf_life_days")
   private Short deliveryShelfLifeDays;

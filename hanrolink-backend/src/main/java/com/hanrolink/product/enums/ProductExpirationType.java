@@ -1,4 +1,4 @@
-package com.hanrolink.product.entity;
+package com.hanrolink.product.enums;
 
 public enum ProductExpirationType {
   BEST_BEFORE,

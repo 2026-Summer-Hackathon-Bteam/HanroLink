@@ -1,4 +1,4 @@
-package com.hanrolink.businessuseraccount.entity;
+package com.hanrolink.businessuseraccount.enums;
 
 public enum BusinessUserAccountRole {
   BUYER,

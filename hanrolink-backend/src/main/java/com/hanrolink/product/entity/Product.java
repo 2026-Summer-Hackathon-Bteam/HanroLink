@@ -2,6 +2,9 @@ package com.hanrolink.product.entity;
 
 import java.time.Instant;
 
+import com.hanrolink.product.enums.ProductExpirationType;
+import com.hanrolink.product.enums.StorageType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

@@ -2,7 +2,7 @@ package com.hanrolink.procurementrequest.entity;
 
 import java.time.Instant;
 
-import com.hanrolink.product.entity.StorageType;
+import com.hanrolink.product.enums.StorageType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
