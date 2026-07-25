@@ -14,14 +14,18 @@ import com.hanrolink.procurementrequest.request.BuyerProcurementRequestCreateReq
 import com.hanrolink.procurementrequest.request.BuyerProcurementRequestUpdateRequest;
 import com.hanrolink.procurementrequest.response.BuyerProcurementRequestCreateResponse;
 import com.hanrolink.procurementrequest.response.BuyerProcurementRequestListResponse;
-import com.hanrolink.procurementrequest.response.ProcurementRequestDetailResponse;
+import com.hanrolink.procurementrequest.response.BuyerProcurementRequestDetailResponse;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 
+/**
+ * 認証中のBuyerが自身の募集情報を管理するためのController。
+ * 他のBuyerが登録した募集情報は操作対象に含まない。
+ */
 @RestController
-public class BuyerProcurementRequestController {
+public class BuyerProcurementRequestManagementController {
 
   // バイヤーのみ利用可能
   @ApiResponse(
@@ -39,7 +43,7 @@ public class BuyerProcurementRequestController {
 
   // 募集を登録したBuyerアカウントのみ利用可能
   @GetMapping(BuyerProcurementRequestApi.V1.BY_ID)
-  public ResponseEntity<ProcurementRequestDetailResponse> getDetail(
+  public ResponseEntity<BuyerProcurementRequestDetailResponse> getDetail(
     @PathVariable Long procurementRequestId
   ) {
 

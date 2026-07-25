@@ -12,7 +12,7 @@ import com.hanrolink.procurementrequest.response.ProcurementRequestListResponse;
 
 /**
  * Supplier・Admin向けの募集情報閲覧API。
- * Buyerによる自社募集の管理は {@link BuyerProcurementRequestController}で扱う。
+ * Buyerによる自社募集の管理は {@link BuyerProcurementRequestManagementController}で扱う。
  */
 @RestController
 public class ProcurementRequestReadController {

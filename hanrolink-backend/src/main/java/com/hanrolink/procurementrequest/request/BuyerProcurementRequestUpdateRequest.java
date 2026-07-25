@@ -38,13 +38,13 @@ public record BuyerProcurementRequestUpdateRequest(
   Set<@NotNull StorageType> storageTypes,
 
   @NotNull
-  @Size(min = 6, max = 6)
+  @Size(min = 6, max = 6, message = "6か月分指定してください")
   List<@NotNull @Valid MonthlyRequirement> monthlyRequirements
 ) {
 
   public record MonthlyRequirement(
     @NotNull
-    @FutureOrPresent
+    @FutureOrPresent(message = "当月以降の月を指定してください")
     YearMonth targetMonth,
 
     @NotNull

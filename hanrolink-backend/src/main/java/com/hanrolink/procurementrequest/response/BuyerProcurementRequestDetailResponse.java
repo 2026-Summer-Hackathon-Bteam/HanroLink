@@ -8,7 +8,7 @@ import com.hanrolink.productcategory.entity.ProductCategory;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record ProcurementRequestDetailResponse(
+public record BuyerProcurementRequestDetailResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   String title,
 
@@ -51,6 +51,9 @@ public record ProcurementRequestDetailResponse(
   ) {}
 
   public record StorageType(
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    String value,
+
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     String label
   ) {}
