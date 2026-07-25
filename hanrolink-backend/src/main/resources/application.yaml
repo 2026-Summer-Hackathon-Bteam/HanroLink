@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: hanrolink-backend
+
+  jpa:
+    open-in-view: false
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

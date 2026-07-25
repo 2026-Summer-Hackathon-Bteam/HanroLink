@@ -9,5 +9,4 @@ public class HanrolinkBackendApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(HanrolinkBackendApplication.class, args);
 	}
-
 }

@@ -23,34 +23,36 @@ services:
       start_period: 10s
 
   backend:
-      build: ./hanrolink-backend
-      environment:
-        SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
-        SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
-        SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+    build: ./hanrolink-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_PROFILES_ACTIVE: dev
+      JAVA_TOOL_OPTIONS: "-Duser.timezone=UTC"
 
-      container_name: hanrolink-backend
+    container_name: hanrolink-backend
 
-      ports:
-        - "${BACKEND_PORT}:8080"
+    ports:
+      - "${BACKEND_PORT}:8080"
 
-      depends_on:
-        postgres:
-          condition: service_healthy
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   frontend:
-      build: ./hanrolink-frontend
-      container_name: hanrolink-frontend
+    build: ./hanrolink-frontend
+    container_name: hanrolink-frontend
 
-      ports:
-        - "${FRONTEND_PORT}:5173"
+    ports:
+      - "${FRONTEND_PORT}:5173"
 
-      volumes:
-        - ./hanrolink-frontend:/app
-        - /app/node_modules
+    volumes:
+      - ./hanrolink-frontend:/app
+      - /app/node_modules
 
-      depends_on:
-        - backend
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:
