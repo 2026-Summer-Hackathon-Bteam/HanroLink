@@ -1,9 +1,7 @@
 // ここでAPI通信の設定を1か所にまとめる
-import axios from 'axios'
+import createClient from "openapi-fetch";
+import type { paths } from "../shared/api/schema";
 
-export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-})
+export const api = createClient<paths>({
+  baseUrl: import.meta.env.VITE_API_URL,
+});
