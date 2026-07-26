@@ -6,7 +6,7 @@ import GuestPage from './pages/GuestPage'
 import SignupPage from './pages/SignupPage'
 import SignupCompletePage from './pages/SignupCompletePage'
 import LoginPage from './pages/LoginPage'
-import ConfirmPage from './pages/ConfirmPage'
+import SignupConfirmPage from './pages/SignupConfirmPage'
 
 type SelectedRole = 'supplier' | 'buyer' | null
 
@@ -47,9 +47,9 @@ function App() {
         <Routes>
           <Route path="/" element={<GuestPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/signup/confirm" element={<SignupConfirmPage />} />
           <Route path="/signup/complete" element={<SignupCompletePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/confirm" element={<ConfirmPage />} />
+          <Route path="/login" element={<LoginPage />} />          
         </Routes>
         <div>
           <h2>新規登録</h2>
