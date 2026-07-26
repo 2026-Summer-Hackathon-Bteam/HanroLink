@@ -1,6 +1,12 @@
-import { useState } from 'react'
+import { useState, type SubmitEvent } from 'react'
+import { Routes, Route, Link } from 'react-router-dom'
 import './App.css'
 import logotitle from './assets/HanroLink_logotitle.png'
+import GuestPage from './pages/GuestPage'
+import SignupPage from './pages/SignupPage'
+import SignupCompletePage from './pages/SignupCompletePage'
+import LoginPage from './pages/LoginPage'
+import ConfirmPage from './pages/ConfirmPage'
 
 type SelectedRole = 'supplier' | 'buyer' | null
 
@@ -10,7 +16,8 @@ function App() {
   const [password, setPassword] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault()
     // Cognitoの送信処理
   }
 
@@ -19,22 +26,31 @@ function App() {
       <header>
         <div>
           <h1>
-            <img src={logotitle} alt='HanroLinkのロゴタイトル'/>
+            <img src={logotitle} alt="HanroLinkのロゴタイトル" />
           </h1>
           <div>
             <nav>
               <ul>
-                <li><a>新規登録</a></li>
-                <li><a>ログイン</a></li>
+                <li>
+                  <Link to="/signup">新規登録</Link>
+                </li>
+                <li>
+                  <Link to="/login">ログイン</Link>
+                </li>
               </ul>
             </nav>
-            <p>
-              {/* ログアウトボタンがあるときはここに入れる */}
-            </p>
+            <p>{/* ログアウトボタンがあるときはここに入れる */}</p>
           </div>
         </div>
       </header>
       <main>
+        <Routes>
+          <Route path="/" element={<GuestPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/signup/complete" element={<SignupCompletePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/confirm" element={<ConfirmPage />} />
+        </Routes>
         <div>
           <h2>新規登録</h2>
           <p>
@@ -109,10 +125,11 @@ function App() {
             ></input>
           </div>
           <div>
-            <label htmlFor="password_confirm">パスワード（確認用）</label>
+            <label htmlFor="passwordConfirm">パスワード（確認用）</label>
             <input
               type="password"
-              id="password_confirm"
+              name="passwordConfirm"
+              id="passwordConfirm"
               required
               onChange={(e) => setPasswordConfirm(e.target.value)}
               value={passwordConfirm}
