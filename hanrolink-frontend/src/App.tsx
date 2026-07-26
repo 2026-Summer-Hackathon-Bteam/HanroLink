@@ -1,140 +1,133 @@
-import { useEffect,useState } from 'react'
-// コメントアウトしているのは、初期のコードを残しておくためです。必要に応じて復元してください。
-// import reactLogo from './assets/react.svg'
-// import viteLogo from './assets/vite.svg'
-// import heroImg from './assets/hero.png'
-// import './App.css'
-import { api } from "./lib/api";
+import { useState } from 'react'
+import './App.css'
+import logotitle from './assets/HanroLink_logotitle.png'
+
+type SelectedRole = 'supplier' | 'buyer' | null
 
 function App() {
-  const [message, setMessage] = useState("");
+  const [selectedRole, setSelectedRole] = useState<SelectedRole>(null)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [passwordConfirm, setPasswordConfirm] = useState('')
 
-  useEffect(() => {
-    api
-      .get("/api/hello")
-      .then((res) => setMessage(res.data))
-      .catch(console.error);
-  }, []);
+  const handleSubmit = () => {
+    // Cognitoの送信処理
+  }
 
-  return <h1>{message}</h1>;
+  return (
+    <>
+      <header>
+        <div>
+          <h1>
+            <img src={logotitle} alt='HanroLinkのロゴタイトル'/>
+          </h1>
+          <div>
+            <nav>
+              <ul>
+                <li><a>新規登録</a></li>
+                <li><a>ログイン</a></li>
+              </ul>
+            </nav>
+            <p>
+              {/* ログアウトボタンがあるときはここに入れる */}
+            </p>
+          </div>
+        </div>
+      </header>
+      <main>
+        <div>
+          <h2>新規登録</h2>
+          <p>
+            このサイトは事業者専用です。一般の方の登録はご遠慮ください。
+            <br />
+            １事業者につきサプライヤー、バイヤーの両方に登録することはできません。
+            <br />
+            登録後に管理者にて審査を行いますので、サービスの使用は審査完了後となります。
+          </p>
+          <section>
+            <h3>新規登録の流れ</h3>
+            <p>
+              新規登録（この画面）でアカウント情報を入力し、送信してください。
+            </p>
+            <p>&darr;</p>
+            <p>
+              登録したメールアドレスに確認コードが送信されますので、コード確認の画面でコードを入力してください。
+            </p>
+            <p>&darr;</p>
+            <p>
+              会社情報等登録画面で会社情報（会社名、所在地、担当者名など）を入力してください。
+            </p>
+            <p>&darr;</p>
+            <p>
+              会社情報送信後、管理者が審査を行います（3日程度かかります）。審査完了後にアプリを使用することができます。
+            </p>
+          </section>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <fieldset>
+            <legend>サプライヤー／バイヤー</legend>
+            <div>
+              <input
+                type="radio"
+                name="role"
+                id="supplier"
+                required
+                checked={selectedRole === 'supplier'}
+                onChange={() => setSelectedRole('supplier')}
+              />
+              <label htmlFor="supplier">サプライヤー</label>
+              <input
+                type="radio"
+                name="role"
+                id="buyer"
+                checked={selectedRole === 'buyer'}
+                onChange={() => setSelectedRole('buyer')}
+              />
+              <label htmlFor="buyer">バイヤー</label>
+            </div>
+          </fieldset>
+          <div>
+            <label htmlFor="email">メールアドレス</label>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              required
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+            ></input>
+          </div>
+          <div>
+            <label htmlFor="password">パスワード</label>
+            <input
+              type="password"
+              name="password"
+              id="password"
+              required
+              onChange={(e) => setPassword(e.target.value)}
+              value={password}
+            ></input>
+          </div>
+          <div>
+            <label htmlFor="password_confirm">パスワード（確認用）</label>
+            <input
+              type="password"
+              id="password_confirm"
+              required
+              onChange={(e) => setPasswordConfirm(e.target.value)}
+              value={passwordConfirm}
+            ></input>
+          </div>
+          <button type="submit">新規登録</button>
+        </form>
+      </main>
+      <footer>
+        <div>
+          <p>&copy;2026 Hackathon Summer B-team</p>
+        </div>
+      </footer>
+    </>
+  )
 }
-
-// 初期のコードはコメントアウトされているので、必要に応じて復元してください。
-// export default App;
-
-// function App() {
-//   const [count, setCount] = useState(0)
-
-//   return (
-//     <>
-//       <section id="center">
-//         <div className="hero">
-//           <img src={heroImg} className="base" width="170" height="179" alt="" />
-//           <img src={reactLogo} className="framework" alt="React logo" />
-//           <img src={viteLogo} className="vite" alt="Vite logo" />
-//         </div>
-//         <div>
-//           <h1>Get started</h1>
-//           <p>
-//             Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-//           </p>
-//         </div>
-//         <button
-//           type="button"
-//           className="counter"
-//           onClick={() => setCount((count) => count + 1)}
-//         >
-//           Count is {count}
-//         </button>
-//       </section>
-
-//       <div className="ticks"></div>
-
-//       <section id="next-steps">
-//         <div id="docs">
-//           <svg className="icon" role="presentation" aria-hidden="true">
-//             <use href="/icons.svg#documentation-icon"></use>
-//           </svg>
-//           <h2>Documentation</h2>
-//           <p>Your questions, answered</p>
-//           <ul>
-//             <li>
-//               <a href="https://vite.dev/" target="_blank">
-//                 <img className="logo" src={viteLogo} alt="" />
-//                 Explore Vite
-//               </a>
-//             </li>
-//             <li>
-//               <a href="https://react.dev/" target="_blank">
-//                 <img className="button-icon" src={reactLogo} alt="" />
-//                 Learn more
-//               </a>
-//             </li>
-//           </ul>
-//         </div>
-//         <div id="social">
-//           <svg className="icon" role="presentation" aria-hidden="true">
-//             <use href="/icons.svg#social-icon"></use>
-//           </svg>
-//           <h2>Connect with us</h2>
-//           <p>Join the Vite community</p>
-//           <ul>
-//             <li>
-//               <a href="https://github.com/vitejs/vite" target="_blank">
-//                 <svg
-//                   className="button-icon"
-//                   role="presentation"
-//                   aria-hidden="true"
-//                 >
-//                   <use href="/icons.svg#github-icon"></use>
-//                 </svg>
-//                 GitHub
-//               </a>
-//             </li>
-//             <li>
-//               <a href="https://chat.vite.dev/" target="_blank">
-//                 <svg
-//                   className="button-icon"
-//                   role="presentation"
-//                   aria-hidden="true"
-//                 >
-//                   <use href="/icons.svg#discord-icon"></use>
-//                 </svg>
-//                 Discord
-//               </a>
-//             </li>
-//             <li>
-//               <a href="https://x.com/vite_js" target="_blank">
-//                 <svg
-//                   className="button-icon"
-//                   role="presentation"
-//                   aria-hidden="true"
-//                 >
-//                   <use href="/icons.svg#x-icon"></use>
-//                 </svg>
-//                 X.com
-//               </a>
-//             </li>
-//             <li>
-//               <a href="https://bsky.app/profile/vite.dev" target="_blank">
-//                 <svg
-//                   className="button-icon"
-//                   role="presentation"
-//                   aria-hidden="true"
-//                 >
-//                   <use href="/icons.svg#bluesky-icon"></use>
-//                 </svg>
-//                 Bluesky
-//               </a>
-//             </li>
-//           </ul>
-//         </div>
-//       </section>
-
-//       <div className="ticks"></div>
-//       <section id="spacer"></section>
-//     </>
-//   )
-// }
 
 export default App
