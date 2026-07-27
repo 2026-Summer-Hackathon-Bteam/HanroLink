@@ -11,6 +11,7 @@
   --color-badgearea: #dbc5e2;
   --color-badgecate: #c5dae2;
   --color-badgesto: #e2cdc5;
+  --color-error: red;
 }
 
 body {

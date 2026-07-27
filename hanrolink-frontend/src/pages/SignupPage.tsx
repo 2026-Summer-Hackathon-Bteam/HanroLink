@@ -1,24 +1,48 @@
-import { useState, type SubmitEvent } from 'react'
+import { useState, useEffect, type SubmitEvent } from 'react'
 
-type FormData = {
-  selectedRole: 'supplier' | 'buyer' | null;
-  email: string;
-  password: string;
-  passwordConfirm: string;
-} 
+type SignupFormData = {
+  role: 'supplier' | 'buyer' | null
+  email: string
+  password: string
+  passwordConfirm: string
+}
+
+type FormErrors = {
+  role?: string
+  email?: string
+  password?: string
+  passwordConfirm?: string
+  form?: string
+}
 
 function SignupPage() {
-  const [formData, setFormData] = useState<FormData>({
-    selectedRole: null,
+  const [formData, setFormData] = useState<SignupFormData>({
+    role: null,
     email: '',
     password: '',
-    passwordConfirm: ''
+    passwordConfirm: '',
   })
+  const [errors, setErrors] = useState<FormErrors>({})
 
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
     // Cognitoの送信処理
   }
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setErrors((prev) => ({
+        ...prev,
+        passwordConfirm: !formData.passwordConfirm
+          ? undefined
+          : formData.password !== formData.passwordConfirm
+            ? 'パスワードが一致しません'
+            : undefined,
+      }))
+    }, 400)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [formData.password, formData.passwordConfirm])
 
   return (
     <>
@@ -31,8 +55,8 @@ function SignupPage() {
           <br />
           登録後に管理者にて審査を行いますので、サービスの使用は審査完了後となります。
         </p>
-        <section className="mb-8 mx-auto border-4 border-textbg p-4 w-fit" >
-          <h3 className='text-2xl mb-4'>新規登録の流れ</h3>
+        <section className="mb-8 mx-auto border-4 border-textbg p-4 w-fit">
+          <h3 className="text-2xl mb-4">新規登録の流れ</h3>
           <p>
             新規登録（この画面）でアカウント情報を入力し、送信してください。
           </p>
@@ -50,32 +74,44 @@ function SignupPage() {
           </p>
         </section>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-8 max-w-120 mx-auto">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-8 max-w-120 mx-auto"
+        >
           <fieldset className="flex flex-col gap-1">
-            <legend className="text-xs text-left">サプライヤー／バイヤー</legend>
+            <legend className="text-xs text-left">
+              サプライヤー／バイヤー
+            </legend>
             <div className="flex gap-4 justify-start pl-4">
-              <div className='flex items-center gap-1'>
+              <div className="flex items-center gap-1">
                 <input
                   type="radio"
                   name="role"
                   id="supplier"
                   value="supplier"
                   required
-                  checked={formData.selectedRole === 'supplier'}
-                  onChange={() => setFormData(prev => ({...prev, selectedRole:'supplier'}))}
+                  checked={formData.role === 'supplier'}
+                  onChange={() =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      role: 'supplier',
+                    }))
+                  }
                 />
                 <label htmlFor="supplier" className="text-base">
                   サプライヤー
                 </label>
               </div>
-              <div className='flex items-center gap-1'>
+              <div className="flex items-center gap-1">
                 <input
                   type="radio"
                   name="role"
                   id="buyer"
                   value="buyer"
-                  checked={formData.selectedRole === 'buyer'}
-                  onChange={() => setFormData(prev => ({...prev, selectedRole: 'buyer'}))}
+                  checked={formData.role === 'buyer'}
+                  onChange={() =>
+                    setFormData((prev) => ({ ...prev, role: 'buyer' }))
+                  }
                 />
                 <label htmlFor="buyer" className="text-base">
                   バイヤー
@@ -92,7 +128,9 @@ function SignupPage() {
               name="email"
               id="email"
               required
-              onChange={(e) => setFormData(prev => ({...prev, email: e.target.value}))}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, email: e.target.value }))
+              }
               value={formData.email}
             ></input>
           </div>
@@ -105,7 +143,9 @@ function SignupPage() {
               name="password"
               id="password"
               required
-              onChange={(e) => setFormData(prev => ({...prev, password: e.target.value}))}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, password: e.target.value }))
+              }
               value={formData.password}
             ></input>
           </div>
@@ -118,11 +158,24 @@ function SignupPage() {
               name="passwordConfirm"
               id="passwordConfirm"
               required
-              onChange={(e) => setFormData(prev => ({...prev, passwordConfirm: e.target.value}))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  passwordConfirm: e.target.value,
+                }))
+              }
               value={formData.passwordConfirm}
             ></input>
+            {errors.passwordConfirm && (
+              <p className="self-start text-error">{errors.passwordConfirm}</p>
+            )}
           </div>
-          <button type="submit" className='h-9 w-45 mx-auto mt-8 rounded-full border border-accent bg-accentbg'>新規登録</button>
+          <button
+            type="submit"
+            className="h-9 w-45 mx-auto mt-8 rounded-full border border-accent bg-accentbg"
+          >
+            新規登録
+          </button>
         </form>
       </div>
     </>
