@@ -20,10 +20,10 @@ public record ProcurementRequestListResponse(
   String productCategoryName,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  List<StorageType> storageTypeLabels,
+  List<StorageType> storageTypes,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  List<MonthlyRequirement> monthlyRequirements,
+  List<MonthlyProcurementQuantity> monthlyProcurementQuantities,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   Buyer buyer,
@@ -37,12 +37,12 @@ public record ProcurementRequestListResponse(
     String label
   ) {}
 
-  public record MonthlyRequirement(
+  public record MonthlyProcurementQuantity(
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     YearMonth targetMonth,
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Integer quantity
+    Integer desiredQuantity
   ) {}
 
   public record Buyer(

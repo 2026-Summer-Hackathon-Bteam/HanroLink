@@ -31,7 +31,13 @@ public record ProcurementRequestDetailResponse(
   List<StorageType> storageTypes,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  List<MonthlyRequirement> monthlyRequirements
+  List<MonthlyProcurementQuantity> monthlyProcurementQuantities,
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+  Permissions permissions,
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+  Boolean hasMyActiveNegotiationRequest
 ) {
 
   public record Buyer(
@@ -52,14 +58,25 @@ public record ProcurementRequestDetailResponse(
 
   public record StorageType(
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    StorageType value,
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     String label
   ) {}
 
-  public record MonthlyRequirement(
+  public record MonthlyProcurementQuantity(
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     YearMonth targetMonth,
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Integer quantity
+    Integer desiredQuantity
+  ) {}
+
+  public record Permissions(
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    Boolean canManage,
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    Boolean canRequest
   ) {}
 }

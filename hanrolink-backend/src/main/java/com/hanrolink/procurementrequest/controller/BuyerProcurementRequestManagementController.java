@@ -9,12 +9,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hanrolink.procurementrequest.api.BuyerProcurementRequestApi;
+import com.hanrolink.procurementrequest.api.ProcurementRequestApi;
 import com.hanrolink.procurementrequest.request.BuyerProcurementRequestCreateRequest;
 import com.hanrolink.procurementrequest.request.BuyerProcurementRequestUpdateRequest;
 import com.hanrolink.procurementrequest.response.BuyerProcurementRequestCreateResponse;
 import com.hanrolink.procurementrequest.response.BuyerProcurementRequestListResponse;
-import com.hanrolink.procurementrequest.response.BuyerProcurementRequestDetailResponse;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -32,7 +31,7 @@ public class BuyerProcurementRequestManagementController {
     responseCode = "201",
     description = "Created"
   )
-  @PostMapping(BuyerProcurementRequestApi.V1.BASE)
+  @PostMapping(ProcurementRequestApi.V1.BASE)
   public ResponseEntity<BuyerProcurementRequestCreateResponse> create(
     @Valid @RequestBody BuyerProcurementRequestCreateRequest request
   ) {
@@ -41,18 +40,8 @@ public class BuyerProcurementRequestManagementController {
     return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
   }
 
-  // 募集を登録したBuyerアカウントのみ利用可能
-  @GetMapping(BuyerProcurementRequestApi.V1.BY_ID)
-  public ResponseEntity<BuyerProcurementRequestDetailResponse> getDetail(
-    @PathVariable Long procurementRequestId
-  ) {
-
-    // TODO: Serviceから募集情報詳細を取得し、ResponseEntity.ok(response)で返す
-    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
-  }
-
   // 認証中のBuyerアカウントが登録した募集のみ取得可能
-  @GetMapping(BuyerProcurementRequestApi.V1.BASE)
+  @GetMapping(ProcurementRequestApi.V1.MINE)
   public ResponseEntity<BuyerProcurementRequestListResponse> list() {
 
     // TODO: Serviceから募集情報リストを取得し、ResponseEntity.ok(response)で返す
@@ -64,7 +53,7 @@ public class BuyerProcurementRequestManagementController {
     responseCode = "204",
     description = "No Content"
   )
-  @PutMapping(BuyerProcurementRequestApi.V1.BY_ID)
+  @PutMapping(ProcurementRequestApi.V1.BY_ID)
   public ResponseEntity<Void> update(
     @PathVariable Long procurementRequestId,
     @Valid @RequestBody BuyerProcurementRequestUpdateRequest request
@@ -79,7 +68,7 @@ public class BuyerProcurementRequestManagementController {
     responseCode = "204",
     description = "No Content"
   )
-  @DeleteMapping(BuyerProcurementRequestApi.V1.BY_ID)
+  @DeleteMapping(ProcurementRequestApi.V1.BY_ID)
   public ResponseEntity<Void> delete(
     @PathVariable Long procurementRequestId
   ) {
