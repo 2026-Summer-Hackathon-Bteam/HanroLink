@@ -38,7 +38,7 @@ public class Product {
   private String mainImageStorageKey;
 
   @Column(name = "content_quantity", nullable = false)
-  private Integer contentQuantity;
+  private String contentQuantity;
 
   @Column(name = "expiration_type", nullable = false)
   private ProductExpirationType expirationType;
