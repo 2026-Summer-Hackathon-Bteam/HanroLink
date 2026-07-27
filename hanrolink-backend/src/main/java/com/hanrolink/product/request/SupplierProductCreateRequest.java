@@ -49,10 +49,12 @@ public record SupplierProductCreateRequest(
   @Positive
   Integer desiredRetailPrice,
 
+  @Size(max = 255)
   String allergyInformation,
 
   String certificationInformation,
 
+  @Size(max = 255)
   String caseSize,
 
   @Positive
@@ -64,6 +66,7 @@ public record SupplierProductCreateRequest(
   @Positive
   Short shippingLeadTimeDays,
 
+  @Size(max = 255)
   String salesAreaRestriction,
 
   @NotNull
@@ -99,6 +102,7 @@ public record SupplierProductCreateRequest(
     Short productStorySectionTemplateId,
 
     @NotBlank
+    @Size(max = 255)
     String body,
 
     @NotEmptyFile

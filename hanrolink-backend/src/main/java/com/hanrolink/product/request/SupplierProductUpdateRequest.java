@@ -48,10 +48,12 @@ public record SupplierProductUpdateRequest(
   @Positive
   Integer desiredRetailPrice,
 
+  @Size(max = 255)
   String allergyInformation,
 
   String certificationInformation,
 
+  @Size(max = 255)
   String caseSize,
 
   @Positive
@@ -63,6 +65,7 @@ public record SupplierProductUpdateRequest(
   @Positive
   Short shippingLeadTimeDays,
 
+  @Size(max = 255)
   String salesAreaRestriction,
 
   @NotNull
@@ -102,6 +105,7 @@ public record SupplierProductUpdateRequest(
     Short productStorySectionTemplateId,
 
     @NotBlank
+    @Size(max = 255)
     String body,
 
     MultipartFile imageFile
