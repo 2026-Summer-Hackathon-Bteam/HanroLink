@@ -93,12 +93,12 @@ public record SupplierProductCreateRequest(
 
   public record ProductStory(
     @NotNull
-    @Positive
+    @Min(1)
+    @Max(4)
     Short position,
 
     @NotNull
-    @Min(1)
-    @Max(4)
+    @Positive
     Short productStorySectionTemplateId,
 
     @NotBlank
