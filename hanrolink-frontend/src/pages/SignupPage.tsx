@@ -1,12 +1,19 @@
 import { useState, type SubmitEvent } from 'react'
 
-type SelectedRole = 'supplier' | 'buyer' | null
+type FormData = {
+  selectedRole: 'supplier' | 'buyer' | null;
+  email: string;
+  password: string;
+  passwordConfirm: string;
+} 
 
 function SignupPage() {
-  const [selectedRole, setSelectedRole] = useState<SelectedRole>(null)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [passwordConfirm, setPasswordConfirm] = useState('')
+  const [formData, setFormData] = useState<FormData>({
+    selectedRole: null,
+    email: '',
+    password: '',
+    passwordConfirm: ''
+  })
 
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -54,8 +61,8 @@ function SignupPage() {
                   id="supplier"
                   value="supplier"
                   required
-                  checked={selectedRole === 'supplier'}
-                  onChange={() => setSelectedRole('supplier')}
+                  checked={formData.selectedRole === 'supplier'}
+                  onChange={() => setFormData(prev => ({...prev, selectedRole:'supplier'}))}
                 />
                 <label htmlFor="supplier" className="text-base">
                   サプライヤー
@@ -67,8 +74,8 @@ function SignupPage() {
                   name="role"
                   id="buyer"
                   value="buyer"
-                  checked={selectedRole === 'buyer'}
-                  onChange={() => setSelectedRole('buyer')}
+                  checked={formData.selectedRole === 'buyer'}
+                  onChange={() => setFormData(prev => ({...prev, selectedRole: 'buyer'}))}
                 />
                 <label htmlFor="buyer" className="text-base">
                   バイヤー
@@ -85,8 +92,8 @@ function SignupPage() {
               name="email"
               id="email"
               required
-              onChange={(e) => setEmail(e.target.value)}
-              value={email}
+              onChange={(e) => setFormData(prev => ({...prev, email: e.target.value}))}
+              value={formData.email}
             ></input>
           </div>
           <div className="flex flex-col gap-1">
@@ -98,8 +105,8 @@ function SignupPage() {
               name="password"
               id="password"
               required
-              onChange={(e) => setPassword(e.target.value)}
-              value={password}
+              onChange={(e) => setFormData(prev => ({...prev, password: e.target.value}))}
+              value={formData.password}
             ></input>
           </div>
           <div className="flex flex-col gap-1">
@@ -111,8 +118,8 @@ function SignupPage() {
               name="passwordConfirm"
               id="passwordConfirm"
               required
-              onChange={(e) => setPasswordConfirm(e.target.value)}
-              value={passwordConfirm}
+              onChange={(e) => setFormData(prev => ({...prev, passwordConfirm: e.target.value}))}
+              value={formData.passwordConfirm}
             ></input>
           </div>
           <button type="submit" className='h-9 w-45 mx-auto mt-8 rounded-full border border-accent bg-accentbg'>新規登録</button>
