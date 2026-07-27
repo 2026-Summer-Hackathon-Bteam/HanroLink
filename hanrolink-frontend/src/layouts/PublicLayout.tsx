@@ -6,7 +6,7 @@ function PublicLayout() {
   return (
     <>
       <Header />
-      <main>
+      <main className='py-23'>
         <Outlet />
       </main>
       <Footer />
