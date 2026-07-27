@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hanrolink.product.api.ProductApi;
 import com.hanrolink.product.request.ProductSearchRequest;
+import com.hanrolink.product.response.ProductDetailResponse;
 import com.hanrolink.product.response.ProductListResponse;
 
 import jakarta.validation.Valid;
@@ -23,7 +24,7 @@ public class ProductController {
 
   // 管理者、サプライヤー、バイヤー利用可能
   @GetMapping(ProductApi.V1.BY_ID)
-  public ResponseEntity<ProductListResponse> getDetail(
+  public ResponseEntity<ProductDetailResponse> getDetail(
     @PathVariable Long productId
   ) {
 

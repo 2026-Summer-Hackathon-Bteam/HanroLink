@@ -87,7 +87,7 @@ public class SupplierProductManagementController {
     responseCode = "204",
     description = "No Content"
   )
-  @PutMapping(ProductApi.V1.BASE)
+  @PutMapping(ProductApi.V1.BY_ID)
   public ResponseEntity<SupplierProductUpdateRequest> update(
     @Parameter(hidden = true)
     @Valid
