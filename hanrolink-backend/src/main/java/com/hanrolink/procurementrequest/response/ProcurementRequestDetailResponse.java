@@ -77,6 +77,6 @@ public record ProcurementRequestDetailResponse(
     Boolean canManage,
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Boolean canRequest
+    Boolean canCreateNegotiationRequest
   ) {}
 }

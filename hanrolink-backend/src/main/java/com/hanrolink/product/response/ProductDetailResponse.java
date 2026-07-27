@@ -149,6 +149,6 @@ public record ProductDetailResponse(
     Boolean canManage,
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Boolean canRequest
+    Boolean canCreateNegotiationRequest
   ) {}
 }
