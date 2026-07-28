@@ -68,7 +68,7 @@ function SignupPage() {
 
     // Cognitoの送信処理
 
-    // 成功後の処理
+    // 成功後にコード確認画面へ遷移
     navigate('/signup/confirm', {
       state: {
         email: formData.email,
@@ -96,6 +96,8 @@ function SignupPage() {
           <p>
             登録したメールアドレスに確認コードが送信されますので、コード確認の画面でコードを入力してください。
           </p>
+          <p>&darr;</p>
+          <p>ログイン画面でログインしてください。</p>
           <p>&darr;</p>
           <p>
             会社情報等登録画面で会社情報（会社名、所在地、担当者名など）を入力してください。

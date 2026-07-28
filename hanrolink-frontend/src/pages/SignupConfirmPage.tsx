@@ -1,5 +1,5 @@
 import { useState, type SubmitEvent } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 type LocationState = {
   email?: string
@@ -10,18 +10,29 @@ function SignupConfirmPage() {
   const state = location.state as LocationState | null
   const [email, setEmail] = useState(state?.email ?? '')
   const [confirmCode, setConfirmCode] = useState('')
+  const navigate = useNavigate()
 
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     // Cognitoへの送信処理
+
+    // 成功後にログイン画面へ遷移
+    navigate('/login', {
+      replace: true,
+      state: {
+        email,
+        message:
+          'メールアドレスの確認が完了しました。ログインして会社情報を入力してください。',
+      },
+    })
   }
 
   return (
     <>
       <div className="mx-auto max-w-300 px-4 text-center md:px-6 lg:px-8">
         <h2>コード確認</h2>
-        <p className='mb-4'>
+        <p className="mb-4">
           ご登録のメールアドレスに送信された確認コードを入力し、
           <br />
           「確認する」ボタンを押してください。
@@ -63,7 +74,7 @@ function SignupConfirmPage() {
               required
               onChange={(e) => setConfirmCode(e.target.value)}
               value={confirmCode}
-              inputMode='numeric'
+              inputMode="numeric"
               autoComplete="one-time-code"
             ></input>
           </div>
