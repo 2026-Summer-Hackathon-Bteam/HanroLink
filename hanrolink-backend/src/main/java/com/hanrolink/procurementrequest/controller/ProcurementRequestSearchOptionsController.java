@@ -6,16 +6,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hanrolink.procurementrequest.api.ProcurementRequestApi;
-import com.hanrolink.procurementrequest.response.BuyerProcurementRequestFormOptionsResponse;
+import com.hanrolink.procurementrequest.response.ProcurementRequestSearchOptionsResponse;
 
 @RestController
-public class BuyerProcurementRequestFormOptionsController {
+public class ProcurementRequestSearchOptionsController {
 
-  // バイヤーのみ利用可能
-  @GetMapping(ProcurementRequestApi.V1.FORM_OPTIONS)
-  public ResponseEntity<BuyerProcurementRequestFormOptionsResponse> get() {
+  // 管理者、サプライヤー利用可能
+  @GetMapping(ProcurementRequestApi.V1.SEARCH_OPTIONS)
+  public ResponseEntity<ProcurementRequestSearchOptionsResponse> get() {
 
-    // TODO: Serviceからフォーム選択肢を取得し、ResponseEntity.ok(response)で返す
+    // TODO: Serviceから検索条件を取得し、ResponseEntity.ok(response)で返す
     return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
   }
 }

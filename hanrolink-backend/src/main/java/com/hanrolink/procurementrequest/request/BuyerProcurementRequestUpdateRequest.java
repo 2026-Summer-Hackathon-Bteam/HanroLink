@@ -39,10 +39,10 @@ public record BuyerProcurementRequestUpdateRequest(
 
   @NotNull
   @Size(min = 6, max = 6, message = "6か月分指定してください")
-  List<@NotNull @Valid MonthlyRequirement> monthlyRequirements
+  List<@NotNull @Valid MonthlyProcurementQuantity> monthlyProcurementQuantities
 ) {
 
-  public record MonthlyRequirement(
+  public record MonthlyProcurementQuantity(
     @NotNull
     @FutureOrPresent(message = "当月以降の月を指定してください")
     YearMonth targetMonth,

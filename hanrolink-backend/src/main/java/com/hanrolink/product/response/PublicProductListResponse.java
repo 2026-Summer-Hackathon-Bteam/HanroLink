@@ -1,16 +1,14 @@
-package com.hanrolink.procurementrequest.response;
-
-import java.time.Instant;
+package com.hanrolink.product.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record BuyerProcurementRequestListResponse(
+public record PublicProductListResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  Long id,
+  String name,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  String title,
+  String supplierName,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  Instant updatedAt
+  String mainImageUrl
 ) {}
