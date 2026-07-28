@@ -1,4 +1,5 @@
 import { useState, useEffect, type SubmitEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 type SignupFormData = {
   role: 'supplier' | 'buyer' | null
@@ -15,6 +16,13 @@ type FormErrors = {
   form?: string
 }
 
+const getPasswordConfirmError = (
+  password: string,
+  passwordConfirm: string,
+): string | undefined => {
+  return password === passwordConfirm ? undefined : 'パスワードが一致しません'
+}
+
 function SignupPage() {
   const [formData, setFormData] = useState<SignupFormData>({
     role: null,
@@ -23,11 +31,7 @@ function SignupPage() {
     passwordConfirm: '',
   })
   const [errors, setErrors] = useState<FormErrors>({})
-
-  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    // Cognitoの送信処理
-  }
+  const navigate = useNavigate()
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -35,14 +39,42 @@ function SignupPage() {
         ...prev,
         passwordConfirm: !formData.passwordConfirm
           ? undefined
-          : formData.password !== formData.passwordConfirm
-            ? 'パスワードが一致しません'
-            : undefined,
+          : getPasswordConfirmError(
+              formData.password,
+              formData.passwordConfirm,
+            ),
       }))
     }, 400)
 
     return () => window.clearTimeout(timeoutId)
   }, [formData.password, formData.passwordConfirm])
+
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    // 送信前にエラーがないかを確認
+    const nextErrors: FormErrors = {}
+    const passwordConfirmError = getPasswordConfirmError(
+      formData.password,
+      formData.passwordConfirm,
+    )
+    if (passwordConfirmError) {
+      nextErrors.passwordConfirm = passwordConfirmError
+    }
+    //他のバリデーション処理
+
+    setErrors(nextErrors)
+
+    if (Object.keys(nextErrors).length > 0) return
+
+    // Cognitoの送信処理
+
+    // 成功後の処理
+    navigate('/signup/confirm', {
+      state: {
+        email: formData.email,
+      },
+    })
+  }
 
   return (
     <>
