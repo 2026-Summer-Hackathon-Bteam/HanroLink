@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hanrolink.product.api.ProductApi;
 import com.hanrolink.product.request.ProductSearchRequest;
 import com.hanrolink.product.response.ProductDetailResponse;
-import com.hanrolink.product.response.ProductListResponse;
+import com.hanrolink.product.response.ProductSearchListResponse;
 
 import jakarta.validation.Valid;
 
@@ -34,7 +34,7 @@ public class ProductController {
 
   // 管理者、サプライヤー、バイヤー利用可能
   @GetMapping(ProductApi.V1.BASE)
-  public ResponseEntity<ProductListResponse> search(
+  public ResponseEntity<ProductSearchListResponse> search(
     @Valid
     @ParameterObject
     @ModelAttribute
