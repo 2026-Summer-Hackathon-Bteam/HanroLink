@@ -89,6 +89,7 @@ public class SupplierProductManagementController {
   )
   @PutMapping(ProductApi.V1.BY_ID)
   public ResponseEntity<SupplierProductUpdateRequest> update(
+    @PathVariable Long productId,
     @Parameter(hidden = true)
     @Valid
     @ModelAttribute SupplierProductUpdateRequest request
