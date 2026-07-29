@@ -33,11 +33,19 @@ public class ProcurementNegotiationRequest {
   private Long productId;
 
   @JdbcTypeCode(SqlTypes.JSON)
-  @Column(name = "procurement_request_snapshot", nullable = false)
+  @Column(
+    name = "procurement_request_snapshot",
+    columnDefinition = "jsonb",
+    nullable = false
+  )
   private JsonNode procurementRequestSnapshot;
 
   @JdbcTypeCode(SqlTypes.JSON)
-  @Column(name = "product_snapshot", nullable = false)
+  @Column(
+    name = "product_snapshot",
+    columnDefinition = "jsonb",
+    nullable = false
+  )
   private JsonNode productSnapshot;
 
   @Column(name = "product_main_image_storage_key", nullable = false)
