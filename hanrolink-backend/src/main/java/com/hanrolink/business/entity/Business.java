@@ -37,7 +37,7 @@ public class Business {
   @Column(name = "address_municipality_street", nullable = false)
   private String addressMunicipalityStreet;
 
-  @Column(name = "address_building", nullable = false)
+  @Column(name = "address_building")
   private String addressBuilding;
 
   @Column(name = "phone_number", nullable = false)
