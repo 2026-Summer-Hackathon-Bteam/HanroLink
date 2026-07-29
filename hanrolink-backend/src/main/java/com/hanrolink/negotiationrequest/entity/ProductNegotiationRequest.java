@@ -1,4 +1,4 @@
-package com.hanrolink.discussionrequest.entity;
+package com.hanrolink.negotiationrequest.entity;
 
 import java.time.Instant;
 
@@ -16,8 +16,8 @@ import jakarta.persistence.Table;
 import tools.jackson.databind.JsonNode;
 
 @Entity
-@Table(name = "product_discussion_requests")
-public class ProductDiscussionRequest {
+@Table(name = "product_negotiation_requests")
+public class ProductNegotiationRequest {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,7 +45,7 @@ public class ProductDiscussionRequest {
   @Column(name = "updated_at", nullable = false)
   private Instant updatedAt;
 
-  protected ProductDiscussionRequest() {}
+  protected ProductNegotiationRequest() {}
 
   @PrePersist
   private void onCreate() {

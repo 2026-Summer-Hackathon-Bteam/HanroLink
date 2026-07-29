@@ -226,7 +226,7 @@ CREATE TABLE pending_file_deletions (
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE TABLE procurement_discussion_requests (
+CREATE TABLE procurement_negotiation_requests (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   supplier_account_id BIGINT NOT NULL,
   procurement_request_id BIGINT NOT NULL,
@@ -238,18 +238,18 @@ CREATE TABLE procurement_discussion_requests (
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
-  CONSTRAINT fk_procurement_discussion_requests_supplier_account
+  CONSTRAINT fk_procurement_negotiation_requests_supplier_account
     FOREIGN KEY (supplier_account_id)
     REFERENCES business_user_accounts(id),
-  CONSTRAINT fk_procurement_discussion_requests_procurement_request
+  CONSTRAINT fk_procurement_negotiation_requests_procurement_request
     FOREIGN KEY (procurement_request_id)
     REFERENCES procurement_requests(id),
-  CONSTRAINT fk_procurement_discussion_requests_product
+  CONSTRAINT fk_procurement_negotiation_requests_product
     FOREIGN KEY (product_id)
     REFERENCES products(id)
 );
 
-CREATE TABLE product_discussion_requests (
+CREATE TABLE product_negotiation_requests (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   buyer_account_id BIGINT NOT NULL,
   product_id BIGINT NOT NULL,
@@ -259,10 +259,10 @@ CREATE TABLE product_discussion_requests (
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
-  CONSTRAINT fk_product_discussion_requests_buyer_account
+  CONSTRAINT fk_product_negotiation_requests_buyer_account
     FOREIGN KEY (buyer_account_id)
     REFERENCES business_user_accounts(id),
-  CONSTRAINT fk_product_discussion_requests_product
+  CONSTRAINT fk_product_negotiation_requests_product
     FOREIGN KEY (product_id)
     REFERENCES products(id)
 );
@@ -272,8 +272,8 @@ CREATE TABLE channels (
   public_id UUID UNIQUE NOT NULL,
   supplier_account_id BIGINT NOT NULL,
   buyer_account_id BIGINT NOT NULL,
-  product_discussion_request_id BIGINT,
-  procurement_discussion_request_id BIGINT,
+  product_negotiation_request_id BIGINT,
+  procurement_negotiation_request_id BIGINT,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
@@ -283,12 +283,12 @@ CREATE TABLE channels (
   CONSTRAINT fk_channels_buyer_account
     FOREIGN KEY (buyer_account_id)
     REFERENCES business_user_accounts(id),
-  CONSTRAINT fk_channels_product_discussion_request
-    FOREIGN KEY (product_discussion_request_id)
-    REFERENCES product_discussion_requests(id),
-  CONSTRAINT fk_channels_procurement_discussion_request
-    FOREIGN KEY (procurement_discussion_request_id)
-    REFERENCES procurement_discussion_requests(id)
+  CONSTRAINT fk_channels_product_negotiation_request
+    FOREIGN KEY (product_negotiation_request_id)
+    REFERENCES product_negotiation_requests(id),
+  CONSTRAINT fk_channels_procurement_negotiation_request
+    FOREIGN KEY (procurement_negotiation_request_id)
+    REFERENCES procurement_negotiation_requests(id)
 );
 
 CREATE TABLE messages (
