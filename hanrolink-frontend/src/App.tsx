@@ -6,13 +6,17 @@ import LoginPage from './pages/LoginPage'
 import SignupConfirmPage from './pages/SignupConfirmPage'
 import PublicLayout from './layouts/PublicLayout'
 import BusinessProfileSetupPage from './pages/BusinessProfileSetupPage'
+import GuestLayout from './layouts/GuestLayout'
 
 function App() {
   return (
     <>
       <Routes>
-        <Route element={<PublicLayout />}>
+        <Route element={<GuestLayout />}>
           <Route index element={<GuestPage />} />
+        </Route>
+
+        <Route element={<PublicLayout />}>
           <Route path="signup" element={<SignupPage />} />
           <Route path="signup/confirm" element={<SignupConfirmPage />} />
           <Route path="signup/complete" element={<SignupCompletePage />} />
