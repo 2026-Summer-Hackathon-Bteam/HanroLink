@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/api/v1/buyer/procurement-requests/{procurementRequestId}": {
+    "/api/v1/products/{productId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -20,14 +20,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/buyer/procurement-requests": {
+    "/api/v1/procurement-requests/{procurementRequestId}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get: operations["list"];
+        get: operations["getDetail_1"];
+        put: operations["update_1"];
+        post?: never;
+        delete: operations["delete_1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["search"];
         put?: never;
         post: operations["create"];
         delete?: never;
@@ -43,23 +59,39 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_1"];
+        get: operations["search_1"];
         put?: never;
-        post?: never;
+        post: operations["create_1"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/procurement-requests/{procurementRequestId}": {
+    "/api/v1/products/{productId}/visibility": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get: operations["getDetail_1"];
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["updateVisibility"];
+        trace?: never;
+    };
+    "/api/v1/public/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list"];
         put?: never;
         post?: never;
         delete?: never;
@@ -68,7 +100,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/buyer/procurement-requests/form-options": {
+    "/api/v1/products/search-options": {
         parameters: {
             query?: never;
             header?: never;
@@ -84,10 +116,132 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/products/form-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/procurement-requests/search-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/procurement-requests/form-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_3"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/procurement-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        MonthlySupplyCapacity: {
+            targetMonth: string;
+            /** Format: int32 */
+            availableQuantity: number;
+        };
+        ProductStory: {
+            /** Format: int32 */
+            position: number;
+            /** Format: int32 */
+            productStorySectionTemplateId: number;
+            body: string;
+            /** Format: binary */
+            imageFile?: string;
+        };
+        SupplierProductUpdateRequest: {
+            name: string;
+            /** Format: int32 */
+            productCategoryId: number;
+            /** Format: int32 */
+            mainIngredientRegionId: number;
+            contentQuantity: string;
+            /** @enum {string} */
+            expirationType: "BEST_BEFORE" | "USE_BY" | "NOT_APPLICABLE";
+            /** Format: int32 */
+            shelfLifeDays?: number;
+            /** @enum {string} */
+            storageType: "AMBIENT" | "REFRIGERATED" | "FROZEN";
+            /** Format: int32 */
+            desiredRetailPrice: number;
+            allergyInformation?: string;
+            certificationInformation?: string;
+            caseSize?: string;
+            /** Format: int32 */
+            unitsPerCase?: number;
+            /** Format: int32 */
+            minimumOrderQuantity?: number;
+            /** Format: int32 */
+            shippingLeadTimeDays?: number;
+            salesAreaRestriction?: string;
+            monthlySupplyCapacities: components["schemas"]["MonthlySupplyCapacity"][];
+            productStories: components["schemas"]["ProductStory"][];
+        };
         BuyerProcurementRequestUpdateRequest: {
             title: string;
             description: string;
@@ -99,12 +253,44 @@ export interface components {
             /** Format: int32 */
             deliveryShelfLifeDays?: number;
             storageTypes: ("AMBIENT" | "REFRIGERATED" | "FROZEN")[];
-            monthlyRequirements: components["schemas"]["MonthlyRequirement"][];
+            monthlyProcurementQuantities: components["schemas"]["MonthlyProcurementQuantity"][];
         };
-        MonthlyRequirement: {
+        MonthlyProcurementQuantity: {
             targetMonth: string;
             /** Format: int32 */
             desiredQuantity: number;
+        };
+        SupplierProductCreateRequest: {
+            name: string;
+            /** Format: int32 */
+            productCategoryId: number;
+            /** Format: int32 */
+            mainIngredientRegionId: number;
+            contentQuantity: string;
+            /** @enum {string} */
+            expirationType: "BEST_BEFORE" | "USE_BY" | "NOT_APPLICABLE";
+            /** Format: int32 */
+            shelfLifeDays?: number;
+            /** @enum {string} */
+            storageType: "AMBIENT" | "REFRIGERATED" | "FROZEN";
+            /** Format: int32 */
+            desiredRetailPrice: number;
+            allergyInformation?: string;
+            certificationInformation?: string;
+            caseSize?: string;
+            /** Format: int32 */
+            unitsPerCase?: number;
+            /** Format: int32 */
+            minimumOrderQuantity?: number;
+            /** Format: int32 */
+            shippingLeadTimeDays?: number;
+            salesAreaRestriction?: string;
+            monthlySupplyCapacities: components["schemas"]["MonthlySupplyCapacity"][];
+            productStories: components["schemas"]["ProductStory"][];
+        };
+        SupplierProductCreateResponse: {
+            /** Format: int64 */
+            productId: number;
         };
         BuyerProcurementRequestCreateRequest: {
             title: string;
@@ -117,16 +303,19 @@ export interface components {
             /** Format: int32 */
             deliveryShelfLifeDays?: number;
             storageTypes: ("AMBIENT" | "REFRIGERATED" | "FROZEN")[];
-            monthlyRequirements: components["schemas"]["MonthlyRequirement"][];
+            monthlyProcurementQuantities: components["schemas"]["MonthlyProcurementQuantity"][];
         };
         BuyerProcurementRequestCreateResponse: {
             /** Format: int64 */
             procurementRequestId: number;
         };
-        Buyer: {
-            /** Format: uuid */
-            accountId: string;
-            businessName: string;
+        SupplierProductUpdateVisibilityRequest: {
+            hidden: boolean;
+        };
+        PublicProductListResponse: {
+            name: string;
+            supplierName: string;
+            mainImageUrl: string;
         };
         Pagination: {
             /** Format: int32 */
@@ -138,19 +327,146 @@ export interface components {
             /** Format: int32 */
             totalPages: number;
         };
+        ProductSearchListResponse: {
+            /** Format: int64 */
+            id: number;
+            name: string;
+            businessName: string;
+            productCategoryName: string;
+            mainIngredientRegionName: string;
+            monthlySupplyCapacities: components["schemas"]["MonthlySupplyCapacity"][];
+            mainImageUrl: string;
+            pagination?: components["schemas"]["Pagination"];
+        };
+        MainIngredientRegion: {
+            /** Format: int32 */
+            id: number;
+            name: string;
+        };
+        Permissions: {
+            canManage: boolean;
+            canCreateNegotiationRequest: boolean;
+        };
+        ProductCategory: {
+            /** Format: int32 */
+            id: number;
+            name: string;
+        };
+        ProductDetailResponse: {
+            /** Format: int64 */
+            id: number;
+            name: string;
+            hidden: boolean;
+            productCategory: components["schemas"]["ProductCategory"];
+            mainIngredientRegion: components["schemas"]["MainIngredientRegion"];
+            contentQuantity: string;
+            productExpirationType: components["schemas"]["ProductExpirationType"];
+            /** Format: int32 */
+            shelfLifeDays?: number;
+            storageType: components["schemas"]["StorageType"];
+            /** Format: int32 */
+            desiredRetailPrice: number;
+            allergyInformation?: string;
+            certificationInformation?: string;
+            caseSize?: string;
+            /** Format: int32 */
+            unitsPerCase?: number;
+            /** Format: int32 */
+            minimumOrderQuantity?: number;
+            /** Format: int32 */
+            shippingLeadTimeDays?: number;
+            salesAreaRestriction?: string;
+            mainImageUrl: string;
+            monthlySupplyCapacities: components["schemas"]["MonthlySupplyCapacity"][];
+            productStories: components["schemas"]["ProductStory"][];
+            supplier: components["schemas"]["Supplier"];
+            permissions: components["schemas"]["Permissions"];
+            hasMyActiveNegotiationRequest: boolean;
+        };
+        ProductExpirationType: {
+            value: components["schemas"]["ProductExpirationType"];
+            label: string;
+        };
+        StorageType: {
+            value: components["schemas"]["StorageType"];
+            label: string;
+        };
+        Supplier: {
+            businessName: string;
+            businessAddressPrefecture: string;
+            businessAddressMunicipalityStreet: string;
+            businessAddressBuilding?: string;
+            businessWebsiteUrl: string;
+        };
+        ProductCategoryGroupOption: {
+            /** Format: int32 */
+            id: number;
+            name: string;
+            /** Format: int32 */
+            sortOrder: number;
+        };
+        ProductCategoryOption: {
+            /** Format: int32 */
+            id: number;
+            /** Format: int32 */
+            productCategoryGroupId: number;
+            name: string;
+            /** Format: int32 */
+            sortOrder: number;
+        };
+        ProductSearchOptionsResponse: {
+            productCategoryGroups: components["schemas"]["ProductCategoryGroupOption"][];
+            productCategories: components["schemas"]["ProductCategoryOption"][];
+            mainIngredientRegions: components["schemas"]["RegionOption"][];
+            storageTypes: components["schemas"]["StorageTypeOption"][];
+        };
+        RegionOption: {
+            /** Format: int32 */
+            id: number;
+            name: string;
+            /** Format: int32 */
+            sortOrder: number;
+        };
+        StorageTypeOption: {
+            /** @enum {string} */
+            value: "AMBIENT" | "REFRIGERATED" | "FROZEN";
+            label: string;
+        };
+        ProductExpirationTypeOption: {
+            /** @enum {string} */
+            value: "BEST_BEFORE" | "USE_BY" | "NOT_APPLICABLE";
+            label: string;
+        };
+        ProductStorySectionTemplateOption: {
+            /** Format: int32 */
+            id: number;
+            title: string;
+            imageHint: string;
+            bodyHelpText: string;
+        };
+        SupplierProductFormOptionsResponse: {
+            productCategoryGroups: components["schemas"]["ProductCategoryGroupOption"][];
+            productCategories: components["schemas"]["ProductCategoryOption"][];
+            mainIngredientRegions: components["schemas"]["RegionOption"][];
+            productExpirationTypes: components["schemas"]["ProductExpirationTypeOption"][];
+            storageTypes: components["schemas"]["StorageTypeOption"][];
+            productStorySectionTemplates: components["schemas"]["ProductStorySectionTemplateOption"][];
+        };
+        Buyer: {
+            /** Format: uuid */
+            accountId: string;
+            businessName: string;
+        };
         ProcurementRequestListResponse: {
             /** Format: int64 */
             id: number;
             title: string;
             description: string;
             productCategoryName: string;
-            storageTypeLabels: components["schemas"]["StorageType"][];
-            monthlyRequirements: components["schemas"]["MonthlyRequirement"][];
+            storageTypes: components["schemas"]["StorageType"][];
+            monthlyProcurementQuantities: components["schemas"]["MonthlyProcurementQuantity"][];
             buyer: components["schemas"]["Buyer"];
             pagination: components["schemas"]["Pagination"];
-        };
-        StorageType: {
-            label: string;
         };
         ProcurementRequestDetailResponse: {
             title: string;
@@ -163,44 +479,35 @@ export interface components {
             /** Format: int32 */
             deliveryShelfLifeDays?: number;
             storageTypes: components["schemas"]["StorageType"][];
-            monthlyRequirements: components["schemas"]["MonthlyRequirement"][];
+            monthlyProcurementQuantities: components["schemas"]["MonthlyProcurementQuantity"][];
+            permissions: components["schemas"]["Permissions"];
+            hasMyActiveNegotiationRequest: boolean;
         };
-        ProductCategory: unknown;
+        ProcurementRequestSearchOptionsResponse: {
+            productCategoryGroups: components["schemas"]["ProductCategoryGroupOption"][];
+            productCategories: components["schemas"]["ProductCategoryOption"][];
+            storageTypes: components["schemas"]["StorageTypeOption"][];
+        };
+        BuyerProcurementRequestFormOptionsResponse: {
+            productCategoryGroups: components["schemas"]["ProductCategoryGroupOption"][];
+            productCategories: components["schemas"]["ProductCategoryOption"][];
+            storageTypes: components["schemas"]["StorageTypeOption"][];
+        };
+        SupplierProductListResponse: {
+            /** Format: int64 */
+            id: number;
+            name: string;
+            mainImageUrl: string;
+            hidden: boolean;
+            /** Format: date-time */
+            updatedAt: string;
+        };
         BuyerProcurementRequestListResponse: {
             /** Format: int64 */
             id: number;
             title: string;
-            description: string;
-            productCategoryName: string;
-            storageTypeLabels: components["schemas"]["StorageType"][];
-            monthlyRequirements: components["schemas"]["MonthlyRequirement"][];
-            buyer: components["schemas"]["Buyer"];
-        };
-        BuyerProcurementRequestDetailResponse: {
-            title: string;
-            description: string;
-            buyer: components["schemas"]["Buyer"];
-            productCategory: components["schemas"]["ProductCategory"];
-            requiredTradeTerms?: string;
-            /** Format: int32 */
-            desiredUnitPrice?: number;
-            /** Format: int32 */
-            deliveryShelfLifeDays?: number;
-            storageTypes: components["schemas"]["StorageType"][];
-            monthlyRequirements: components["schemas"]["MonthlyRequirement"][];
-        };
-        BuyerProcurementRequestFormOptionsGetResponse: {
-            productCategories: components["schemas"]["ProductCategoryOption"][];
-            storageTypes: components["schemas"]["StorageTypeOption"][];
-        };
-        ProductCategoryOption: {
-            /** Format: int32 */
-            id: number;
-            label: string;
-        };
-        StorageTypeOption: {
-            value: string;
-            label: string;
+            /** Format: date-time */
+            updatedAt: string;
         };
     };
     responses: never;
@@ -216,7 +523,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                procurementRequestId: number;
+                productId: number;
             };
             cookie?: never;
         };
@@ -228,7 +535,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["BuyerProcurementRequestDetailResponse"];
+                    "*/*": components["schemas"]["ProductDetailResponse"];
                 };
             };
         };
@@ -238,13 +545,13 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                procurementRequestId: number;
+                productId: number;
             };
             cookie?: never;
         };
-        requestBody?: {
+        requestBody: {
             content: {
-                "application/json": components["schemas"]["BuyerProcurementRequestUpdateRequest"];
+                "multipart/form-data": components["schemas"]["SupplierProductUpdateRequest"];
             };
         };
         responses: {
@@ -253,7 +560,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "*/*": components["schemas"]["SupplierProductUpdateRequest"];
+                };
             };
         };
     };
@@ -262,7 +571,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                procurementRequestId: number;
+                productId: number;
             };
             cookie?: never;
         };
@@ -274,70 +583,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
-            };
-        };
-    };
-    list: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["BuyerProcurementRequestListResponse"];
-                };
-            };
-        };
-    };
-    create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["BuyerProcurementRequestCreateRequest"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["BuyerProcurementRequestCreateResponse"];
-                };
-            };
-        };
-    };
-    list_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ProcurementRequestListResponse"];
-                };
             };
         };
     };
@@ -363,6 +608,197 @@ export interface operations {
             };
         };
     };
+    update_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                procurementRequestId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["BuyerProcurementRequestUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    delete_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                procurementRequestId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    search: {
+        parameters: {
+            query?: {
+                availableSupplyMonths?: string[];
+                mainIngredientRegionIds?: number[];
+                productCategoryGroupIds?: number[];
+                productCategoryIds?: number[];
+                storageTypes?: ("AMBIENT" | "REFRIGERATED" | "FROZEN")[];
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ProductSearchListResponse"];
+                };
+            };
+        };
+    };
+    create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["SupplierProductCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SupplierProductCreateResponse"];
+                };
+            };
+        };
+    };
+    search_1: {
+        parameters: {
+            query?: {
+                productCategoryGroupIds?: number[];
+                productCategoryIds?: number[];
+                storageTypes?: ("AMBIENT" | "REFRIGERATED" | "FROZEN")[];
+                keyword?: string;
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ProcurementRequestListResponse"];
+                };
+            };
+        };
+    };
+    create_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["BuyerProcurementRequestCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BuyerProcurementRequestCreateResponse"];
+                };
+            };
+        };
+    };
+    updateVisibility: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                productId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SupplierProductUpdateVisibilityRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PublicProductListResponse"];
+                };
+            };
+        };
+    };
     get: {
         parameters: {
             query?: never;
@@ -378,7 +814,107 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["BuyerProcurementRequestFormOptionsGetResponse"];
+                    "*/*": components["schemas"]["ProductSearchOptionsResponse"];
+                };
+            };
+        };
+    };
+    get_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SupplierProductFormOptionsResponse"];
+                };
+            };
+        };
+    };
+    get_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ProcurementRequestSearchOptionsResponse"];
+                };
+            };
+        };
+    };
+    get_3: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BuyerProcurementRequestFormOptionsResponse"];
+                };
+            };
+        };
+    };
+    list_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SupplierProductListResponse"];
+                };
+            };
+        };
+    };
+    list_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BuyerProcurementRequestListResponse"];
                 };
             };
         };

@@ -1,12 +1,55 @@
-import { useState, type SubmitEvent } from 'react'
+import { useState, type SubmitEvent, type ChangeEvent } from 'react'
 import FormRow from '../components/FormRow'
 
+type BusinessProfileFormData = {
+  businessName: string
+  businessNameKana: string
+  businessPostalCode: string
+  businessAddressPrefecture: string
+  businessAddressMunicipalityStreet: string
+  businessAddressBuilding: string
+  businessPhoneNumber: string
+  businessWebsiteUrl: string
+  contactLastName: string
+  contactFirstName: string
+  contactLastNameKana: string
+  contactFirstNameKana: string
+  contactPhoneNumber: string
+}
+
 function BusinessProfileSetupPage() {
+  const [formData, setFormData] = useState<BusinessProfileFormData>({
+    businessName: '',
+    businessNameKana: '',
+    businessPostalCode: '',
+    businessAddressPrefecture: '',
+    businessAddressMunicipalityStreet: '',
+    businessAddressBuilding: '',
+    businessPhoneNumber: '',
+    businessWebsiteUrl: '',
+    contactLastName: '',
+    contactFirstName: '',
+    contactLastNameKana: '',
+    contactFirstNameKana: '',
+    contactPhoneNumber: '',
+  })
+  const email: string = 'バックエンドから取得'
+
+  const handleChange = (e:ChangeEvent<HTMLInputElement>)=>{
+    const{name,value} = e.target
+
+    setFormData((prev)=> ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
   }
 
   return (
+    // 型生成ファイルにリクエストデータの型が定義されたら、必須項目を確認し、「必須」バッジをつける
     <>
       <div className="mx-auto max-w-300 px-4 text-center md:px-6 lg:px-8">
         <h2>会社情報登録</h2>
@@ -27,124 +70,200 @@ function BusinessProfileSetupPage() {
                 name="businessName"
                 type="text"
                 className="w-full"
+                onChange={handleChange}
+                value={formData.businessName}
+                required
               />
             </FormRow>
-            <FormRow label="会社名カナ" htmlFor="businessName">
+            <FormRow label="会社名カナ" htmlFor="businessNameKana">
               <input
-                id="businessName"
-                name="businessName"
+                id="businessNameKana"
+                name="businessNameKana"
                 type="text"
                 className="w-full"
+                onChange={handleChange}
+                value={formData.businessNameKana}
+                required
               />
             </FormRow>
-            <FormRow label="郵便番号" htmlFor="businessName">
+            <FormRow label="郵便番号" htmlFor="businessPostalCode">
               <input
-                id="businessName"
-                name="businessName"
+                id="businessPostalCode"
+                name="businessPostalCode"
                 type="text"
                 className="w-full max-w-28"
+                onChange={handleChange}
+                value={formData.businessPostalCode}
+                required
               />
             </FormRow>
-            <FormRow label="会社住所（都道府県）" htmlFor="businessName">
+            <FormRow
+              label="会社住所（都道府県）"
+              htmlFor="businessAddressPrefecture"
+            >
               <input
-                id="businessName"
-                name="businessName"
+                id="businessAddressPrefecture"
+                name="businessAddressPrefecture"
                 type="text"
                 className="w-full"
+                onChange={handleChange}
+                value={formData.businessAddressPrefecture}
+                required
               />
             </FormRow>
             <FormRow
               label="会社住所（市区町村名・町名・番地）"
-              htmlFor="businessName"
+              htmlFor="businessAddressMunicipalityStreet"
             >
               <input
-                id="businessName"
-                name="businessName"
+                id="businessAddressMunicipalityStreet"
+                name="businessAddressMunicipalityStreet"
                 type="text"
                 className="w-full"
+                onChange={handleChange}
+                value={formData.businessAddressMunicipalityStreet}
+                required
               />
             </FormRow>
-            <FormRow label="建物名" htmlFor="businessName">
+            <FormRow label="建物名" htmlFor="businessAddressBuilding">
               <input
-                id="businessName"
-                name="businessName"
+                id="businessAddressBuilding"
+                name="businessAddressBuilding"
                 type="text"
                 className="w-full"
+                onChange={handleChange}
+                value={formData.businessAddressBuilding}
               />
             </FormRow>
-            <FormRow label="電話番号" htmlFor="businessName">
+            <FormRow label="電話番号" htmlFor="businessPhoneNumber">
               <input
-                id="businessName"
-                name="businessName"
-                type="text"
+                id="businessPhoneNumber"
+                name="businessPhoneNumber"
+                type="tel"
                 className="w-full max-w-40"
+                onChange={handleChange}
+                value={formData.businessPhoneNumber}
+                required
+                inputMode='numeric'
+                autoComplete='postal-code'
+                maxLength={7}
               />
+              <p>（ハイフンなし）</p>
             </FormRow>
-            <FormRow label="ホームページ" htmlFor="businessName">
+            <FormRow label="Webサイト（URL）" htmlFor="businessWebsiteUrl">
               <input
-                id="businessName"
-                name="businessName"
-                type="text"
+                id="businessWebsiteUrl"
+                name="businessWebsiteUrl"
+                type="url"
                 className="w-full"
+                onChange={handleChange}
+                value={formData.businessWebsiteUrl}
               />
             </FormRow>
-            <FormRow label="担当者名" htmlFor="businessName">
-              <div className="flex items-center gap-2">
-                <label>姓</label>
-                <input
-                  id="businessName"
-                  name="businessName"
-                  type="text"
-                  className="w-full"
-                />
+
+            <fieldset className="m-0 min-w-0 border-0 p-0 md:border-b md:border-border">
+              <legend className="sr-only">担当者名</legend>
+              <div className="grid md:grid-cols-[16rem_1fr]">
+                <div
+                  aria-hidden="true"
+                  className="flex items-center bg-textbg px-5 py-4 text-left md:border-r md:border-border"
+                >
+                  担当者名
+                </div>
+                <div className="grid grid-cols-1 gap-3 p-3 md:grid-cols-2">
+                  <div className="flex items-center gap-3">
+                    <label htmlFor="contactLastName">姓</label>
+                    <input
+                      id="contactLastName"
+                      name="contactLastName"
+                      type="text"
+                      className="w-full"
+                      onChange={handleChange}
+                      value={formData.contactLastName}
+                      required
+                    />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <label htmlFor="contactFirstName">名</label>
+                    <input
+                      id="contactFirstName"
+                      name="contactFirstName"
+                      type="text"
+                      className="w-full"
+                      onChange={handleChange}
+                      value={formData.contactFirstName}
+                      required
+                    />
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <label>名</label>
-                <input
-                  id="businessName"
-                  name="businessName"
-                  type="text"
-                  className="w-full"
-                />
+            </fieldset>
+
+            <fieldset className="m-0 min-w-0 border-0 p-0 md:border-b md:border-border">
+              <legend className="sr-only">担当者名カナ</legend>
+              <div className="grid md:grid-cols-[16rem_1fr]">
+                <div
+                  aria-hidden="true"
+                  className="flex items-center bg-textbg px-5 py-4 text-left md:border-r md:border-border"
+                >
+                  担当者名カナ
+                </div>
+                <div className="grid grid-cols-1 gap-3 p-3 md:grid-cols-2">
+                  <div className="flex items-center gap-3">
+                    <label
+                      htmlFor="contactLastNameKana"
+                      className="whitespace-nowrap"
+                    >
+                      セイ
+                    </label>
+                    <input
+                      id="contactLastNameKana"
+                      name="contactLastNameKana"
+                      type="text"
+                      className="w-full"
+                      onChange={handleChange}
+                      value={formData.contactLastNameKana}
+                      required
+                    />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <label
+                      htmlFor="contactFirstNameKana"
+                      className="whitespace-nowrap"
+                    >
+                      メイ
+                    </label>
+                    <input
+                      id="contactFirstNameKana"
+                      name="contactFirstNameKana"
+                      type="text"
+                      className="w-full"
+                      onChange={handleChange}
+                      value={formData.contactFirstNameKana}
+                      required
+                    />
+                  </div>
+                </div>
               </div>
-            </FormRow>
-            <FormRow label="担当者フリガナ" htmlFor="businessName">
-              <div className="flex items-center gap-2">
-                <label>姓</label>
-                <input
-                  id="businessName"
-                  name="businessName"
-                  type="text"
-                  className="w-full"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <label>名</label>
-                <input
-                  id="businessName"
-                  name="businessName"
-                  type="text"
-                  className="w-full"
-                />
-              </div>
-            </FormRow>
-            <FormRow label="担当者電話番号" htmlFor="businessName">
+            </fieldset>
+
+            <FormRow label="担当者電話番号" htmlFor="contactPhoneNumber">
               <input
-                id="businessName"
-                name="businessName"
-                type="text"
-                className="w-full"
+                id="contactPhoneNumber"
+                name="contactPhoneNumber"
+                type="tel"
+                className="w-full max-w-40"
+                onChange={handleChange}
+                value={formData.contactPhoneNumber}
               />
             </FormRow>
-            <FormRow label="担当者メールアドレス" htmlFor="businessName">
-              <input
-                id="businessName"
-                name="businessName"
-                type="text"
-                className="w-full"
-                // valueでバックエンドから取得した値を入れる
-              />
-            </FormRow>
+
+            <div className="grid md:grid-cols-[16rem_1fr]">
+              <div className="flex items-center bg-textbg px-5 py-4 md:border-r md:border-border">
+                担当者メールアドレス
+              </div>
+              <p className="p-5.5 text-left">{email}</p>
+            </div>
           </div>
           <button
             type="submit"
