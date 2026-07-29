@@ -274,6 +274,7 @@ CREATE TABLE channels (
   buyer_account_id BIGINT NOT NULL,
   product_negotiation_request_id BIGINT,
   procurement_negotiation_request_id BIGINT,
+  name VARCHAR(255) NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 

@@ -35,6 +35,9 @@ public class Channel {
   @Column(name = "procurement_discussion_request_id")
   private Long procurementDiscussionRequestId;
 
+  @Column(nullable = false)
+  private String name;
+
   @Column(name = "created_at", updatable = false, nullable = false)
   private Instant createdAt;
 
