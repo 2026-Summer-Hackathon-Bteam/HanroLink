@@ -170,7 +170,7 @@ function BusinessProfileSetupPage() {
                 >
                   担当者名
                 </div>
-                <div className="grid grid-cols-1 gap-3 p-3 md:grid-cols-2">
+                <div className="grid grid-cols-1 gap-3 p-3 border-b border-border md:border-none md:grid-cols-2">
                   <div className="flex items-center gap-3">
                     <label htmlFor="contactLastName">姓</label>
                     <input
@@ -208,7 +208,7 @@ function BusinessProfileSetupPage() {
                 >
                   担当者名カナ
                 </div>
-                <div className="grid grid-cols-1 gap-3 p-3 md:grid-cols-2">
+                <div className="grid grid-cols-1 gap-3 p-3 border-b border-border md:border-none md:grid-cols-2">
                   <div className="flex items-center gap-3">
                     <label
                       htmlFor="contactLastNameKana"
