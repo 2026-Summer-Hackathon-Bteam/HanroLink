@@ -20,6 +20,7 @@ dist-ssr
 # ===== Environment =====
 .env
 .env.*
+!.env.example
 
 # ===== Logs =====
 logs/

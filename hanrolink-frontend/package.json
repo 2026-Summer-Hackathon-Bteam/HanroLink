@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
+    "aws-amplify": "^6.19.0",
     "openapi-fetch": "^0.17.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
