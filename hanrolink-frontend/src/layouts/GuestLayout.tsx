@@ -5,7 +5,7 @@ import { Outlet } from 'react-router-dom'
 function GuestLayout() {
   return (
     <>
-      <Header showAfterScroll={400}/>
+      <Header showAfterElementId='guest-header-trigger' />
       <main className='pb-23'>
         <Outlet />
       </main>
