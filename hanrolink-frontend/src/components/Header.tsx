@@ -45,7 +45,9 @@ function Header({ showAfterScroll = 0, showAfterElementId = '' }: HeaderProps) {
   return (
     <header
       className={`fixed left-0 right-0 top-0 z-50 px-4 pt-3 transition-transform duration-500 ease-out md:px-6 ${
-        isVisible ? 'translate-y-0 ' : '-translate-y-full pointer-events-none'
+        isVisible
+          ? 'translate-y-0'
+          : '-translate-y-[calc(100%+2px)] pointer-events-none'
       }`}
     >
       <div className="mx-auto flex justify-between items-center max-w-400 h-20 rounded-xl bg-bg/60 shadow-sm backdrop-blur-md">
