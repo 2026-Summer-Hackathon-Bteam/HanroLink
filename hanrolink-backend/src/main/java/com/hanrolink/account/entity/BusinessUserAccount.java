@@ -1,6 +1,10 @@
-package com.hanrolink.adminaccount.entity;
+package com.hanrolink.account.entity;
 
 import java.time.Instant;
+import java.util.UUID;
+
+import com.hanrolink.account.enums.BusinessUserAccountReviewStatus;
+import com.hanrolink.account.enums.BusinessUserAccountRole;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,15 +14,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
 
 @Entity
-@Table(name = "admin_accounts")
-public class AdminAccount {
+@Table(name = "business_user_accounts")
+public class BusinessUserAccount {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Column(name = "public_id", updatable = false, nullable = false)
+  private UUID publicId = UUID.randomUUID();
 
   @Column(
     name = "identity_provider_subject",
@@ -27,7 +33,27 @@ public class AdminAccount {
   )
   private String identityProviderSubject;
 
-  @Email
+  @Column(nullable = false)
+  private BusinessUserAccountRole role;
+
+  @Column(name = "review_status", nullable = false)
+  private BusinessUserAccountReviewStatus reviewStatus;
+
+  @Column(name = "last_name", nullable = false)
+  private String lastName;
+
+  @Column(name = "first_name", nullable = false)
+  private String firstName;
+
+  @Column(name = "last_name_kana", nullable = false)
+  private String lastNameKana;
+
+  @Column(name = "first_name_kana", nullable = false)
+  private String firstNameKana;
+
+  @Column(name = "phone_number", nullable = false)
+  private String phoneNumber;
+
   @Column(nullable = false)
   private String email;
 
@@ -37,7 +63,7 @@ public class AdminAccount {
   @Column(name = "updated_at", nullable = false)
   private Instant updatedAt;
 
-  protected AdminAccount() {}
+  protected BusinessUserAccount() {}
 
   @PrePersist
   private void onCreate() {

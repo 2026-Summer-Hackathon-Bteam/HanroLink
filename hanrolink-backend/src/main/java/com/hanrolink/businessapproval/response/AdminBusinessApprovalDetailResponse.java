@@ -3,8 +3,8 @@ package com.hanrolink.businessapproval.response;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.hanrolink.businessuseraccount.enums.BusinessUserAccountReviewStatus;
-import com.hanrolink.businessuseraccount.enums.BusinessUserAccountRole;
+import com.hanrolink.account.enums.BusinessUserAccountReviewStatus;
+import com.hanrolink.account.enums.BusinessUserAccountRole;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

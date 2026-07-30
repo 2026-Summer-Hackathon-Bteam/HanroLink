@@ -1,4 +1,4 @@
-package com.hanrolink.businessuseraccount.enums;
+package com.hanrolink.account.enums;
 
 public enum BusinessUserAccountReviewStatus {
   PENDING,
