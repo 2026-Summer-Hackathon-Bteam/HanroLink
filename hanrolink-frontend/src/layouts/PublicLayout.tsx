@@ -4,13 +4,13 @@ import { Outlet } from 'react-router-dom'
 
 function PublicLayout() {
   return (
-    <>
+    <div className='flex min-h-dvh flex-col'>
       <Header />
-      <main className='py-23'>
+      <main className='py-23 flex-1'>
         <Outlet />
       </main>
       <Footer />
-    </>
+    </div>
   )
 }
 
