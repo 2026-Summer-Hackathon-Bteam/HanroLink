@@ -24,8 +24,8 @@ CREATE TABLE businesses (
 );
 
 CREATE TYPE business_user_account_role AS ENUM (
-  'BUYER',
-  'SUPPLIER'
+  'SUPPLIER',
+  'BUYER'
 );
 
 CREATE TYPE business_user_account_review_status AS ENUM (
