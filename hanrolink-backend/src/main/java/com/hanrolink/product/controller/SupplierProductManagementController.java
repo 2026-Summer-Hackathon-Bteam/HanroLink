@@ -1,5 +1,7 @@
 package com.hanrolink.product.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -64,7 +66,7 @@ public class SupplierProductManagementController {
 
   // 商品を登録したSupplierアカウントのみ利用可能
   @GetMapping(ProductApi.V1.MINE)
-  public ResponseEntity<SupplierProductListResponse> list() {
+  public ResponseEntity<List<SupplierProductListResponse>> list() {
 
     // TODO: Serviceから商品情報リストを取得し、ResponseEntity.ok(response)で返す
     return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();

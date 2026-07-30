@@ -1,5 +1,7 @@
 package com.hanrolink.product.controller;
 
+import java.util.List;
+
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +36,7 @@ public class ProductController {
 
   // 管理者、サプライヤー、バイヤー利用可能
   @GetMapping(ProductApi.V1.BASE)
-  public ResponseEntity<ProductSearchListResponse> search(
+  public ResponseEntity<List<ProductSearchListResponse>> search(
     @Valid
     @ParameterObject
     @ModelAttribute
