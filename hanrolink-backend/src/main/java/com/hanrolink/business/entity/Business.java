@@ -1,6 +1,9 @@
 package com.hanrolink.business.entity;
 
+import java.sql.Types;
 import java.time.Instant;
+
+import org.hibernate.annotations.JdbcTypeCode;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,7 +31,13 @@ public class Business {
   @Column(name = "website_url")
   private String websiteUrl;
 
-  @Column(name = "address_postal_code", nullable = false)
+  @JdbcTypeCode(Types.CHAR)
+  @Column(
+    name = "address_postal_code",
+    columnDefinition = "CHAR(7)",
+    length = 7,
+    nullable = false
+  )
   private String addressPostalCode;
 
   @Column(name = "address_prefecture", nullable = false)

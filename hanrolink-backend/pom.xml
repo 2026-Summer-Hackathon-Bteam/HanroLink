@@ -51,6 +51,18 @@
       <artifactId>spring-boot-starter-data-jpa</artifactId>
     </dependency>
 
+    <!-- Spring Boot向けDBマイグレーション管理（Flyway本体・自動構成） -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-flyway</artifactId>
+    </dependency>
+
+    <!-- PostgreSQL向けFlywayサポート -->
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-database-postgresql</artifactId>
+    </dependency>
+
     <!-- JDBC driver for PostgreSQL -->
     <dependency>
       <groupId>org.postgresql</groupId>

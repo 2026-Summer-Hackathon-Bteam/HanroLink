@@ -3,11 +3,16 @@ package com.hanrolink.account.entity;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import com.hanrolink.account.enums.BusinessUserAccountReviewStatus;
 import com.hanrolink.account.enums.BusinessUserAccountRole;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,10 +38,18 @@ public class BusinessUserAccount {
   )
   private String identityProviderSubject;
 
-  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+  @Column(columnDefinition = "business_user_account_role", nullable = false)
   private BusinessUserAccountRole role;
 
-  @Column(name = "review_status", nullable = false)
+  @Enumerated(EnumType.STRING)
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+  @Column(
+    name = "review_status",
+    columnDefinition = "business_user_account_review_status",
+    nullable = false
+  )
   private BusinessUserAccountReviewStatus reviewStatus;
 
   @Column(name = "last_name", nullable = false)

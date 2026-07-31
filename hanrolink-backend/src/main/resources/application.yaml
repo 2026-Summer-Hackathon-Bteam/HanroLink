@@ -2,8 +2,13 @@ spring:
   application:
     name: hanrolink-backend
 
+  flyway:
+    enabled: true
+
   jpa:
     open-in-view: false
+    hibernate:
+      ddl-auto: validate
 
 springdoc:
   api-docs:

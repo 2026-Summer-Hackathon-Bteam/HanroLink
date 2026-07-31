@@ -2,11 +2,16 @@ package com.hanrolink.product.entity;
 
 import java.time.Instant;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import com.hanrolink.product.enums.ProductExpirationType;
 import com.hanrolink.product.enums.StorageType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -40,13 +45,25 @@ public class Product {
   @Column(name = "content_quantity", nullable = false)
   private String contentQuantity;
 
-  @Column(name = "expiration_type", nullable = false)
+  @Enumerated(EnumType.STRING)
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+  @Column(
+    name = "expiration_type",
+    columnDefinition = "product_expiration_type",
+    nullable = false
+  )
   private ProductExpirationType expirationType;
 
   @Column(name = "shelf_life_days")
   private Short shelfLifeDays;
 
-  @Column(name = "storage_type", nullable = false)
+  @Enumerated(EnumType.STRING)
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+  @Column(
+    name = "storage_type",
+    columnDefinition = "storage_type",
+    nullable = false
+  )
   private StorageType storageType;
 
   @Column(name = "desired_retail_price", nullable = false)
