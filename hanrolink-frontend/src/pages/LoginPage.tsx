@@ -1,5 +1,6 @@
 import { useState, type SubmitEvent } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { getAuthErrorMessage, signInUser } from '../features/auth/authService'
 
 type LocationState = {
   email?: string
@@ -12,14 +13,42 @@ function LoginPage() {
   const [email, setEmail] = useState(state?.email ?? '')
   const message = state?.message ?? ''
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const navigate = useNavigate()
 
-  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setError('')
+    setIsSubmitting(true)
 
     // cognitoの送信処理
+    try {
+      const result = await signInUser({
+        email,
+        password,
+      })
 
-    // 成功した後にバックエンドにトークンを送付して自己情報を取得する
-    // レスポンスのステータスにより、遷移先を分岐する
+      if (result.isSignedIn && result.nextStep.signInStep === 'DONE') {
+        // Cognitoのアクセストークン取得
+        // バックエンドにトークンを送付して自己情報を取得する
+        // レスポンスのステータスにより、遷移先を分岐する
+        return
+      }
+
+      if (result.nextStep.signInStep === 'CONFIRM_SIGN_UP') {
+        navigate('/signup/confirm', {
+          state: {
+            email: email.trim(),
+          },
+        })
+        return
+      }
+    } catch (error: unknown) {
+      setError(getAuthErrorMessage(error))
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -61,9 +90,13 @@ function LoginPage() {
           <button
             type="submit"
             className="h-9 w-45 mx-auto mt-8 rounded-full border border-accent bg-accentbg"
+            disabled={isSubmitting}
           >
-            ログイン
+            {isSubmitting ? '送信中...' : 'ログイン'}
           </button>
+          { error && (
+            <p role='alert' className='text-error'>{error}</p>
+          )}
         </form>
       </div>
     </>
