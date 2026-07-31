@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hanrolink.negotiationrequest.api.SupplierNegotiationRequestApi;
-import com.hanrolink.negotiationrequest.response.SupplierProductNegotiationRequestAcceptResponse;
+import com.hanrolink.negotiationrequest.response.NegotiationRequestAcceptResponse;
 import com.hanrolink.negotiationrequest.response.SupplierProductNegotiationRequestListResponse;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -32,7 +32,7 @@ public class SupplierProductNegotiationRequestController {
     description = "Created"
   )
   @PostMapping(SupplierNegotiationRequestApi.V1.ACCEPT)
-  public ResponseEntity<SupplierProductNegotiationRequestAcceptResponse> accept(
+  public ResponseEntity<NegotiationRequestAcceptResponse> accept(
     @PathVariable Long productNegotiationRequestId
   ) {
 
