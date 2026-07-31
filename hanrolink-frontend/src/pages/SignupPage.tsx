@@ -1,5 +1,6 @@
 import { useState, useEffect, type SubmitEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { getAuthErrorMessage, signUpUser } from '../features/auth/authService'
 
 type SignupFormData = {
   role: 'supplier' | 'buyer' | null
@@ -32,6 +33,7 @@ function SignupPage() {
   })
   const [errors, setErrors] = useState<FormErrors>({})
   const navigate = useNavigate()
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -49,7 +51,7 @@ function SignupPage() {
     return () => window.clearTimeout(timeoutId)
   }, [formData.password, formData.passwordConfirm])
 
-  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
     // 送信前にエラーがないかを確認
     const nextErrors: FormErrors = {}
@@ -67,13 +69,39 @@ function SignupPage() {
     if (Object.keys(nextErrors).length > 0) return
 
     // Cognitoの送信処理
+    const role = formData.role
+    if (!role) return
 
-    // 成功後にコード確認画面へ遷移
-    navigate('/signup/confirm', {
-      state: {
+    setIsSubmitting(true)
+
+    try {
+      const result = await signUpUser({
         email: formData.email,
-      },
-    })
+        password: formData.password,
+        role,
+      })
+
+      if (result.nextStep.signUpStep === 'CONFIRM_SIGN_UP') {
+        navigate('/signup/confirm', {
+          state: {
+            email: formData.email.trim(),
+          },
+        })
+        return
+      }
+
+      setErrors((prev) => ({
+        ...prev,
+        form: '新規登録を続行できませんでした。',
+      }))
+    } catch (error: unknown) {
+      setErrors((prev) => ({
+        ...prev,
+        form: getAuthErrorMessage(error),
+      }))
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -207,9 +235,15 @@ function SignupPage() {
           <button
             type="submit"
             className="h-9 w-45 mx-auto mt-8 rounded-full border border-accent bg-accentbg"
+            disabled={isSubmitting}
           >
-            新規登録
+            {isSubmitting ? '送信中...' : '新規登録'}
           </button>
+          {errors.form && (
+            <p role="alert" className="text-error">
+              {errors.form}
+            </p>
+          )}
         </form>
       </div>
     </>
