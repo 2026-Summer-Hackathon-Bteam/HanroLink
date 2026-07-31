@@ -81,11 +81,12 @@ export function getAuthErrorMessage(error: unknown): string {
     case 'ExpiredCodeException':
       return '確認コードの有効期限が切れています。'
     case 'LimitExceededException':
+    case 'TooManyFailedAttemptsException':
     case 'TooManyRequestsException':
-      return '操作回数が上限に達しました。時間をおいて再度お試しください。'
+      return '試行回数または送信回数が上限に達しました。時間をおいて再度お試しください。'
     case 'UserNotFoundException':
     case 'NotAuthorizedException':
-      return 'メールアドレスまたはパスワードが正しくありません。'
+      return '入力された内容に誤りがあります。内容を確認して再度お試しください。'
     case 'UserNotConfirmedException':
       return 'メールアドレスの確認が完了していません。'
     case 'PasswordResetRequiredException':
