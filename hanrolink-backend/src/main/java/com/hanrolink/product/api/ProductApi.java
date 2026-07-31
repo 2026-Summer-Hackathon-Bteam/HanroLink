@@ -6,7 +6,7 @@ public final class ProductApi {
 
   public static final class V1 {
 
-    public static final String PUBLIC_BASE = ApiPath.API_V1 + "/public/products";
+    public static final String BASE_PUBLIC = ApiPath.API_V1 + "/public/products";
     public static final String BASE = ApiPath.API_V1 + "/products";
     public static final String MINE = ApiPath.API_V1 + "/me/products";
     public static final String BY_ID = BASE + "/{productId}";

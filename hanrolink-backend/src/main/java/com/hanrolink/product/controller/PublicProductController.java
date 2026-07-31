@@ -14,7 +14,7 @@ import com.hanrolink.product.response.PublicProductListResponse;
 public class PublicProductController {
 
   // 誰でもアクセス可能
-  @GetMapping(ProductApi.V1.PUBLIC_BASE)
+  @GetMapping(ProductApi.V1.BASE_PUBLIC)
   public ResponseEntity<List<PublicProductListResponse>> list() {
 
     // Serviceから商品情報リストを取得し、ResponseEntity.ok(response)で返す
