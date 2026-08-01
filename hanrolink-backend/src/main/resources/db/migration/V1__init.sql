@@ -152,7 +152,7 @@ CREATE TABLE product_story_section_templates (
   image_hint VARCHAR(255) NOT NULL,
   body_help_text VARCHAR(255) NOT NULL,
   body_example VARCHAR(255) NOT NULL,
-  sort_order SMALLINT NOT NULL,
+  sort_order SMALLINT UNIQUE NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
