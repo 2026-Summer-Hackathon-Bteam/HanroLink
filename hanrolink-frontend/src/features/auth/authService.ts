@@ -7,12 +7,9 @@ import {
   type SignUpOutput,
 } from 'aws-amplify/auth'
 
-export type Role = 'supplier' | 'buyer'
-
 type SignUpUserInput = {
   email: string
   password: string
-  role: Role
 }
 
 type ConfirmSignUpUserInput = {
@@ -28,7 +25,6 @@ type SignInUserInput = {
 export function signUpUser({
   email,
   password,
-  role,
 }: SignUpUserInput): Promise<SignUpOutput> {
   return signUp({
     username: email.trim(),
@@ -36,7 +32,6 @@ export function signUpUser({
     options: {
       userAttributes: {
         email: email.trim(),
-        'custom:role': role,
       },
     },
   })

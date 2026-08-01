@@ -3,14 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { getAuthErrorMessage, signUpUser } from '../features/auth/authService'
 
 type SignupFormData = {
-  role: 'supplier' | 'buyer' | null
   email: string
   password: string
   passwordConfirm: string
 }
 
 type FormErrors = {
-  role?: string
   email?: string
   password?: string
   passwordConfirm?: string
@@ -26,7 +24,6 @@ const getPasswordConfirmError = (
 
 function SignupPage() {
   const [formData, setFormData] = useState<SignupFormData>({
-    role: null,
     email: '',
     password: '',
     passwordConfirm: '',
@@ -69,8 +66,6 @@ function SignupPage() {
     if (Object.keys(nextErrors).length > 0) return
 
     // Cognitoの送信処理
-    const role = formData.role
-    if (!role) return
 
     setIsSubmitting(true)
 
@@ -78,7 +73,6 @@ function SignupPage() {
       const result = await signUpUser({
         email: formData.email,
         password: formData.password,
-        role,
       })
 
       if (result.nextStep.signUpStep === 'CONFIRM_SIGN_UP') {
@@ -111,8 +105,6 @@ function SignupPage() {
         <p className="mb-8">
           このサイトは事業者専用です。一般の方の登録はご遠慮ください。
           <br />
-          １事業者につきサプライヤー、バイヤーの両方に登録することはできません。
-          <br />
           登録後に管理者にて審査を行いますので、サービスの使用は審査完了後となります。
         </p>
         <section className="mb-8 mx-auto border-4 border-textbg p-4 w-fit">
@@ -140,47 +132,6 @@ function SignupPage() {
           onSubmit={handleSubmit}
           className="flex flex-col gap-8 max-w-120 mx-auto"
         >
-          <fieldset className="flex flex-col gap-1">
-            <legend className="text-xs text-left">
-              サプライヤー／バイヤー
-            </legend>
-            <div className="flex gap-4 justify-start pl-4">
-              <div className="flex items-center gap-1">
-                <input
-                  type="radio"
-                  name="role"
-                  id="supplier"
-                  value="supplier"
-                  required
-                  checked={formData.role === 'supplier'}
-                  onChange={() =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      role: 'supplier',
-                    }))
-                  }
-                />
-                <label htmlFor="supplier" className="text-base">
-                  サプライヤー
-                </label>
-              </div>
-              <div className="flex items-center gap-1">
-                <input
-                  type="radio"
-                  name="role"
-                  id="buyer"
-                  value="buyer"
-                  checked={formData.role === 'buyer'}
-                  onChange={() =>
-                    setFormData((prev) => ({ ...prev, role: 'buyer' }))
-                  }
-                />
-                <label htmlFor="buyer" className="text-base">
-                  バイヤー
-                </label>
-              </div>
-            </div>
-          </fieldset>
           <div className="flex flex-col gap-1">
             <label htmlFor="email" className="text-xs self-start">
               メールアドレス
