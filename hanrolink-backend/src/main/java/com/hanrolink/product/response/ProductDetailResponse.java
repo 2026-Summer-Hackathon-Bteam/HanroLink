@@ -86,7 +86,7 @@ public record ProductDetailResponse(
 
   public record ProductExpirationType(
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    ProductExpirationType value,
+    com.hanrolink.product.enums.ProductExpirationType value,
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     String label
@@ -94,7 +94,7 @@ public record ProductDetailResponse(
 
   public record StorageType(
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    StorageType value,
+    com.hanrolink.product.enums.StorageType value,
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     String label

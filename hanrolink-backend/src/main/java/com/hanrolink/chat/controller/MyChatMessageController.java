@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hanrolink.chat.api.ChatApi;
 import com.hanrolink.chat.request.MyChatMessageCreateRequest;
 import com.hanrolink.chat.response.MyChatMessageListResponse;
-import com.hanrolink.product.request.SupplierProductCreateRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -35,7 +34,7 @@ public class MyChatMessageController {
         content = @Content(
           mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
           schema = @Schema(
-            implementation = SupplierProductCreateRequest.class
+            implementation = MyChatMessageCreateRequest.class
           )
         )
       )

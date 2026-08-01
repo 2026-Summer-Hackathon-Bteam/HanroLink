@@ -4,8 +4,6 @@ import java.time.YearMonth;
 import java.util.List;
 import java.util.UUID;
 
-import com.hanrolink.productcategory.entity.ProductCategory;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record ProcurementRequestDetailResponse(
@@ -48,7 +46,7 @@ public record ProcurementRequestDetailResponse(
     String businessName
   ) {}
 
-  public record productCategory(
+  public record ProductCategory(
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     Short id,
 
@@ -58,7 +56,7 @@ public record ProcurementRequestDetailResponse(
 
   public record StorageType(
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    StorageType value,
+    com.hanrolink.product.enums.StorageType value,
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     String label

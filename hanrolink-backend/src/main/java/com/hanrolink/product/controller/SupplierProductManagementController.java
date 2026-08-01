@@ -90,7 +90,7 @@ public class SupplierProductManagementController {
     description = "No Content"
   )
   @PutMapping(ProductApi.V1.BY_ID)
-  public ResponseEntity<SupplierProductUpdateRequest> update(
+  public ResponseEntity<Void> update(
     @PathVariable Long productId,
     @Parameter(hidden = true)
     @Valid
