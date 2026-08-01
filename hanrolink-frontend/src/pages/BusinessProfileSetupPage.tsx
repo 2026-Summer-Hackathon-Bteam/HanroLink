@@ -79,7 +79,7 @@ function BusinessProfileSetupPage() {
                 >
                   サプライヤー／バイヤー
                 </div>
-                <div className="flex gap-4 p-5">
+                <div className="flex gap-4 p-5.5">
                   <div className="flex items-center gap-1">
                     <input
                       type="radio"
