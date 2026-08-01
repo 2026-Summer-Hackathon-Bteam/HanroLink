@@ -90,6 +90,12 @@ public record SupplierProductFormOptionsResponse(
     String imageHint,
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String bodyHelpText
+    String bodyHelpText,
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    String bodyExample,
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    Short sortOrder
   ) {}
 }

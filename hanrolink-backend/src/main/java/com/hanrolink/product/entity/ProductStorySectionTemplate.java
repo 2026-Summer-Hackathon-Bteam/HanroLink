@@ -28,6 +28,12 @@ public class ProductStorySectionTemplate {
   @Column(name = "body_help_text", nullable = false)
   private String bodyHelpText;
 
+  @Column(name = "body_example", nullable = false)
+  private String bodyExample;
+
+  @Column(name = "sort_order", nullable = false)
+  private Short sortOrder;
+
   @Column(name = "created_at", updatable = false, nullable = false)
   private Instant createdAt;
 
