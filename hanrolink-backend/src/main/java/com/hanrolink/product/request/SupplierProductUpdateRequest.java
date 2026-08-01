@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.hanrolink.product.enums.ProductExpirationType;
 import com.hanrolink.product.enums.StorageType;
+import com.hanrolink.web.validation.NotEmptyFile;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -30,6 +31,9 @@ public record SupplierProductUpdateRequest(
   @NotNull
   @Positive
   Short mainIngredientRegionId,
+
+  @NotEmptyFile
+  MultipartFile mainImageFile,
 
   @NotBlank
   @Size(max = 255)

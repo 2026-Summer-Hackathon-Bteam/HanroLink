@@ -18,6 +18,9 @@ public record NegotiationRequestAcceptResponse(
     String name,
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    String counterpartyBusinessName,
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     Instant lastActivityAt
   ) {}
 }

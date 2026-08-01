@@ -32,6 +32,9 @@ public record SupplierProductCreateRequest(
   @Positive
   Short mainIngredientRegionId,
 
+  @NotEmptyFile
+  MultipartFile mainImageFile,
+
   @NotBlank
   @Size(max = 255)
   String contentQuantity,
