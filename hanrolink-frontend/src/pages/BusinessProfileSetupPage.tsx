@@ -149,7 +149,11 @@ function BusinessProfileSetupPage() {
                 onChange={handleChange}
                 value={formData.businessPostalCode}
                 required
+                inputMode="numeric"
+                autoComplete="postal-code"
+                maxLength={7}
               />
+              <p>（ハイフンなし）</p>
             </FormRow>
             <FormRow
               label="会社住所（都道府県）"
@@ -198,11 +202,7 @@ function BusinessProfileSetupPage() {
                 onChange={handleChange}
                 value={formData.businessPhoneNumber}
                 required
-                inputMode="numeric"
-                autoComplete="postal-code"
-                maxLength={7}
               />
-              <p>（ハイフンなし）</p>
             </FormRow>
             <FormRow label="Webサイト（URL）" htmlFor="businessWebsiteUrl">
               <input
