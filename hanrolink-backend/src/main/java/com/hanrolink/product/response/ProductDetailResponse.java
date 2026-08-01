@@ -119,7 +119,7 @@ public record ProductDetailResponse(
     Short position,
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String title,
+    String sectionTitle,
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     String body,
