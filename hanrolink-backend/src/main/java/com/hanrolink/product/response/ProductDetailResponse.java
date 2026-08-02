@@ -1,7 +1,15 @@
 package com.hanrolink.product.response;
 
-import java.time.YearMonth;
 import java.util.List;
+
+import com.hanrolink.product.response.component.MonthlySupplyCapacityResponse;
+import com.hanrolink.product.response.component.ProductExpirationTypeResponse;
+import com.hanrolink.product.response.component.ProductMainIngredientRegionResponse;
+import com.hanrolink.product.response.component.ProductPermissionsResponse;
+import com.hanrolink.product.response.component.ProductStoryResponse;
+import com.hanrolink.product.response.component.ProductSupplierResponse;
+import com.hanrolink.product.response.component.StorageTypeResponse;
+import com.hanrolink.productcategory.response.component.ProductCategoryResponse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -16,21 +24,21 @@ public record ProductDetailResponse(
   Boolean hidden,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  ProductCategory productCategory,
+  ProductCategoryResponse productCategory,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  MainIngredientRegion mainIngredientRegion,
+  ProductMainIngredientRegionResponse mainIngredientRegion,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   String contentQuantity,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  ProductExpirationType productExpirationType,
+  ProductExpirationTypeResponse productExpirationType,
 
   Short shelfLifeDays,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  StorageType storageType,
+  StorageTypeResponse storageType,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   Integer desiredRetailPrice,
@@ -53,102 +61,17 @@ public record ProductDetailResponse(
   String mainImageUrl,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  List<MonthlySupplyCapacity> monthlySupplyCapacities,
+  List<MonthlySupplyCapacityResponse> monthlySupplyCapacities,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  List<ProductStory> productStories,
+  List<ProductStoryResponse> productStories,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  Supplier supplier,
+  ProductSupplierResponse supplier,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  Permissions permissions,
+  ProductPermissionsResponse permissions,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   Boolean hasMyActiveNegotiationRequest
-) {
-
-  public record ProductCategory(
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Short id,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String name
-  ) {}
-
-  public record MainIngredientRegion(
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Short id,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String name
-  ) {}
-
-  public record ProductExpirationType(
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    com.hanrolink.product.enums.ProductExpirationType value,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String label
-  ) {}
-
-  public record StorageType(
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    com.hanrolink.product.enums.StorageType value,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String label
-  ) {}
-
-  public record MonthlySupplyCapacity(
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    YearMonth targetMonth,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Integer availableQuantity
-  ) {}
-
-  public record ProductStory(
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Long id,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Short productStorySectionTemplateId,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Short position,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String sectionTitle,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String body,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String imageUrl
-  ) {}
-
-  public record Supplier(
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String businessName,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String businessAddressPrefecture,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String businessAddressMunicipalityStreet,
-
-    String businessAddressBuilding,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String businessWebsiteUrl
-  ) {}
-
-  public record Permissions(
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Boolean canManage,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Boolean canCreateNegotiationRequest
-  ) {}
-}
+) {}

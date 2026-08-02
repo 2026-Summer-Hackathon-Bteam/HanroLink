@@ -3,12 +3,12 @@ package com.hanrolink.account.response;
 import com.hanrolink.account.enums.BusinessUserAccountRegistrationApiStatus;
 
 public record CurrentAccountResponse(
-  Role role,
+  CurrentAccountRole role,
 
   BusinessUserAccountRegistrationApiStatus businessUserAccountRegistrationStatus
 ) {
 
-  public enum Role {
+  public enum CurrentAccountRole {
     ADMIN,
     SUPPLIER,
     BUYER

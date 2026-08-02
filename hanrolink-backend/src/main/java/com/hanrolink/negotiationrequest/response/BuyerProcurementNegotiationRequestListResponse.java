@@ -2,6 +2,9 @@ package com.hanrolink.negotiationrequest.response;
 
 import java.time.Instant;
 
+import com.hanrolink.negotiationrequest.response.component.ProcurementRequestSnapshotSummaryResponse;
+import com.hanrolink.negotiationrequest.response.component.BuyerProcurementNegotiationProductSnapshotSummaryResponse;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record BuyerProcurementNegotiationRequestListResponse(
@@ -9,31 +12,11 @@ public record BuyerProcurementNegotiationRequestListResponse(
   Long procurementNegotiationRequestId,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  ProcurementRequestSnapshot procurementRequest,
+  ProcurementRequestSnapshotSummaryResponse procurementRequest,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  ProductSnapshot product,
+  BuyerProcurementNegotiationProductSnapshotSummaryResponse product,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   Instant expiresAt
-) {
-
-  public record ProcurementRequestSnapshot(
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Long id,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String title
-  ) {}
-
-  public record ProductSnapshot(
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Long id,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String name,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String businessName
-  ) {}
-}
+) {}

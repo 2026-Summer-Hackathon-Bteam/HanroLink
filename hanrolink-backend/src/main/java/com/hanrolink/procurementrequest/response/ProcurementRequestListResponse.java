@@ -1,8 +1,10 @@
 package com.hanrolink.procurementrequest.response;
 
-import java.time.YearMonth;
 import java.util.List;
-import java.util.UUID;
+
+import com.hanrolink.pagination.response.component.PaginationResponse;
+import com.hanrolink.procurementrequest.response.component.MonthlyProcurementQuantityResponse;
+import com.hanrolink.procurementrequest.response.component.ProcurementRequestBuyerResponse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -20,50 +22,14 @@ public record ProcurementRequestListResponse(
   String productCategoryName,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  List<StorageType> storageTypes,
+  List<String> storageTypeLabels,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  List<MonthlyProcurementQuantity> monthlyProcurementQuantities,
+  List<MonthlyProcurementQuantityResponse> monthlyProcurementQuantities,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  Buyer buyer,
+  ProcurementRequestBuyerResponse buyer,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  Pagination pagination
-) {
-
-  public record StorageType(
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String label
-  ) {}
-
-  public record MonthlyProcurementQuantity(
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    YearMonth targetMonth,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Integer desiredQuantity
-  ) {}
-
-  public record Buyer(
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    UUID accountId,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String businessName
-  ) {}
-
-  public record Pagination(
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Integer page,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Integer pageSize,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Long totalCount,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Integer totalPages
-  ) {}
-}
+  PaginationResponse pagination
+) {}

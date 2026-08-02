@@ -1,8 +1,12 @@
 package com.hanrolink.procurementrequest.response;
 
-import java.time.YearMonth;
 import java.util.List;
-import java.util.UUID;
+
+import com.hanrolink.procurementrequest.response.component.MonthlyProcurementQuantityResponse;
+import com.hanrolink.procurementrequest.response.component.ProcurementRequestBuyerResponse;
+import com.hanrolink.procurementrequest.response.component.ProcurementRequestPermissionsResponse;
+import com.hanrolink.product.response.component.StorageTypeResponse;
+import com.hanrolink.productcategory.response.component.ProductCategoryResponse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -14,10 +18,10 @@ public record ProcurementRequestDetailResponse(
   String description,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  Buyer buyer,
+  ProcurementRequestBuyerResponse buyer,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  ProductCategory productCategory,
+  ProductCategoryResponse productCategory,
 
   String requiredTradeTerms,
 
@@ -26,55 +30,14 @@ public record ProcurementRequestDetailResponse(
   Short deliveryShelfLifeDays,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  List<StorageType> storageTypes,
+  List<StorageTypeResponse> storageTypes,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  List<MonthlyProcurementQuantity> monthlyProcurementQuantities,
+  List<MonthlyProcurementQuantityResponse> monthlyProcurementQuantities,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  Permissions permissions,
+  ProcurementRequestPermissionsResponse permissions,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   Boolean hasMyActiveNegotiationRequest
-) {
-
-  public record Buyer(
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    UUID accountId,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String businessName
-  ) {}
-
-  public record ProductCategory(
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Short id,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String name
-  ) {}
-
-  public record StorageType(
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    com.hanrolink.product.enums.StorageType value,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String label
-  ) {}
-
-  public record MonthlyProcurementQuantity(
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    YearMonth targetMonth,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Integer desiredQuantity
-  ) {}
-
-  public record Permissions(
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Boolean canManage,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Boolean canCreateNegotiationRequest
-  ) {}
-}
+) {}

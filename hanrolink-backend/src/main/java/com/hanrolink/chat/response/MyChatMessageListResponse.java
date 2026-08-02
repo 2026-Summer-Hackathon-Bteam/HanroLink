@@ -3,6 +3,8 @@ package com.hanrolink.chat.response;
 import java.time.Instant;
 import java.util.List;
 
+import com.hanrolink.chat.response.component.ChatMessageFileResponse;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record MyChatMessageListResponse(
@@ -20,18 +22,5 @@ public record MyChatMessageListResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   Instant createdAt,
 
-  List<MessageFile> messageFiles
-) {
-
-  public record MessageFile(
-    String displayFilename,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String url,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    String mimeType,
-
-    Long fileSizeBytes
-  ) {}
-}
+  List<ChatMessageFileResponse> messageFiles
+) {}

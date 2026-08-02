@@ -1,19 +1,16 @@
 package com.hanrolink.product.request;
 
-import java.time.YearMonth;
 import java.util.List;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.hanrolink.product.enums.ProductExpirationType;
 import com.hanrolink.product.enums.StorageType;
+import com.hanrolink.product.request.component.MonthlySupplyCapacityRequest;
+import com.hanrolink.product.request.component.ProductStoryCreateRequest;
 import com.hanrolink.web.validation.NotEmptyFile;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -75,40 +72,10 @@ public record SupplierProductCreateRequest(
   @NotNull
   @Size(min = 6, max = 6, message = "6か月分指定してください")
   @Valid
-  List<@NotNull MonthlySupplyCapacity> monthlySupplyCapacities,
+  List<@NotNull MonthlySupplyCapacityRequest> monthlySupplyCapacities,
 
   @NotNull
   @Size(min = 4, max = 4, message = "4つすべて入力してください")
   @Valid
-  List<@NotNull ProductStory> productStories
-) {
-
-  public record MonthlySupplyCapacity(
-    @NotNull
-    @FutureOrPresent(message = "当月以降の月を指定してください")
-    @DateTimeFormat(pattern = "yyyy-MM")
-    YearMonth targetMonth,
-
-    @NotNull
-    @Positive
-    Integer availableQuantity
-  ) {}
-
-  public record ProductStory(
-    @NotNull
-    @Min(1)
-    @Max(4)
-    Short position,
-
-    @NotNull
-    @Positive
-    Short productStorySectionTemplateId,
-
-    @NotBlank
-    @Size(max = 255)
-    String body,
-
-    @NotEmptyFile
-    MultipartFile imageFile
-  ) {}
-}
+  List<@NotNull ProductStoryCreateRequest> productStories
+) {}

@@ -1,7 +1,9 @@
 package com.hanrolink.product.response;
 
-import java.time.YearMonth;
 import java.util.List;
+
+import com.hanrolink.pagination.response.component.PaginationResponse;
+import com.hanrolink.product.response.component.MonthlySupplyCapacityResponse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -22,33 +24,10 @@ public record ProductSearchListResponse(
   String mainIngredientRegionName,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  List<MonthlySupplyCapacity> monthlySupplyCapacities,
+  List<MonthlySupplyCapacityResponse> monthlySupplyCapacities,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   String mainImageUrl,
 
-  Pagination pagination
-) {
-
-  public record MonthlySupplyCapacity(
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    YearMonth targetMonth,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Integer availableQuantity
-  ) {}
-
-  public record Pagination(
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Integer page,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Integer pageSize,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Long totalCount,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Integer totalPages
-  ) {}
-}
+  PaginationResponse pagination
+) {}
