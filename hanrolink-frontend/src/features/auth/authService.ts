@@ -2,6 +2,8 @@ import {
   confirmSignUp,
   signIn,
   signUp,
+  fetchAuthSession,
+  signOut,
   type ConfirmSignUpOutput,
   type SignInOutput,
   type SignUpOutput,
@@ -55,6 +57,21 @@ export function signInUser({
     username: email.trim(),
     password,
   })
+}
+
+export async function getAccessToken(): Promise<string> {
+  const session = await fetchAuthSession()
+  const accessToken = session.tokens?.accessToken
+
+  if (!accessToken) {
+    throw new Error('アクセストークンを取得できませんでした。')
+  }
+
+  return accessToken.toString()
+}
+
+export function signOutUser(): Promise<void> {
+  return signOut()
 }
 
 export function getAuthErrorMessage(error: unknown): string {

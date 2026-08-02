@@ -44,6 +44,10 @@ function LoginPage() {
         })
         return
       }
+      // 上の２つ以外の状態をまとめて処理
+      setError(
+        `想定外のログイン状態です。管理者にお問い合わせください。（状態コード: ${result.nextStep.signInStep}）`,
+      )
     } catch (error: unknown) {
       setError(getAuthErrorMessage(error))
     } finally {
@@ -94,8 +98,10 @@ function LoginPage() {
           >
             {isSubmitting ? '送信中...' : 'ログイン'}
           </button>
-          { error && (
-            <p role='alert' className='text-error'>{error}</p>
+          {error && (
+            <p role="alert" className="text-error">
+              {error}
+            </p>
           )}
         </form>
       </div>
