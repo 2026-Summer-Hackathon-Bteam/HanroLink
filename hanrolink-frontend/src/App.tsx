@@ -7,6 +7,9 @@ import SignupConfirmPage from './pages/SignupConfirmPage'
 import PublicLayout from './layouts/PublicLayout'
 import BusinessProfileSetupPage from './pages/BusinessProfileSetupPage'
 import GuestLayout from './layouts/GuestLayout'
+import AdminMyPage from './pages/AdminMyPage'
+import SupplierMyPage from './pages/SupplierMyPage'
+import BuyerMyPage from './pages/BuyerMyPage'
 
 function App() {
   return (
@@ -23,6 +26,10 @@ function App() {
           <Route path="login" element={<LoginPage />} />
           <Route path="onboarding/business" element={<BusinessProfileSetupPage />} />
         </Route>
+
+        <Route path='mypage/admin' element={<AdminMyPage />} />
+        <Route path='mypage/supplier' element={<SupplierMyPage />} />
+        <Route path='mypage/buyer' element={<BuyerMyPage />} />
       </Routes>
     </>
   )
