@@ -2,7 +2,7 @@ import { useState, type SubmitEvent, type ChangeEvent } from 'react'
 import FormRow from '../components/FormRow'
 
 type BusinessProfileFormData = {
-  role: 'supplier' | 'buyer' | null
+  role: 'SUPPLIER' | 'BUYER' | null
   businessName: string
   businessNameKana: string
   businessPostalCode: string
@@ -85,13 +85,13 @@ function BusinessProfileSetupPage() {
                       type="radio"
                       name="role"
                       id="supplier"
-                      value="supplier"
+                      value="SUPPLIER"
                       required
-                      checked={formData.role === 'supplier'}
+                      checked={formData.role === 'SUPPLIER'}
                       onChange={() =>
                         setFormData((prev) => ({
                           ...prev,
-                          role: 'supplier',
+                          role: 'SUPPLIER',
                         }))
                       }
                     />
@@ -104,10 +104,10 @@ function BusinessProfileSetupPage() {
                       type="radio"
                       name="role"
                       id="buyer"
-                      value="buyer"
-                      checked={formData.role === 'buyer'}
+                      value="BUYER"
+                      checked={formData.role === 'BUYER'}
                       onChange={() =>
-                        setFormData((prev) => ({ ...prev, role: 'buyer' }))
+                        setFormData((prev) => ({ ...prev, role: 'BUYER' }))
                       }
                     />
                     <label htmlFor="buyer" className="text-base">
