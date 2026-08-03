@@ -24,8 +24,8 @@ CREATE TABLE businesses (
 );
 
 CREATE TYPE business_user_account_role AS ENUM (
-  'BUYER',
-  'SUPPLIER'
+  'SUPPLIER',
+  'BUYER'
 );
 
 CREATE TYPE business_user_account_review_status AS ENUM (
@@ -151,6 +151,8 @@ CREATE TABLE product_story_section_templates (
   title VARCHAR(255) NOT NULL,
   image_hint VARCHAR(255) NOT NULL,
   body_help_text VARCHAR(255) NOT NULL,
+  body_example VARCHAR(255) NOT NULL,
+  sort_order SMALLINT UNIQUE NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
@@ -226,43 +228,43 @@ CREATE TABLE pending_file_deletions (
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE TABLE procurement_discussion_requests (
+CREATE TABLE procurement_negotiation_requests (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   supplier_account_id BIGINT NOT NULL,
   procurement_request_id BIGINT NOT NULL,
   product_id BIGINT NOT NULL,
-  procurement_request_snapshot JSON NOT NULL,
-  product_snapshot JSON NOT NULL,
+  procurement_request_snapshot JSONB NOT NULL,
+  product_snapshot JSONB NOT NULL,
   product_main_image_storage_key VARCHAR(255) UNIQUE NOT NULL,
   accepted_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
-  CONSTRAINT fk_procurement_discussion_requests_supplier_account
+  CONSTRAINT fk_procurement_negotiation_requests_supplier_account
     FOREIGN KEY (supplier_account_id)
     REFERENCES business_user_accounts(id),
-  CONSTRAINT fk_procurement_discussion_requests_procurement_request
+  CONSTRAINT fk_procurement_negotiation_requests_procurement_request
     FOREIGN KEY (procurement_request_id)
     REFERENCES procurement_requests(id),
-  CONSTRAINT fk_procurement_discussion_requests_product
+  CONSTRAINT fk_procurement_negotiation_requests_product
     FOREIGN KEY (product_id)
     REFERENCES products(id)
 );
 
-CREATE TABLE product_discussion_requests (
+CREATE TABLE product_negotiation_requests (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   buyer_account_id BIGINT NOT NULL,
   product_id BIGINT NOT NULL,
-  product_snapshot JSON NOT NULL,
+  product_snapshot JSONB NOT NULL,
   product_main_image_storage_key VARCHAR(255) UNIQUE NOT NULL,
   accepted_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
-  CONSTRAINT fk_product_discussion_requests_buyer_account
+  CONSTRAINT fk_product_negotiation_requests_buyer_account
     FOREIGN KEY (buyer_account_id)
     REFERENCES business_user_accounts(id),
-  CONSTRAINT fk_product_discussion_requests_product
+  CONSTRAINT fk_product_negotiation_requests_product
     FOREIGN KEY (product_id)
     REFERENCES products(id)
 );
@@ -272,8 +274,9 @@ CREATE TABLE channels (
   public_id UUID UNIQUE NOT NULL,
   supplier_account_id BIGINT NOT NULL,
   buyer_account_id BIGINT NOT NULL,
-  product_discussion_request_id BIGINT,
-  procurement_discussion_request_id BIGINT,
+  product_negotiation_request_id BIGINT,
+  procurement_negotiation_request_id BIGINT,
+  name VARCHAR(255) NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
@@ -283,12 +286,12 @@ CREATE TABLE channels (
   CONSTRAINT fk_channels_buyer_account
     FOREIGN KEY (buyer_account_id)
     REFERENCES business_user_accounts(id),
-  CONSTRAINT fk_channels_product_discussion_request
-    FOREIGN KEY (product_discussion_request_id)
-    REFERENCES product_discussion_requests(id),
-  CONSTRAINT fk_channels_procurement_discussion_request
-    FOREIGN KEY (procurement_discussion_request_id)
-    REFERENCES procurement_discussion_requests(id)
+  CONSTRAINT fk_channels_product_negotiation_request
+    FOREIGN KEY (product_negotiation_request_id)
+    REFERENCES product_negotiation_requests(id),
+  CONSTRAINT fk_channels_procurement_negotiation_request
+    FOREIGN KEY (procurement_negotiation_request_id)
+    REFERENCES procurement_negotiation_requests(id)
 );
 
 CREATE TABLE messages (
@@ -311,6 +314,7 @@ CREATE TABLE message_files (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   message_id BIGINT NOT NULL,
   storage_key VARCHAR(255) UNIQUE NOT NULL,
+  mime_type VARCHAR(100) NOT NULL,
   display_filename VARCHAR(255),
   file_size_bytes BIGINT,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
