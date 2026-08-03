@@ -30,7 +30,6 @@ public record SupplierProductUpdateRequest(
   @Positive
   Short mainIngredientRegionId,
 
-  @NotEmptyFile
   MultipartFile mainImageFile,
 
   @NotBlank

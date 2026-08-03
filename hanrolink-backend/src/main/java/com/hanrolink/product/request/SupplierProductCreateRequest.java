@@ -29,6 +29,7 @@ public record SupplierProductCreateRequest(
   @Positive
   Short mainIngredientRegionId,
 
+  @NotNull
   @NotEmptyFile
   MultipartFile mainImageFile,
 

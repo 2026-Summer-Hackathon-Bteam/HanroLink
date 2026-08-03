@@ -25,6 +25,7 @@ public record ProductStoryCreateRequest(
   @Size(max = 255)
   String body,
 
+  @NotNull
   @NotEmptyFile
   MultipartFile imageFile
 ) {}
