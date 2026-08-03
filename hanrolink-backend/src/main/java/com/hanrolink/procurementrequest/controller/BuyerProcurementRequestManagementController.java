@@ -1,5 +1,7 @@
 package com.hanrolink.procurementrequest.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,7 +44,7 @@ public class BuyerProcurementRequestManagementController {
 
   // 認証中のBuyerアカウントが登録した募集のみ取得可能
   @GetMapping(ProcurementRequestApi.V1.MINE)
-  public ResponseEntity<BuyerProcurementRequestListResponse> list() {
+  public ResponseEntity<List<BuyerProcurementRequestListResponse>> list() {
 
     // TODO: Serviceから募集情報リストを取得し、ResponseEntity.ok(response)で返す
     return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();

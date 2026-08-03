@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpHeaders;
@@ -11,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -33,10 +33,14 @@ public class RequestValidationErrorHandler extends ResponseEntityExceptionHandle
         .stream()
         .collect(
           Collectors.groupingBy(
-            FieldError::getField,
+            fieldError -> fieldError.getField(),
             LinkedHashMap::new,
             Collectors.mapping(
-              FieldError::getDefaultMessage,
+              fieldError ->
+                Objects.requireNonNullElse(
+                  fieldError.getDefaultMessage(),
+                  "入力内容を確認してください"
+                ),
               Collectors.toList()
             )
           )
@@ -45,7 +49,7 @@ public class RequestValidationErrorHandler extends ResponseEntityExceptionHandle
     ProblemDetail problem =
       ProblemDetail.forStatusAndDetail(
         HttpStatus.BAD_REQUEST,
-        "入力内容を確認してください。"
+        "入力内容を確認してください"
       );
 
     problem.setType(

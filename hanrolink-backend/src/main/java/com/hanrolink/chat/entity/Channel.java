@@ -29,11 +29,14 @@ public class Channel {
   @Column(name = "buyer_account_id", nullable = false)
   private Long buyerAccountId;
 
-  @Column(name = "product_discussion_request_id")
-  private Long productDiscussionRequestId;
+  @Column(name = "product_negotiation_request_id")
+  private Long productNegotiationRequestId;
 
-  @Column(name = "procurement_discussion_request_id")
-  private Long procurementDiscussionRequestId;
+  @Column(name = "procurement_negotiation_request_id")
+  private Long procurementNegotiationRequestId;
+
+  @Column(nullable = false)
+  private String name;
 
   @Column(name = "created_at", updatable = false, nullable = false)
   private Instant createdAt;

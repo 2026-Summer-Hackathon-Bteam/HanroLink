@@ -2,10 +2,15 @@ package com.hanrolink.procurementrequest.entity;
 
 import java.time.Instant;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import com.hanrolink.product.enums.StorageType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,7 +29,13 @@ public class ProcurementRequestStorageType {
   @Column(name = "procurement_request_id", nullable = false)
   private Long procurementRequestId;
 
-  @Column(name = "storage_type", nullable = false)
+  @Enumerated(EnumType.STRING)
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+  @Column(
+    name = "storage_type",
+    columnDefinition = "storage_type",
+    nullable = false
+  )
   private StorageType storageType;
 
   @Column(name = "created_at", updatable = false, nullable = false)

@@ -1,0 +1,53 @@
+package com.hanrolink.businessapproval.controller;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.hanrolink.businessapproval.api.BusinessApprovalApi;
+import com.hanrolink.businessapproval.response.AdminBusinessApprovalDetailResponse;
+import com.hanrolink.businessapproval.response.AdminBusinessApprovalPendingListResponse;
+
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
+@RestController
+public class AdminBusinessApprovalController {
+
+  // 管理者のみ利用可能
+  @GetMapping(BusinessApprovalApi.V1.PENDING)
+  public ResponseEntity<List<AdminBusinessApprovalPendingListResponse>> listPending() {
+
+    // TODO: 承認待ちの担当者アカウントと事業者情報を取得し、ResponseEntity.ok(response)で返す
+    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+  }
+
+  // 管理者のみ利用可能
+  @GetMapping(BusinessApprovalApi.V1.BY_ID)
+  public ResponseEntity<AdminBusinessApprovalDetailResponse> getDetail(
+    @PathVariable UUID businessUserAccountId
+  ) {
+
+    // TODO: 承認待ちの担当者と事業者の詳細情報を取得して、ResponseEntity.ok(response)で返す
+    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+  }
+
+  // 管理者のみ利用可能
+  @ApiResponse(
+    responseCode = "204",
+    description = "No Content"
+  )
+  @PatchMapping(BusinessApprovalApi.V1.APPROVE)
+  public ResponseEntity<Void> approve(
+    @PathVariable UUID businessUserAccountId
+  ) {
+
+    // TODO: 承認待ちの対象アカウントの審査状態をAPPROVEDへ変更し、204 No Contentを返す
+    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+  }
+}

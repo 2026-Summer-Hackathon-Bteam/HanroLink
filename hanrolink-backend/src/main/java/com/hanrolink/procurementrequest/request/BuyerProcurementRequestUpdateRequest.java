@@ -1,13 +1,12 @@
 package com.hanrolink.procurementrequest.request;
 
-import java.time.YearMonth;
 import java.util.List;
 import java.util.Set;
 
+import com.hanrolink.procurementrequest.request.component.MonthlyProcurementQuantityRequest;
 import com.hanrolink.product.enums.StorageType;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -39,16 +38,5 @@ public record BuyerProcurementRequestUpdateRequest(
 
   @NotNull
   @Size(min = 6, max = 6, message = "6か月分指定してください")
-  List<@NotNull @Valid MonthlyProcurementQuantity> monthlyProcurementQuantities
-) {
-
-  public record MonthlyProcurementQuantity(
-    @NotNull
-    @FutureOrPresent(message = "当月以降の月を指定してください")
-    YearMonth targetMonth,
-
-    @NotNull
-    @Positive
-    Integer desiredQuantity
-  ) {}
-}
+  List<@NotNull @Valid MonthlyProcurementQuantityRequest> monthlyProcurementQuantities
+) {}

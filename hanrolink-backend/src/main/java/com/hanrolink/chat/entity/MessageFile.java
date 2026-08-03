@@ -25,6 +25,9 @@ public class MessageFile {
   @Column(name = "storage_key", nullable = false)
   private String storageKey;
 
+  @Column(name = "mime_type", nullable = false)
+  private String mimeType;
+
   @Column(name = "display_filename")
   private String displayFilename;
 
