@@ -13,7 +13,7 @@ function AuthenticatedLayout() {
     return (
         <div className="flex min-h-dvh flex-col">
             <Header isLoggedIn={true} account={temporaryAccount}/>
-            <main className="py-23 flex-1">
+            <main className="flex flex-1 flex-col">
                 <Outlet />
             </main>
             <Footer />
