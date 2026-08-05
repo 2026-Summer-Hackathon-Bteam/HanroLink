@@ -1,15 +1,15 @@
 import { Link } from 'react-router-dom'
 
-type Role = 'supplier' | 'buyer'
+type Role = 'SUPPLIER' | 'BUYER'
 
 const mypagePathByRole: Record<Role, string> = {
-  supplier: '/mypage/supplier',
-  buyer: '/mypage/buyer',
+  SUPPLIER: '/mypage/supplier',
+  BUYER: '/mypage/buyer',
 }
 
 function SignupCompletePage() {
   // バックエンドから受け取ったデータをroleに代入する
-  const role: Role = 'supplier'
+  const role: Role = 'SUPPLIER'
 
   return (
     <>

@@ -2,6 +2,7 @@ import { useState, type SubmitEvent, type ChangeEvent } from 'react'
 import FormRow from '../components/FormRow'
 
 type BusinessProfileFormData = {
+  role: 'SUPPLIER' | 'BUYER' | null
   businessName: string
   businessNameKana: string
   businessPostalCode: string
@@ -19,6 +20,7 @@ type BusinessProfileFormData = {
 
 function BusinessProfileSetupPage() {
   const [formData, setFormData] = useState<BusinessProfileFormData>({
+    role: null,
     businessName: '',
     businessNameKana: '',
     businessPostalCode: '',
@@ -35,17 +37,19 @@ function BusinessProfileSetupPage() {
   })
   const email: string = 'バックエンドから取得'
 
-  const handleChange = (e:ChangeEvent<HTMLInputElement>)=>{
-    const{name,value} = e.target
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
 
-    setFormData((prev)=> ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }))
   }
 
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
+
+    if (!formData.role) return
   }
 
   return (
@@ -61,9 +65,59 @@ function BusinessProfileSetupPage() {
           各事業者様に安心してご利用いただくため、ご入力いただいた情報をもとに審査を行います。
           <br />
           審査には通常3日程度お時間をいただきますので、あらかじめご了承ください。
+          <br />
+          なお、１事業者につきサプライヤー、バイヤーの両方に登録することはできません。
         </p>
         <form onSubmit={handleSubmit} className="flex flex-col mx-auto">
           <div className="overflow-hidden border border-border divide-y divide-border">
+            <fieldset className="m-0 min-w-0 border-0 p-0">
+              <legend className="sr-only">サプライヤー／バイヤー</legend>
+              <div className="grid md:grid-cols-[16rem_1fr] border-b border-border">
+                <div
+                  aria-hidden="true"
+                  className="flex items-center bg-textbg px-5 py-4 text-left md:border-r md:border-border"
+                >
+                  サプライヤー／バイヤー
+                </div>
+                <div className="flex gap-4 p-5.5">
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="radio"
+                      name="role"
+                      id="supplier"
+                      value="SUPPLIER"
+                      required
+                      checked={formData.role === 'SUPPLIER'}
+                      onChange={() =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          role: 'SUPPLIER',
+                        }))
+                      }
+                    />
+                    <label htmlFor="supplier" className="text-base">
+                      サプライヤー
+                    </label>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="radio"
+                      name="role"
+                      id="buyer"
+                      value="BUYER"
+                      checked={formData.role === 'BUYER'}
+                      onChange={() =>
+                        setFormData((prev) => ({ ...prev, role: 'BUYER' }))
+                      }
+                    />
+                    <label htmlFor="buyer" className="text-base">
+                      バイヤー
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+
             <FormRow label="会社名" htmlFor="businessName">
               <input
                 id="businessName"
@@ -95,7 +149,11 @@ function BusinessProfileSetupPage() {
                 onChange={handleChange}
                 value={formData.businessPostalCode}
                 required
+                inputMode="numeric"
+                autoComplete="postal-code"
+                maxLength={7}
               />
+              <p>（ハイフンなし）</p>
             </FormRow>
             <FormRow
               label="会社住所（都道府県）"
@@ -144,11 +202,7 @@ function BusinessProfileSetupPage() {
                 onChange={handleChange}
                 value={formData.businessPhoneNumber}
                 required
-                inputMode='numeric'
-                autoComplete='postal-code'
-                maxLength={7}
               />
-              <p>（ハイフンなし）</p>
             </FormRow>
             <FormRow label="Webサイト（URL）" htmlFor="businessWebsiteUrl">
               <input

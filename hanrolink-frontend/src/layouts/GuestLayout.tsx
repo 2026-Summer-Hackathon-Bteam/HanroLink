@@ -5,7 +5,7 @@ import { Outlet } from 'react-router-dom'
 function GuestLayout() {
   return (
     <div className='flex min-h-dvh flex-col'>
-      <Header showAfterElementId='guest-header-trigger' />
+      <Header isLoggedIn={false} showAfterElementId='guest-header-trigger' />
       <main className='pb-23' flex-1>
         <Outlet />
       </main>
