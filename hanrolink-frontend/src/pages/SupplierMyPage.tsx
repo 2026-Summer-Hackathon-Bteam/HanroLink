@@ -81,7 +81,7 @@ function SupplierMyPage() {
                 {/* ここをmapで繰り返す */}
                 {data.receivedNegotiations.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="py-4 text-center">
+                    <td colSpan={4} className="py-4 text-center!">
                       まだ商談希望は届いていないか、期限が切れました。
                     </td>
                   </tr>
@@ -147,7 +147,7 @@ function SupplierMyPage() {
                 {/* ここをmapで繰り返す */}
                 {data.sentNegotiations.length === 0 ? (
                   <tr>
-                    <td colSpan={3} className="py-4 text-center">
+                    <td colSpan={3} className="py-4 text-center!">
                       まだ商談希望を送信していないか、期限が切れました
                     </td>
                   </tr>
@@ -196,7 +196,7 @@ function SupplierMyPage() {
           <div className="min-h-0 flex-1 space-y-3 overflow-x-hidden overflow-y-auto p-1">
             {/* ここをmapで繰り返す */}
             {data.products.length === 0 ? (
-              <p>まずは商品を登録しましょう！</p>
+              <p className='text-center'>まずは商品を登録しましょう！</p>
             ) : (
               [...data.products]
                 .sort(
@@ -254,7 +254,7 @@ function SupplierMyPage() {
               <tbody>
                 {data.chats.length === 0 ? (
                   <tr>
-                    <td colSpan={1} className="py-4 text-center">
+                    <td colSpan={1} className="py-4 text-center!">
                       まだチャットがありません。
                     </td>
                   </tr>

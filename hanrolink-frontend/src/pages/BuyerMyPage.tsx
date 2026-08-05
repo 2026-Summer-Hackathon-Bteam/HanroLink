@@ -80,7 +80,7 @@ function BuyerMyPage() {
               <tbody>
                 {data.receivedNegotiations.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="py-4 text-center">
+                    <td colSpan={4} className="py-4 text-center!">
                       まだ商談希望は届いていないか、期限が切れました。
                     </td>
                   </tr>
@@ -147,7 +147,7 @@ function BuyerMyPage() {
                 {/* ここをmapで繰り返す */}
                 {data.sentNegotiations.length === 0 ? (
                   <tr>
-                    <td colSpan={2} className="py-4 text-center">
+                    <td colSpan={2} className="py-4 text-center!">
                       まだ商談希望を送信していないか、期限が切れました
                     </td>
                   </tr>
@@ -236,7 +236,7 @@ function BuyerMyPage() {
               <tbody>
                 {data.chats.length === 0 ? (
                   <tr>
-                    <td colSpan={1} className="py-4 text-center">
+                    <td colSpan={1} className="py-4 text-center!">
                       まだチャットがありません。
                     </td>
                   </tr>
