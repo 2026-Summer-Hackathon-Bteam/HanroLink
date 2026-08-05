@@ -13,6 +13,7 @@ import BuyerMyPage from './pages/BuyerMyPage'
 import AuthenticatedLayout from './layouts/AuthenticatedLayout'
 import AuthenticatedPageLayout from './layouts/AuthenticatedPageLayout'
 import MyPageRayout from './layouts/MyPageLayout'
+import AdminBusinessApprovalDetailPage from './pages/AdminBusinessApprovalDetailPage'
 
 function App() {
   return (
@@ -36,7 +37,9 @@ function App() {
               element={<BusinessProfileSetupPage />}
             />
             <Route path="signup/complete" element={<SignupCompletePage />} />
+            <Route path="admin/approvals/:businessUserAccountId" element={<AdminBusinessApprovalDetailPage />} />
           </Route>
+
           <Route element={<MyPageRayout />}>
             <Route path="mypage/admin" element={<AdminMyPage />} />
             <Route path="mypage/supplier" element={<SupplierMyPage />} />
