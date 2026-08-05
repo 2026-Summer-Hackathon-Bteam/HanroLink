@@ -11,6 +11,9 @@ import AdminMyPage from './pages/AdminMyPage'
 import SupplierMyPage from './pages/SupplierMyPage'
 import BuyerMyPage from './pages/BuyerMyPage'
 import AuthenticatedLayout from './layouts/AuthenticatedLayout'
+import AuthenticatedPageLayout from './layouts/AuthenticatedPageLayout'
+import MyPageRayout from './layouts/MyPageLayout'
+import AdminBusinessApprovalDetailPage from './pages/AdminBusinessApprovalDetailPage'
 
 function App() {
   return (
@@ -28,14 +31,20 @@ function App() {
         </Route>
 
         <Route element={<AuthenticatedLayout />}>
-          <Route
-            path="onboarding/business"
-            element={<BusinessProfileSetupPage />}
-          />
-          <Route path="signup/complete" element={<SignupCompletePage />} />
-          <Route path="mypage/admin" element={<AdminMyPage />} />
-          <Route path="mypage/supplier" element={<SupplierMyPage />} />
-          <Route path="mypage/buyer" element={<BuyerMyPage />} />
+          <Route element={<AuthenticatedPageLayout />}>
+            <Route
+              path="onboarding/business"
+              element={<BusinessProfileSetupPage />}
+            />
+            <Route path="signup/complete" element={<SignupCompletePage />} />
+            <Route path="admin/approvals/:businessUserAccountId" element={<AdminBusinessApprovalDetailPage />} />
+          </Route>
+
+          <Route element={<MyPageRayout />}>
+            <Route path="mypage/admin" element={<AdminMyPage />} />
+            <Route path="mypage/supplier" element={<SupplierMyPage />} />
+            <Route path="mypage/buyer" element={<BuyerMyPage />} />
+          </Route>
         </Route>
       </Routes>
     </>
