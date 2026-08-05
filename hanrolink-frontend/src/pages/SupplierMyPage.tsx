@@ -43,21 +43,17 @@ function SupplierMyPage() {
     return <p className="py-10 text-center">読み込み中...</p>
   }
 
-  const getDateObject = (date: string) => {
-    return new Date(date)
-  }
-
   return (
     <div className="mx-auto max-w-300 px-4 md:px-6 lg:px-8">
       <h2 className="sr-only">サプライヤーマイページ</h2>
       <p className="my-2">こんにちは、{data.business.businessName}様</p>
       {/* 一覧ゾーン */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:h-[calc(100dvh-176px)] lg:grid-rows-2">
-        {/* 商品希望一覧（受信） */}
+        {/* 商談希望一覧（受信） */}
         <section className="flex min-h-0 flex-col overflow-hidden min-w-0 lg:col-start-1 lg:row-start-1 rounded-lg bg-bg p-3 shadow-md ring-1 ring-text/5">
           <div className="mb-4 flex flex-col items-start gap-1 sm:justify-between sm:flex-row sm:items-center">
             <h3>
-              商品希望一覧（受信）：{`${data.receivedNegotiations.length}件`}
+              商談希望一覧（受信）：{`${data.receivedNegotiations.length}件`}
             </h3>
             <p className="text-xs">
               承諾ボタンを押すと商談希望を送信したバイヤーとのチャットが作成されます
@@ -86,7 +82,7 @@ function SupplierMyPage() {
                 {data.receivedNegotiations.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="py-4 text-center">
-                     まだ商談希望は届いていないか、期限が切れました。
+                      まだ商談希望は届いていないか、期限が切れました。
                     </td>
                   </tr>
                 ) : (
@@ -112,7 +108,7 @@ function SupplierMyPage() {
                           </Link>
                         </td>
                         <td>
-                          {getDateObject(rn.expiresAt).toLocaleString('ja-JP')}
+                          {new Date(rn.expiresAt).toLocaleString('ja-JP')}
                         </td>
                         <td>
                           <button
@@ -130,10 +126,10 @@ function SupplierMyPage() {
             </table>
           </div>
         </section>
-        {/* 商品希望一覧（送信） */}
+        {/* 商談希望一覧（送信） */}
         <section className="flex min-h-0 flex-col overflow-hidden min-w-0 lg:col-start-1 lg:row-start-2 rounded-lg bg-bg p-3 shadow-md  ring-1 ring-text/5">
           <div className="mb-4 flex flex-col items-start gap-1 sm:justify-between sm:flex-row sm:items-center">
-            <h3>商品希望一覧（送信）：{`${data.sentNegotiations.length}件`}</h3>
+            <h3>商談希望一覧（送信）：{`${data.sentNegotiations.length}件`}</h3>
             <p className="text-xs">
               募集情報を作成したバイヤーが承諾するとチャットが作成されます
             </p>
@@ -180,7 +176,7 @@ function SupplierMyPage() {
                           </Link>
                         </td>
                         <td>
-                          {getDateObject(sn.expiresAt).toLocaleString('ja-JP')}
+                          {new Date(sn.expiresAt).toLocaleString('ja-JP')}
                         </td>
                       </tr>
                     ))
@@ -224,7 +220,7 @@ function SupplierMyPage() {
                           <h4 className="truncate">{product.name}</h4>
                           <p className="text-xs">
                             更新日時：
-                            {getDateObject(product.updatedAt).toLocaleString(
+                            {new Date(product.updatedAt).toLocaleString(
                               'ja-JP',
                             )}
                           </p>
@@ -259,7 +255,7 @@ function SupplierMyPage() {
                 {data.chats.length === 0 ? (
                   <tr>
                     <td colSpan={1} className="py-4 text-center">
-                    まだチャットがありません。
+                      まだチャットがありません。
                     </td>
                   </tr>
                 ) : (
