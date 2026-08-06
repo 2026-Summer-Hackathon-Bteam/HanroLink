@@ -1,5 +1,9 @@
 import { useState, type SubmitEvent } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import {
+  confirmSignUpUser,
+  getAuthErrorMessage,
+} from '../features/auth/authService'
 
 type LocationState = {
   email?: string
@@ -11,21 +15,39 @@ function SignupConfirmPage() {
   const [email, setEmail] = useState(state?.email ?? '')
   const [confirmCode, setConfirmCode] = useState('')
   const navigate = useNavigate()
+  const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setError('')
+    setIsSubmitting(true)
 
     // Cognitoへの送信処理
-
-    // 成功後にログイン画面へ遷移
-    navigate('/login', {
-      replace: true,
-      state: {
+    try {
+      const result = await confirmSignUpUser({
         email,
-        message:
-          'メールアドレスの確認が完了しました。ログインして会社情報を入力してください。',
-      },
-    })
+        confirmationCode: confirmCode,
+      })
+
+      if (!result.isSignUpComplete) {
+        setError('メールアドレスの確認を完了できませんでした。')
+        return
+      }
+      // 成功後にログイン画面へ遷移
+      navigate('/login', {
+        replace: true,
+        state: {
+          email: email.trim(),
+          message:
+            'メールアドレスの確認が完了しました。ログインして会社情報を入力してください。',
+        },
+      })
+    } catch (error: unknown) {
+      setError(getAuthErrorMessage(error))
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -81,9 +103,15 @@ function SignupConfirmPage() {
           <button
             type="submit"
             className="h-9 w-45 mx-auto mt-8 rounded-full border border-accent bg-accentbg"
+            disabled={isSubmitting}
           >
-            確認する
+            {isSubmitting ? '送信中...' : '確認する'}
           </button>
+          {error && (
+            <p role="alert" className="text-error">
+              {error}
+            </p>
+          )}
         </form>
       </div>
     </>

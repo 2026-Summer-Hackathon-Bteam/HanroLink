@@ -1,17 +1,108 @@
 import { useState, useEffect } from 'react'
 import logotitle from '../assets/HanroLink_logotitle.png'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { signOutUser } from '../features/auth/authService'
+import {
+  getPathAfterLogin,
+  type CurrentAccount,
+} from '../features/auth/authRouting'
 
-type HeaderProps = {
+type HeaderCommonProps = {
   showAfterScroll?: number
   showAfterElementId?: string
 }
 
-function Header({ showAfterScroll = 0, showAfterElementId = '' }: HeaderProps) {
+type HeaderProps = HeaderCommonProps &
+  (
+    | {
+        // ログイン前はaccountは渡せない
+        isLoggedIn: false
+        account?: never
+      }
+    | {
+        // ログイン後はaccountは必須で、roleとstatusはCurrentAccountで定義された組み合わせだけを許可
+        isLoggedIn: true
+        account: CurrentAccount
+      }
+  )
+
+const menuItemsByName = {
+  signup: { label: '新規登録', path: '/signup' },
+  login: { label: 'ログイン', path: '/login' },
+  products: { label: '商品を探す', path: '/products' },
+  recruitments: { label: '募集情報を探す', path: '/recruitments' },
+  adminMypage: { label: 'マイページ', path: '/mypage/admin' },
+  supplierMyPage: { label: 'マイページ', path: '/mypage/supplier' },
+  buyerMyPage: { label: 'マイページ', path: '/mypage/buyer' },
+}
+
+const navMenuByRoleAndStatus = {
+  LOGGED_OUT: [menuItemsByName.signup, menuItemsByName.login],
+  LOGGED_IN: {
+    ADMIN: [
+      menuItemsByName.adminMypage,
+      menuItemsByName.products,
+      menuItemsByName.recruitments,
+    ],
+    NOT_SUBMITTED: [],
+    PENDING: {
+      SUPPLIER: [menuItemsByName.supplierMyPage],
+      BUYER: [menuItemsByName.buyerMyPage],
+    },
+    APPROVED: {
+      SUPPLIER: [
+        menuItemsByName.supplierMyPage,
+        menuItemsByName.products,
+        menuItemsByName.recruitments,
+      ],
+      BUYER: [
+        menuItemsByName.buyerMyPage,
+        menuItemsByName.products,
+        menuItemsByName.recruitments,
+      ],
+    },
+  },
+}
+
+const getNavMenuList = (account: CurrentAccount | null) => {
+  if (account === null) return navMenuByRoleAndStatus.LOGGED_OUT
+
+  const { role, businessUserAccountRegistrationStatus: status } = account
+
+  if (role === 'ADMIN') return navMenuByRoleAndStatus.LOGGED_IN.ADMIN
+  if (role === null && status === 'NOT_SUBMITTED')
+    return navMenuByRoleAndStatus.LOGGED_IN.NOT_SUBMITTED
+  if (status === 'PENDING') {
+    if (role === 'SUPPLIER') {
+      return navMenuByRoleAndStatus.LOGGED_IN.PENDING.SUPPLIER
+    }
+    return navMenuByRoleAndStatus.LOGGED_IN.PENDING.BUYER
+  }
+  if (status === 'APPROVED') {
+    if (role === 'SUPPLIER') {
+      return navMenuByRoleAndStatus.LOGGED_IN.APPROVED.SUPPLIER
+    }
+    return navMenuByRoleAndStatus.LOGGED_IN.APPROVED.BUYER
+  }
+  return []
+}
+
+function Header(props: HeaderProps) {
+  const { showAfterScroll = 0, showAfterElementId = '' } = props
+  const isLoggedIn = props.isLoggedIn
+  const account = props.isLoggedIn ? props.account : null
+
   const [isVisible, setIsVisible] = useState(
     showAfterElementId ? false : showAfterScroll === 0,
   )
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isSigningOut, setSigningOut] = useState(false)
+  const [signOutError, setSignOutError] = useState('')
+
+  const navigate = useNavigate()
+
+  const navMenuList = getNavMenuList(account)
+  const logoPath = account === null ? '/' : (getPathAfterLogin(account) ?? null)
 
   useEffect(() => {
     if (showAfterElementId) {
@@ -42,6 +133,25 @@ function Header({ showAfterScroll = 0, showAfterElementId = '' }: HeaderProps) {
     }
   }, [showAfterScroll, showAfterElementId])
 
+  const handleSignOut = async () => {
+    if (isSigningOut) return
+
+    setSignOutError('')
+    setSigningOut(true)
+
+    try {
+      await signOutUser()
+
+      navigate('/login', {
+        replace: true,
+      })
+    } catch {
+      setSignOutError('ログアウト処理に失敗しました。もう一度お試しください。')
+    } finally {
+      setSigningOut(false)
+    }
+  }
+
   return (
     <header
       className={`fixed left-0 right-0 top-0 z-50 px-4 pt-3 transition-transform duration-500 ease-out md:px-6 ${
@@ -52,15 +162,25 @@ function Header({ showAfterScroll = 0, showAfterElementId = '' }: HeaderProps) {
     >
       <div className="mx-auto flex justify-between items-center max-w-400 h-20 rounded-xl bg-bg/60 shadow-sm backdrop-blur-md">
         <h1 className="m-0 leading-none">
-          <img
-            src={logotitle}
-            alt="HanroLinkのロゴタイトル"
-            className="h-16 md:h-20"
-          />
+          {logoPath ? (
+            <Link to={logoPath}>
+              <img
+                src={logotitle}
+                alt="HanroLinkのロゴタイトル"
+                className="h-16 md:h-20"
+              />
+            </Link>
+          ) : (
+            <img
+              src={logotitle}
+              alt="HanroLinkのロゴタイトル"
+              className="h-16 md:h-20"
+            />
+          )}
         </h1>
         <div className="relative mr-4 md:mr-10">
           <nav
-            id="guest-navigation"
+            id="header-navigation"
             className={`absolute right-0 top-full mt-2 w-40 origin-top-right rounded-xl bg-border shadow-md transition-[translate,scale,opacity] duration-300 ease-out
               ${
                 isMenuOpen
@@ -71,22 +191,41 @@ function Header({ showAfterScroll = 0, showAfterElementId = '' }: HeaderProps) {
               md:scale-100 md:rounded-full md:opacity-100 md:pointer-events-auto`}
           >
             <ul className="flex flex-col rounded-xl overflow-hidden md:rounded-full md:h-full md:flex-row">
-              <li>
-                <Link
-                  to="/signup"
-                  className="flex items-center h-12 textaccent text-bg px-7 bg-border transition hover:bg-border/80"
+              {navMenuList.map((menu, index) => (
+                <li
+                  key={menu.path}
+                  className={
+                    index > 0
+                      ? 'relative md:before:absolute md:before:left-0 md:before:top-1/2 md:before:h-6 md:before:-translate-y-1/2 md:before:border-l md:before:border-dotted md:before:border-bg/60'
+                      : undefined
+                  }
                 >
-                  新規登録
-                </Link>
-              </li>
-              <li className="relative md:before:absolute md:before:left-0 md:before:top-1/2 md:before:h-6 md:before:-translate-y-1/2 md:before:border-l md:before:border-dotted md:before:border-bg/60">
-                <Link
-                  to="/login"
-                  className="flex items-center h-12 textaccent text-bg px-7 bg-border transition hover:bg-border/80"
+                  <Link
+                    to={menu.path}
+                    className="flex items-center h-12 textaccent text-bg px-7 bg-border transition hover:bg-border/80"
+                  >
+                    {menu.label}
+                  </Link>
+                </li>
+              ))}
+              {isLoggedIn && (
+                <li
+                  className={
+                    navMenuList.length > 0
+                      ? 'relative md:before:absolute md:before:left-0 md:before:top-1/2 md:before:h-6 md:before:-translate-y-1/2 md:before:border-l md:before:border-dotted md:before:border-bg/60'
+                      : undefined
+                  }
                 >
-                  ログイン
-                </Link>
-              </li>
+                  <button
+                    type="button"
+                    className="flex h-12 w-full items-center text-bg textaccent px-7 transition hover:bg-border/80 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+                    onClick={handleSignOut}
+                    disabled={isSigningOut}
+                  >
+                    {isSigningOut ? 'ログアウト中' : 'ログアウト'}
+                  </button>
+                </li>
+              )}
             </ul>
           </nav>
           {/* スマホ用ハンバーガーメニュー */}
@@ -94,7 +233,7 @@ function Header({ showAfterScroll = 0, showAfterElementId = '' }: HeaderProps) {
             type="button"
             className="flex h-11 w-11 items-center justify-center rounded-lg text-2xl p-1 border border-border md:hidden"
             aria-label={isMenuOpen ? 'メニューを閉じる' : 'メニューを開く'}
-            aria-controls="guest-navigation"
+            aria-controls="header-navigation"
             aria-expanded={isMenuOpen}
             onClick={() => setIsMenuOpen((prev) => !prev)}
           >
@@ -121,9 +260,24 @@ function Header({ showAfterScroll = 0, showAfterElementId = '' }: HeaderProps) {
               />
             </span>
           </button>
-          <p>{/* ログアウトボタンがあるときはここに入れる */}</p>
         </div>
       </div>
+      {signOutError&& (
+        <div
+          role="alert"
+          className="fixed left-1/2 top-8 z-60 flex w-[calc(100%-2rem)] max-w-md -translate-x-1/2 items-center justify-between gap-4 rounded-lg bg-bg/80 px-4 py-3 text-sm text-error shadow-lg"
+        >
+          <p>{signOutError}</p>
+          <button
+            type="button"
+            aria-label="通知を閉じる"
+            className="shrink-0 cursor-pointer text-xl leading-none"
+            onClick={() => setSignOutError('')}
+          >
+            ×
+          </button>
+        </div>
+      )}
     </header>
   )
 }

@@ -52,6 +52,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/products/{productId}/negotiation-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["create_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/procurement-requests": {
         parameters: {
             query?: never;
@@ -61,7 +77,87 @@ export interface paths {
         };
         get: operations["search_1"];
         put?: never;
-        post: operations["create_1"];
+        post: operations["create_2"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/procurement-requests/{procurementRequestId}/negotiation-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["create_3"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/onboarding": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get"];
+        put?: never;
+        post: operations["create_4"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/supplier/product-negotiation-requests/{productNegotiationRequestId}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["accept"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/buyer/procurement-negotiation-requests/{procurementNegotiationRequestId}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["accept_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/chats/{channelId}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list"];
+        put?: never;
+        post: operations["create_5"];
         delete?: never;
         options?: never;
         head?: never;
@@ -84,87 +180,23 @@ export interface paths {
         patch: operations["updateVisibility"];
         trace?: never;
     };
+    "/api/v1/admin/business-registrations/{businessUserAccountId}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["approve"];
+        trace?: never;
+    };
     "/api/v1/public/products": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["list"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/products/search-options": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/products/form-options": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["get_1"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/procurement-requests/search-options": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["get_2"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/procurement-requests/form-options": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["get_3"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/me/products": {
         parameters: {
             query?: never;
             header?: never;
@@ -180,7 +212,87 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/me/procurement-requests": {
+    "/api/v1/products/search-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/products/form-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/procurement-requests/search-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_3"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/procurement-requests/form-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_4"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_5"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/supplier/product-negotiation-requests": {
         parameters: {
             query?: never;
             header?: never;
@@ -196,16 +308,194 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/supplier/procurement-negotiation-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_3"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_4"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/procurement-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_5"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/chats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_6"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/buyer/product-negotiation-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_7"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/buyer/procurement-negotiation-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_8"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/business": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_6"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/chats/{channelId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getDetail_2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/buyer/{businessUserAccountId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_7"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/business-registrations/{businessUserAccountId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getDetail_3"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/business-registrations/pending": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listPending"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        MonthlySupplyCapacity: {
+        MonthlySupplyCapacityRequest: {
             targetMonth: string;
             /** Format: int32 */
             availableQuantity: number;
         };
-        ProductStory: {
+        ProductStoryUpdateRequest: {
+            /** Format: int64 */
+            id: number;
             /** Format: int32 */
             position: number;
             /** Format: int32 */
@@ -220,6 +510,8 @@ export interface components {
             productCategoryId: number;
             /** Format: int32 */
             mainIngredientRegionId: number;
+            /** Format: binary */
+            mainImageFile?: string;
             contentQuantity: string;
             /** @enum {string} */
             expirationType: "BEST_BEFORE" | "USE_BY" | "NOT_APPLICABLE";
@@ -239,8 +531,8 @@ export interface components {
             /** Format: int32 */
             shippingLeadTimeDays?: number;
             salesAreaRestriction?: string;
-            monthlySupplyCapacities: components["schemas"]["MonthlySupplyCapacity"][];
-            productStories: components["schemas"]["ProductStory"][];
+            monthlySupplyCapacities: components["schemas"]["MonthlySupplyCapacityRequest"][];
+            productStories: components["schemas"]["ProductStoryUpdateRequest"][];
         };
         BuyerProcurementRequestUpdateRequest: {
             title: string;
@@ -253,12 +545,21 @@ export interface components {
             /** Format: int32 */
             deliveryShelfLifeDays?: number;
             storageTypes: ("AMBIENT" | "REFRIGERATED" | "FROZEN")[];
-            monthlyProcurementQuantities: components["schemas"]["MonthlyProcurementQuantity"][];
+            monthlyProcurementQuantities: components["schemas"]["MonthlyProcurementQuantityRequest"][];
         };
-        MonthlyProcurementQuantity: {
+        MonthlyProcurementQuantityRequest: {
             targetMonth: string;
             /** Format: int32 */
             desiredQuantity: number;
+        };
+        ProductStoryCreateRequest: {
+            /** Format: int32 */
+            position: number;
+            /** Format: int32 */
+            productStorySectionTemplateId: number;
+            body: string;
+            /** Format: binary */
+            imageFile: string;
         };
         SupplierProductCreateRequest: {
             name: string;
@@ -266,6 +567,8 @@ export interface components {
             productCategoryId: number;
             /** Format: int32 */
             mainIngredientRegionId: number;
+            /** Format: binary */
+            mainImageFile: string;
             contentQuantity: string;
             /** @enum {string} */
             expirationType: "BEST_BEFORE" | "USE_BY" | "NOT_APPLICABLE";
@@ -285,8 +588,8 @@ export interface components {
             /** Format: int32 */
             shippingLeadTimeDays?: number;
             salesAreaRestriction?: string;
-            monthlySupplyCapacities: components["schemas"]["MonthlySupplyCapacity"][];
-            productStories: components["schemas"]["ProductStory"][];
+            monthlySupplyCapacities: components["schemas"]["MonthlySupplyCapacityRequest"][];
+            productStories: components["schemas"]["ProductStoryCreateRequest"][];
         };
         SupplierProductCreateResponse: {
             /** Format: int64 */
@@ -303,11 +606,59 @@ export interface components {
             /** Format: int32 */
             deliveryShelfLifeDays?: number;
             storageTypes: ("AMBIENT" | "REFRIGERATED" | "FROZEN")[];
-            monthlyProcurementQuantities: components["schemas"]["MonthlyProcurementQuantity"][];
+            monthlyProcurementQuantities: components["schemas"]["MonthlyProcurementQuantityRequest"][];
         };
         BuyerProcurementRequestCreateResponse: {
             /** Format: int64 */
             procurementRequestId: number;
+        };
+        SupplierProcurementNegotiationRequestCreateRequest: {
+            /** Format: int64 */
+            productId: number;
+        };
+        OnboardingBusinessRequest: {
+            name: string;
+            nameKana: string;
+            websiteUrl?: string;
+            addressPostalCode: string;
+            addressPrefecture: string;
+            addressMunicipalityStreet: string;
+            addressBuilding?: string;
+            phoneNumber: string;
+        };
+        OnboardingBusinessUserAccountRequest: {
+            /** @enum {string} */
+            role: "SUPPLIER" | "BUYER";
+            lastName: string;
+            firstName: string;
+            lastNameKana: string;
+            firstNameKana: string;
+            phoneNumber: string;
+        };
+        OnboardingCreateRequest: {
+            business: components["schemas"]["OnboardingBusinessRequest"];
+            businessUserAccount: components["schemas"]["OnboardingBusinessUserAccountRequest"];
+        };
+        OnboardingCreateResponse: {
+            /** @enum {string} */
+            businessUserAccountRegistrationStatus?: "NOT_SUBMITTED" | "PENDING" | "APPROVED";
+        };
+        NegotiationRequestAcceptResponse: {
+            channel: components["schemas"]["NegotiationRequestChannelResponse"];
+        };
+        NegotiationRequestChannelResponse: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            counterpartyBusinessName: string;
+            /** Format: date-time */
+            lastActivityAt: string;
+        };
+        MyChatMessageCreateRequest: {
+            body?: string;
+            file?: string[];
+            displayFilename?: string;
+            contentPresent?: boolean;
         };
         SupplierProductUpdateVisibilityRequest: {
             hidden: boolean;
@@ -317,7 +668,12 @@ export interface components {
             supplierName: string;
             mainImageUrl: string;
         };
-        Pagination: {
+        MonthlySupplyCapacityResponse: {
+            targetMonth: string;
+            /** Format: int32 */
+            availableQuantity: number;
+        };
+        PaginationResponse: {
             /** Format: int32 */
             page: number;
             /** Format: int32 */
@@ -334,20 +690,11 @@ export interface components {
             businessName: string;
             productCategoryName: string;
             mainIngredientRegionName: string;
-            monthlySupplyCapacities: components["schemas"]["MonthlySupplyCapacity"][];
+            monthlySupplyCapacities: components["schemas"]["MonthlySupplyCapacityResponse"][];
             mainImageUrl: string;
-            pagination?: components["schemas"]["Pagination"];
+            pagination?: components["schemas"]["PaginationResponse"];
         };
-        MainIngredientRegion: {
-            /** Format: int32 */
-            id: number;
-            name: string;
-        };
-        Permissions: {
-            canManage: boolean;
-            canCreateNegotiationRequest: boolean;
-        };
-        ProductCategory: {
+        ProductCategoryResponse: {
             /** Format: int32 */
             id: number;
             name: string;
@@ -357,13 +704,13 @@ export interface components {
             id: number;
             name: string;
             hidden: boolean;
-            productCategory: components["schemas"]["ProductCategory"];
-            mainIngredientRegion: components["schemas"]["MainIngredientRegion"];
+            productCategory: components["schemas"]["ProductCategoryResponse"];
+            mainIngredientRegion: components["schemas"]["ProductMainIngredientRegionResponse"];
             contentQuantity: string;
-            productExpirationType: components["schemas"]["ProductExpirationType"];
+            productExpirationType: components["schemas"]["ProductExpirationTypeResponse"];
             /** Format: int32 */
             shelfLifeDays?: number;
-            storageType: components["schemas"]["StorageType"];
+            storageType: components["schemas"]["StorageTypeResponse"];
             /** Format: int32 */
             desiredRetailPrice: number;
             allergyInformation?: string;
@@ -377,35 +724,57 @@ export interface components {
             shippingLeadTimeDays?: number;
             salesAreaRestriction?: string;
             mainImageUrl: string;
-            monthlySupplyCapacities: components["schemas"]["MonthlySupplyCapacity"][];
-            productStories: components["schemas"]["ProductStory"][];
-            supplier: components["schemas"]["Supplier"];
-            permissions: components["schemas"]["Permissions"];
+            monthlySupplyCapacities: components["schemas"]["MonthlySupplyCapacityResponse"][];
+            productStories: components["schemas"]["ProductStoryResponse"][];
+            supplier: components["schemas"]["ProductSupplierResponse"];
+            permissions: components["schemas"]["ProductPermissionsResponse"];
             hasMyActiveNegotiationRequest: boolean;
         };
-        ProductExpirationType: {
-            value: components["schemas"]["ProductExpirationType"];
+        ProductExpirationTypeResponse: {
+            /** @enum {string} */
+            value: "BEST_BEFORE" | "USE_BY" | "NOT_APPLICABLE";
             label: string;
         };
-        StorageType: {
-            value: components["schemas"]["StorageType"];
-            label: string;
+        ProductMainIngredientRegionResponse: {
+            /** Format: int32 */
+            id: number;
+            name: string;
         };
-        Supplier: {
+        ProductPermissionsResponse: {
+            canManage: boolean;
+            canCreateNegotiationRequest: boolean;
+        };
+        ProductStoryResponse: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int32 */
+            productStorySectionTemplateId: number;
+            /** Format: int32 */
+            position: number;
+            sectionTitle: string;
+            body: string;
+            imageUrl: string;
+        };
+        ProductSupplierResponse: {
             businessName: string;
             businessAddressPrefecture: string;
             businessAddressMunicipalityStreet: string;
             businessAddressBuilding?: string;
             businessWebsiteUrl: string;
         };
-        ProductCategoryGroupOption: {
+        StorageTypeResponse: {
+            /** @enum {string} */
+            value: "AMBIENT" | "REFRIGERATED" | "FROZEN";
+            label: string;
+        };
+        ProductCategoryGroupOptionResponse: {
             /** Format: int32 */
             id: number;
             name: string;
             /** Format: int32 */
             sortOrder: number;
         };
-        ProductCategoryOption: {
+        ProductCategoryOptionResponse: {
             /** Format: int32 */
             id: number;
             /** Format: int32 */
@@ -415,44 +784,52 @@ export interface components {
             sortOrder: number;
         };
         ProductSearchOptionsResponse: {
-            productCategoryGroups: components["schemas"]["ProductCategoryGroupOption"][];
-            productCategories: components["schemas"]["ProductCategoryOption"][];
-            mainIngredientRegions: components["schemas"]["RegionOption"][];
-            storageTypes: components["schemas"]["StorageTypeOption"][];
+            productCategoryGroups: components["schemas"]["ProductCategoryGroupOptionResponse"][];
+            productCategories: components["schemas"]["ProductCategoryOptionResponse"][];
+            mainIngredientRegions: components["schemas"]["RegionOptionResponse"][];
+            storageTypes: components["schemas"]["StorageTypeOptionResponse"][];
         };
-        RegionOption: {
+        RegionOptionResponse: {
             /** Format: int32 */
             id: number;
             name: string;
             /** Format: int32 */
             sortOrder: number;
         };
-        StorageTypeOption: {
+        StorageTypeOptionResponse: {
             /** @enum {string} */
             value: "AMBIENT" | "REFRIGERATED" | "FROZEN";
             label: string;
         };
-        ProductExpirationTypeOption: {
+        ProductExpirationTypeOptionResponse: {
             /** @enum {string} */
             value: "BEST_BEFORE" | "USE_BY" | "NOT_APPLICABLE";
             label: string;
         };
-        ProductStorySectionTemplateOption: {
+        ProductStorySectionTemplateOptionResponse: {
             /** Format: int32 */
             id: number;
             title: string;
             imageHint: string;
             bodyHelpText: string;
+            bodyExample: string;
+            /** Format: int32 */
+            sortOrder: number;
         };
         SupplierProductFormOptionsResponse: {
-            productCategoryGroups: components["schemas"]["ProductCategoryGroupOption"][];
-            productCategories: components["schemas"]["ProductCategoryOption"][];
-            mainIngredientRegions: components["schemas"]["RegionOption"][];
-            productExpirationTypes: components["schemas"]["ProductExpirationTypeOption"][];
-            storageTypes: components["schemas"]["StorageTypeOption"][];
-            productStorySectionTemplates: components["schemas"]["ProductStorySectionTemplateOption"][];
+            productCategoryGroups: components["schemas"]["ProductCategoryGroupOptionResponse"][];
+            productCategories: components["schemas"]["ProductCategoryOptionResponse"][];
+            mainIngredientRegions: components["schemas"]["RegionOptionResponse"][];
+            productExpirationTypes: components["schemas"]["ProductExpirationTypeOptionResponse"][];
+            storageTypes: components["schemas"]["StorageTypeOptionResponse"][];
+            productStorySectionTemplates: components["schemas"]["ProductStorySectionTemplateOptionResponse"][];
         };
-        Buyer: {
+        MonthlyProcurementQuantityResponse: {
+            targetMonth: string;
+            /** Format: int32 */
+            desiredQuantity: number;
+        };
+        ProcurementRequestBuyerResponse: {
             /** Format: uuid */
             accountId: string;
             businessName: string;
@@ -463,35 +840,79 @@ export interface components {
             title: string;
             description: string;
             productCategoryName: string;
-            storageTypes: components["schemas"]["StorageType"][];
-            monthlyProcurementQuantities: components["schemas"]["MonthlyProcurementQuantity"][];
-            buyer: components["schemas"]["Buyer"];
-            pagination: components["schemas"]["Pagination"];
+            storageTypeLabels: string[];
+            monthlyProcurementQuantities: components["schemas"]["MonthlyProcurementQuantityResponse"][];
+            buyer: components["schemas"]["ProcurementRequestBuyerResponse"];
+            pagination: components["schemas"]["PaginationResponse"];
         };
         ProcurementRequestDetailResponse: {
             title: string;
             description: string;
-            buyer: components["schemas"]["Buyer"];
-            productCategory: components["schemas"]["ProductCategory"];
+            buyer: components["schemas"]["ProcurementRequestBuyerResponse"];
+            productCategory: components["schemas"]["ProductCategoryResponse"];
             requiredTradeTerms?: string;
             /** Format: int32 */
             desiredUnitPrice?: number;
             /** Format: int32 */
             deliveryShelfLifeDays?: number;
-            storageTypes: components["schemas"]["StorageType"][];
-            monthlyProcurementQuantities: components["schemas"]["MonthlyProcurementQuantity"][];
-            permissions: components["schemas"]["Permissions"];
+            storageTypes: components["schemas"]["StorageTypeResponse"][];
+            monthlyProcurementQuantities: components["schemas"]["MonthlyProcurementQuantityResponse"][];
+            permissions: components["schemas"]["ProcurementRequestPermissionsResponse"];
             hasMyActiveNegotiationRequest: boolean;
         };
+        ProcurementRequestPermissionsResponse: {
+            canManage: boolean;
+            canCreateNegotiationRequest: boolean;
+        };
         ProcurementRequestSearchOptionsResponse: {
-            productCategoryGroups: components["schemas"]["ProductCategoryGroupOption"][];
-            productCategories: components["schemas"]["ProductCategoryOption"][];
-            storageTypes: components["schemas"]["StorageTypeOption"][];
+            productCategoryGroups: components["schemas"]["ProductCategoryGroupOptionResponse"][];
+            productCategories: components["schemas"]["ProductCategoryOptionResponse"][];
+            storageTypes: components["schemas"]["StorageTypeOptionResponse"][];
         };
         BuyerProcurementRequestFormOptionsResponse: {
-            productCategoryGroups: components["schemas"]["ProductCategoryGroupOption"][];
-            productCategories: components["schemas"]["ProductCategoryOption"][];
-            storageTypes: components["schemas"]["StorageTypeOption"][];
+            productCategoryGroups: components["schemas"]["ProductCategoryGroupOptionResponse"][];
+            productCategories: components["schemas"]["ProductCategoryOptionResponse"][];
+            storageTypes: components["schemas"]["StorageTypeOptionResponse"][];
+        };
+        OnboardingGetResponse: {
+            email: string;
+        };
+        CurrentAccountResponse: {
+            /** @enum {string|null} */
+            role: "ADMIN" | "SUPPLIER" | "BUYER" | null;
+            /** @enum {string|null} */
+            businessUserAccountRegistrationStatus: "NOT_SUBMITTED" | "PENDING" | "APPROVED" | null;
+        };
+        ProductSnapshotSummaryResponse: {
+            /** Format: int64 */
+            id: number;
+            name: string;
+        };
+        SupplierProductNegotiationRequestBuyerResponse: {
+            /** Format: uuid */
+            accountId: string;
+            businessName: string;
+        };
+        SupplierProductNegotiationRequestListResponse: {
+            /** Format: int64 */
+            productNegotiationRequestId: number;
+            product: components["schemas"]["ProductSnapshotSummaryResponse"];
+            buyer: components["schemas"]["SupplierProductNegotiationRequestBuyerResponse"];
+            /** Format: date-time */
+            expiresAt: string;
+        };
+        ProcurementRequestSnapshotSummaryResponse: {
+            /** Format: int64 */
+            id: number;
+            title: string;
+        };
+        SupplierProcurementNegotiationRequestListResponse: {
+            /** Format: int64 */
+            procurementNegotiationRequestId: number;
+            procurementRequest: components["schemas"]["ProcurementRequestSnapshotSummaryResponse"];
+            product: components["schemas"]["ProductSnapshotSummaryResponse"];
+            /** Format: date-time */
+            expiresAt: string;
         };
         SupplierProductListResponse: {
             /** Format: int64 */
@@ -508,6 +929,102 @@ export interface components {
             title: string;
             /** Format: date-time */
             updatedAt: string;
+        };
+        MyChatListResponse: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            /** Format: date-time */
+            lastActivityAt: string;
+        };
+        BuyerProductNegotiationRequestListResponse: {
+            /** Format: int64 */
+            productNegotiationRequestId: number;
+            product: components["schemas"]["ProductSnapshotSummaryResponse"];
+            /** Format: date-time */
+            expiresAt: string;
+        };
+        BuyerProcurementNegotiationProductSnapshotSummaryResponse: {
+            /** Format: int64 */
+            id: number;
+            name: string;
+            businessName: string;
+        };
+        BuyerProcurementNegotiationRequestListResponse: {
+            /** Format: int64 */
+            procurementNegotiationRequestId: number;
+            procurementRequest: components["schemas"]["ProcurementRequestSnapshotSummaryResponse"];
+            product: components["schemas"]["BuyerProcurementNegotiationProductSnapshotSummaryResponse"];
+            /** Format: date-time */
+            expiresAt: string;
+        };
+        CurrentBusinessGetResponse: {
+            businessName: string;
+        };
+        MyChatDetailResponse: {
+            name: string;
+            counterpartyBusinessName: string;
+        };
+        ChatMessageFileResponse: {
+            displayFilename?: string;
+            url: string;
+            mimeType: string;
+            /** Format: int64 */
+            fileSizeBytes?: number;
+        };
+        MyChatMessageListResponse: {
+            /** Format: int64 */
+            id: number;
+            senderBusinessName: string;
+            isMine: boolean;
+            body?: string;
+            /** Format: date-time */
+            createdAt: string;
+            messageFiles?: components["schemas"]["ChatMessageFileResponse"][];
+        };
+        BuyerProfileGetResponse: {
+            businessName: string;
+            businessAddressPrefecture: string;
+            businessAddressMunicipalityStreet: string;
+            businessAddressBuilding?: string;
+            websiteUrl?: string;
+        };
+        AdminBusinessApprovalDetailResponse: {
+            businessUserAccount: components["schemas"]["BusinessApprovalAccountResponse"];
+            business: components["schemas"]["BusinessApprovalBusinessResponse"];
+        };
+        BusinessApprovalAccountResponse: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            role: "SUPPLIER" | "BUYER";
+            /** @enum {string} */
+            reviewStatus: "PENDING" | "APPROVED";
+            lastName: string;
+            firstName: string;
+            lastNameKana: string;
+            firstNameKana: string;
+            phoneNumber: string;
+            email: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        BusinessApprovalBusinessResponse: {
+            name: string;
+            nameKana: string;
+            websiteUrl?: string;
+            addressPostalCode: string;
+            addressPrefecture: string;
+            addressMunicipalityStreet: string;
+            addressBuilding?: string;
+            phoneNumber: string;
+        };
+        AdminBusinessApprovalPendingListResponse: {
+            /** Format: uuid */
+            businessUserAccountId: string;
+            businessName: string;
+            /** Format: date-time */
+            createdAt: string;
         };
     };
     responses: never;
@@ -560,9 +1077,7 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": components["schemas"]["SupplierProductUpdateRequest"];
-                };
+                content?: never;
             };
         };
     };
@@ -675,7 +1190,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ProductSearchListResponse"];
+                    "*/*": components["schemas"]["ProductSearchListResponse"][];
                 };
             };
         };
@@ -704,6 +1219,26 @@ export interface operations {
             };
         };
     };
+    create_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                productId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     search_1: {
         parameters: {
             query?: {
@@ -726,12 +1261,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ProcurementRequestListResponse"];
+                    "*/*": components["schemas"]["ProcurementRequestListResponse"][];
                 };
             };
         };
     };
-    create_1: {
+    create_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -752,6 +1287,164 @@ export interface operations {
                 content: {
                     "*/*": components["schemas"]["BuyerProcurementRequestCreateResponse"];
                 };
+            };
+        };
+    };
+    create_3: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                procurementRequestId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SupplierProcurementNegotiationRequestCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["OnboardingGetResponse"];
+                };
+            };
+        };
+    };
+    create_4: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OnboardingCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["OnboardingCreateResponse"];
+                };
+            };
+        };
+    };
+    accept: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                productNegotiationRequestId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["NegotiationRequestAcceptResponse"];
+                };
+            };
+        };
+    };
+    accept_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                procurementNegotiationRequestId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["NegotiationRequestAcceptResponse"];
+                };
+            };
+        };
+    };
+    list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                channelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MyChatMessageListResponse"][];
+                };
+            };
+        };
+    };
+    create_5: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                channelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["MyChatMessageCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -779,27 +1472,27 @@ export interface operations {
             };
         };
     };
-    list: {
+    approve: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                businessUserAccountId: string;
+            };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
-            200: {
+            /** @description No Content */
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": components["schemas"]["PublicProductListResponse"];
-                };
+                content?: never;
             };
         };
     };
-    get: {
+    list_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -814,7 +1507,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ProductSearchOptionsResponse"];
+                    "*/*": components["schemas"]["PublicProductListResponse"][];
                 };
             };
         };
@@ -834,7 +1527,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["SupplierProductFormOptionsResponse"];
+                    "*/*": components["schemas"]["ProductSearchOptionsResponse"];
                 };
             };
         };
@@ -854,7 +1547,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ProcurementRequestSearchOptionsResponse"];
+                    "*/*": components["schemas"]["SupplierProductFormOptionsResponse"];
                 };
             };
         };
@@ -874,12 +1567,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["BuyerProcurementRequestFormOptionsResponse"];
+                    "*/*": components["schemas"]["ProcurementRequestSearchOptionsResponse"];
                 };
             };
         };
     };
-    list_1: {
+    get_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -894,7 +1587,27 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["SupplierProductListResponse"];
+                    "*/*": components["schemas"]["BuyerProcurementRequestFormOptionsResponse"];
+                };
+            };
+        };
+    };
+    get_5: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CurrentAccountResponse"];
                 };
             };
         };
@@ -914,7 +1627,233 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["BuyerProcurementRequestListResponse"];
+                    "*/*": components["schemas"]["SupplierProductNegotiationRequestListResponse"][];
+                };
+            };
+        };
+    };
+    list_3: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SupplierProcurementNegotiationRequestListResponse"][];
+                };
+            };
+        };
+    };
+    list_4: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SupplierProductListResponse"][];
+                };
+            };
+        };
+    };
+    list_5: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BuyerProcurementRequestListResponse"][];
+                };
+            };
+        };
+    };
+    list_6: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MyChatListResponse"][];
+                };
+            };
+        };
+    };
+    list_7: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BuyerProductNegotiationRequestListResponse"][];
+                };
+            };
+        };
+    };
+    list_8: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BuyerProcurementNegotiationRequestListResponse"][];
+                };
+            };
+        };
+    };
+    get_6: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CurrentBusinessGetResponse"];
+                };
+            };
+        };
+    };
+    getDetail_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                channelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MyChatDetailResponse"];
+                };
+            };
+        };
+    };
+    get_7: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                businessUserAccountId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BuyerProfileGetResponse"];
+                };
+            };
+        };
+    };
+    getDetail_3: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                businessUserAccountId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AdminBusinessApprovalDetailResponse"];
+                };
+            };
+        };
+    };
+    listPending: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AdminBusinessApprovalPendingListResponse"][];
                 };
             };
         };
