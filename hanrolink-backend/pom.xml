@@ -39,6 +39,12 @@
       <artifactId>spring-boot-starter-security</artifactId>
     </dependency>
 
+    <!-- Cognito JWTによる認証・認可 -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+    </dependency>
+
     <!-- 入力値バリデーション（Bean Validation） -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
