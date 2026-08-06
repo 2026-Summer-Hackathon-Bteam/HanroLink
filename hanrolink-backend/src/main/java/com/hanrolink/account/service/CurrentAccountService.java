@@ -37,6 +37,7 @@ public class CurrentAccountService {
     JwtAccountRole authenticatedAccountRole,
     String identityProviderSubject
   ) {
+    // Adminユーザー向けレスポンスの返却
     if (authenticatedAccountRole == JwtAccountRole.ADMIN) {
       return new CurrentAccountGetResponse(
         AccountRole.ADMIN,
@@ -44,10 +45,12 @@ public class CurrentAccountService {
       );
     }
 
+    // Admin以外のJWTロールの拒否
     if (authenticatedAccountRole != null) {
       throw new UnsupportedJwtAccountRoleException();
     }
 
+    // Admin以外は、DBの登録情報からロールと審査状態の取得
     Optional<BusinessUserAccount> optionalBusinessUserAccount =
       businessUserAccountRepository
         .findByIdentityProviderSubject(identityProviderSubject);
