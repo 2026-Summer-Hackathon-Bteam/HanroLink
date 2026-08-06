@@ -120,6 +120,10 @@ public class BusinessUserAccount {
     this.updatedAt = Instant.now();
   }
 
+  public UUID getPublicId() {
+    return publicId;
+  }
+
   public BusinessUserAccountRole getRole() {
     return role;
   }
