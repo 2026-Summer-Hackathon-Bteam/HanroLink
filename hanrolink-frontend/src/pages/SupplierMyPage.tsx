@@ -190,9 +190,9 @@ function SupplierMyPage() {
           <div className="mb-4 flex items-center">
             <h3>商品情報一覧： {`${data.products.length}件`}</h3>
           </div>
-          <button className="bg-border text-bg rounded-lg mb-2 mx-1">
-            + 商品情報を登録する（Linkに入れ替える）
-          </button>
+          <Link to={'/products/new'} className="bg-border text-bg rounded-lg mb-2 mx-1 text-center py-1">
+            + 商品情報を登録する
+          </Link>
           <div className="min-h-0 flex-1 space-y-3 overflow-x-hidden overflow-y-auto p-1">
             {/* ここをmapで繰り返す */}
             {data.products.length === 0 ? (

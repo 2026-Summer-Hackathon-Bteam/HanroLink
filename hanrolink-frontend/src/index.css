@@ -32,10 +32,16 @@ h2 {
   margin: 48px auto;
 }
 
-input:not([type="radio"]) {
+input:not([type="radio"]):not([type='checkbox']):not([type='file']) {
   border: solid 0.5px var(--color-text);
   box-shadow: 1px 1px 2px 0 rgb(0 0 0 / 0.10);
   border-radius: 8px;
   height: 44px;
   padding: 12px;
+}
+
+textarea {
+  border: solid 0.5px var(--color-text);
+  box-shadow: 1px 1px 2px 0 rgb(0 0 0 / 0.10);
+  border-radius: 8px;
 }
