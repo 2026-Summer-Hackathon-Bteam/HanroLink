@@ -1,21 +1,46 @@
 package com.hanrolink.account.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hanrolink.account.api.AccountApi;
+import com.hanrolink.account.enums.JwtAccountRole;
 import com.hanrolink.account.response.CurrentAccountResponse;
+import com.hanrolink.account.service.CurrentAccountService;
+import com.hanrolink.security.authorization.AuthenticatedAccountRoleResolver;
 
 @RestController
 public class CurrentAccountController {
 
-  // 管理者、サプライヤー、バイヤー利用可能
-  @GetMapping(AccountApi.V1.ME)
-  public ResponseEntity<CurrentAccountResponse> get() {
+  private final CurrentAccountService currentAccountService;
 
-    // TODO: JWTから現在のアカウントを特定し、Roleと登録状態を返す
-    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+  private final AuthenticatedAccountRoleResolver authenticatedAccountRoleResolver;
+
+  public CurrentAccountController(
+    CurrentAccountService currentAccountService,
+    AuthenticatedAccountRoleResolver authenticatedAccountRoleResolver
+  ) {
+    this.currentAccountService = currentAccountService;
+    this.authenticatedAccountRoleResolver = authenticatedAccountRoleResolver;
+  }
+
+  /**
+   * 認証済みユーザーのアカウント状態を取得する
+   * @param jwt 認証済みユーザーのJWT
+   * @return 現在のアカウント情報
+   */
+  @GetMapping(AccountApi.V1.ME)
+  public ResponseEntity<CurrentAccountResponse> get(
+    @AuthenticationPrincipal Jwt jwt
+  ) {
+    JwtAccountRole authenticatedAccountRole = authenticatedAccountRoleResolver.resolve(jwt);
+
+    return ResponseEntity.ok(currentAccountService.get(
+      authenticatedAccountRole,
+      jwt.getSubject()
+    ));
   }
 }
