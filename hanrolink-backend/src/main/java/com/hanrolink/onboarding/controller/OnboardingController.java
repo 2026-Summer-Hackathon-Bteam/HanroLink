@@ -41,8 +41,9 @@ public class OnboardingController {
   public ResponseEntity<OnboardingGetResponse> get(
     @AuthenticationPrincipal Jwt jwt
   ) {
-    String email = jwt.getClaimAsString("email");
-    return ResponseEntity.ok(new OnboardingGetResponse(email));
+    return ResponseEntity.ok(
+      new OnboardingGetResponse(jwt.getClaimAsString("email"))
+    );
   }
 
   /**

@@ -38,15 +38,19 @@ public class CurrentAccountService {
     String identityProviderSubject
   ) {
     if (authenticatedAccountRole == JwtAccountRole.ADMIN) {
-      return new CurrentAccountGetResponse(AccountRole.ADMIN, null);
+      return new CurrentAccountGetResponse(
+        AccountRole.ADMIN,
+        null
+      );
     }
 
     if (authenticatedAccountRole != null) {
       throw new UnsupportedJwtAccountRoleException();
     }
 
-    Optional<BusinessUserAccount> optionalBusinessUserAccount = businessUserAccountRepository
-      .findByIdentityProviderSubject(identityProviderSubject);
+    Optional<BusinessUserAccount> optionalBusinessUserAccount =
+      businessUserAccountRepository
+        .findByIdentityProviderSubject(identityProviderSubject);
 
     if (optionalBusinessUserAccount.isEmpty()) {
       return new CurrentAccountGetResponse(
@@ -55,7 +59,8 @@ public class CurrentAccountService {
       );
     }
 
-    BusinessUserAccount businessUserAccount = optionalBusinessUserAccount.orElseThrow();
+    BusinessUserAccount businessUserAccount =
+      optionalBusinessUserAccount.orElseThrow();
 
     return new CurrentAccountGetResponse(
       accountRoleOf(businessUserAccount.getRole()),

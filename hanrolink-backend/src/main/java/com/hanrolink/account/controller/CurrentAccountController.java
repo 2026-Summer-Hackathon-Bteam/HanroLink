@@ -38,9 +38,11 @@ public class CurrentAccountController {
   ) {
     JwtAccountRole authenticatedAccountRole = authenticatedAccountRoleResolver.resolve(jwt);
 
-    return ResponseEntity.ok(currentAccountService.get(
-      authenticatedAccountRole,
-      jwt.getSubject()
-    ));
+    return ResponseEntity.ok(
+      currentAccountService.get(
+        authenticatedAccountRole,
+        jwt.getSubject()
+      )
+    );
   }
 }
