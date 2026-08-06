@@ -1,6 +1,7 @@
 package com.hanrolink.onboarding.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hanrolink.account.entity.BusinessUserAccount;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
@@ -8,8 +9,6 @@ import com.hanrolink.business.entity.Business;
 import com.hanrolink.business.repository.BusinessRepository;
 import com.hanrolink.onboarding.exception.OnboardingAlreadyExistsException;
 import com.hanrolink.onboarding.request.OnboardingCreateRequest;
-
-import jakarta.transaction.Transactional;
 
 @Service
 public class OnboardingService {
