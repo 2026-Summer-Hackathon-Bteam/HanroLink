@@ -132,7 +132,7 @@ function AdminBusinessApprovalDetailPage() {
       </dl>
       <button
         type="button"
-        className="h-9 w-45 mx-auto mt-8 rounded-full border border-accent bg-accentbg"
+        className="h-9 w-45 mx-auto mt-16 rounded-full border border-accent bg-accentbg"
       >
         承認
         {/* （idは承認ボタンを押した時にアクセスするAPIのパスに使う） */}
