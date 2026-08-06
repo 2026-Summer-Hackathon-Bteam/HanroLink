@@ -21,7 +21,7 @@ import com.hanrolink.account.enums.BusinessUserAccountReviewStatus;
 import com.hanrolink.account.enums.BusinessUserAccountRole;
 import com.hanrolink.account.enums.JwtAccountRole;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
-import com.hanrolink.account.response.CurrentAccountResponse;
+import com.hanrolink.account.response.CurrentAccountGetResponse;
 
 @ExtendWith(MockitoExtension.class)
 class CurrentAccountServiceTest {
@@ -50,14 +50,14 @@ class CurrentAccountServiceTest {
         .findByIdentityProviderSubject(IDENTITY_PROVIDER_SUBJECT)
     ).thenReturn(Optional.of(businessUserAccount));
 
-    CurrentAccountResponse response =
+    CurrentAccountGetResponse response =
       currentAccountService.get(
         null,
         IDENTITY_PROVIDER_SUBJECT
       );
 
     assertEquals(
-      new CurrentAccountResponse(
+      new CurrentAccountGetResponse(
         AccountRole.BUYER,
         BusinessUserAccountRegistrationApiStatus.APPROVED
       ),
@@ -75,14 +75,14 @@ class CurrentAccountServiceTest {
         .findByIdentityProviderSubject(IDENTITY_PROVIDER_SUBJECT)
     ).thenReturn(Optional.empty());
 
-    CurrentAccountResponse response =
+    CurrentAccountGetResponse response =
       currentAccountService.get(
         null,
         IDENTITY_PROVIDER_SUBJECT
       );
 
     assertEquals(
-      new CurrentAccountResponse(
+      new CurrentAccountGetResponse(
         null,
         BusinessUserAccountRegistrationApiStatus.NOT_SUBMITTED
       ),
@@ -92,14 +92,14 @@ class CurrentAccountServiceTest {
 
   @Test
   void get_shouldReturnAdmin_withoutAccessingRepository() {
-    CurrentAccountResponse response =
+    CurrentAccountGetResponse response =
       currentAccountService.get(
         JwtAccountRole.ADMIN,
         IDENTITY_PROVIDER_SUBJECT
       );
 
     assertEquals(
-      new CurrentAccountResponse(
+      new CurrentAccountGetResponse(
         AccountRole.ADMIN,
         null
       ),

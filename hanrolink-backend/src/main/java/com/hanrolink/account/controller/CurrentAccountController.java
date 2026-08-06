@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hanrolink.account.api.AccountApi;
 import com.hanrolink.account.enums.JwtAccountRole;
-import com.hanrolink.account.response.CurrentAccountResponse;
+import com.hanrolink.account.response.CurrentAccountGetResponse;
 import com.hanrolink.account.service.CurrentAccountService;
 import com.hanrolink.security.authorization.AuthenticatedAccountRoleResolver;
 
@@ -33,7 +33,7 @@ public class CurrentAccountController {
    * @return 現在のアカウント情報
    */
   @GetMapping(AccountApi.V1.ME)
-  public ResponseEntity<CurrentAccountResponse> get(
+  public ResponseEntity<CurrentAccountGetResponse> get(
     @AuthenticationPrincipal Jwt jwt
   ) {
     JwtAccountRole authenticatedAccountRole = authenticatedAccountRoleResolver.resolve(jwt);

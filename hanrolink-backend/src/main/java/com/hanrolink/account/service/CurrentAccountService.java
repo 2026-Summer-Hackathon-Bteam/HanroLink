@@ -13,7 +13,7 @@ import com.hanrolink.account.enums.BusinessUserAccountRole;
 import com.hanrolink.account.enums.JwtAccountRole;
 import com.hanrolink.account.exception.UnsupportedJwtAccountRoleException;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
-import com.hanrolink.account.response.CurrentAccountResponse;
+import com.hanrolink.account.response.CurrentAccountGetResponse;
 
 @Service
 public class CurrentAccountService {
@@ -33,12 +33,12 @@ public class CurrentAccountService {
    * @return 認証済みユーザーのアカウント状態
    */
   @Transactional(readOnly = true)
-  public CurrentAccountResponse get(
+  public CurrentAccountGetResponse get(
     JwtAccountRole authenticatedAccountRole,
     String identityProviderSubject
   ) {
     if (authenticatedAccountRole == JwtAccountRole.ADMIN) {
-      return new CurrentAccountResponse(AccountRole.ADMIN, null);
+      return new CurrentAccountGetResponse(AccountRole.ADMIN, null);
     }
 
     if (authenticatedAccountRole != null) {
@@ -49,7 +49,7 @@ public class CurrentAccountService {
       .findByIdentityProviderSubject(identityProviderSubject);
 
     if (optionalBusinessUserAccount.isEmpty()) {
-      return new CurrentAccountResponse(
+      return new CurrentAccountGetResponse(
         null,
         BusinessUserAccountRegistrationApiStatus.NOT_SUBMITTED
       );
@@ -57,7 +57,7 @@ public class CurrentAccountService {
 
     BusinessUserAccount businessUserAccount = optionalBusinessUserAccount.orElseThrow();
 
-    return new CurrentAccountResponse(
+    return new CurrentAccountGetResponse(
       accountRoleOf(businessUserAccount.getRole()),
       registrationStatusOf(
         businessUserAccount.getReviewStatus()

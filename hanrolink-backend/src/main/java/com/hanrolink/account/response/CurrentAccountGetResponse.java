@@ -5,7 +5,7 @@ import com.hanrolink.account.enums.BusinessUserAccountRegistrationApiStatus;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record CurrentAccountResponse(
+public record CurrentAccountGetResponse(
   @Schema(
     requiredMode = Schema.RequiredMode.REQUIRED,
     nullable = true
