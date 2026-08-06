@@ -18,7 +18,7 @@ public class OnboardingService {
 
   private final BusinessUserAccountRepository businessUserAccountRepository;
 
-  OnboardingService(
+  public OnboardingService(
     BusinessRepository businessRepository,
     BusinessUserAccountRepository businessUserAccountRepository
   ) {

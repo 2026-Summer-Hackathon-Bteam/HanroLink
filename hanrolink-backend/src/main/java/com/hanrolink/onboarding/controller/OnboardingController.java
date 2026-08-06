@@ -25,7 +25,7 @@ public class OnboardingController {
 
   private final OnboardingService onboardingService;
 
-  OnboardingController(
+  public OnboardingController(
     OnboardingService onboardingService
   ) {
     this.onboardingService = onboardingService;
