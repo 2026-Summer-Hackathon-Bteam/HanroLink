@@ -123,10 +123,31 @@
       <scope>test</scope>
 		</dependency>
 
-    <!-- H2 インメモリデータベース（統合テスト用の軽量DB） -->
+    <!-- Spring Data JPAテスト支援（@DataJpaTest） -->
     <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-data-jpa-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Spring BootとTestcontainersの連携支援 -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-testcontainers</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- JUnit 5でTestcontainersを使用するためのテスト支援 -->
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- PostgreSQLコンテナを利用したDBテスト支援 -->
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-postgresql</artifactId>
       <scope>test</scope>
     </dependency>
 
