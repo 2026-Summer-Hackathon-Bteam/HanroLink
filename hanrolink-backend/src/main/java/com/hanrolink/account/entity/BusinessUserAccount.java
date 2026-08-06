@@ -43,7 +43,11 @@ public class BusinessUserAccount {
 
   @Enumerated(EnumType.STRING)
   @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-  @Column(columnDefinition = "business_user_account_role", nullable = false)
+  @Column(
+    columnDefinition = "business_user_account_role",
+    updatable = false,
+    nullable = false
+  )
   private BusinessUserAccountRole role;
 
   @Enumerated(EnumType.STRING)
