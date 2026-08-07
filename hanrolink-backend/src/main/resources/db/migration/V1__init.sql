@@ -49,19 +49,6 @@ CREATE TABLE business_user_accounts (
     REFERENCES businesses(id)
 );
 
-CREATE TABLE business_user_account_review_status_histories (
-  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  business_user_account_id BIGINT NOT NULL,
-  reviewed_by_identity_provider_subject VARCHAR(255) NOT NULL,
-  review_status business_user_account_review_status NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-
-  CONSTRAINT fk_business_user_account_review_status_histories_business_user_account
-    FOREIGN KEY (business_user_account_id)
-    REFERENCES business_user_accounts(id)
-);
-
 CREATE TABLE regions (
   id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   name VARCHAR(50) UNIQUE NOT NULL,
