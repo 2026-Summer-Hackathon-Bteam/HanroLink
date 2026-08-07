@@ -24,12 +24,20 @@ import com.hanrolink.business.entity.Business;
 import com.hanrolink.business.repository.BusinessRepository;
 import com.hanrolink.onboarding.exception.OnboardingAlreadyExistsException;
 import com.hanrolink.onboarding.request.OnboardingCreateRequest;
+import com.hanrolink.security.authentication.AuthenticatedUser;
+import com.hanrolink.security.authentication.AuthenticatedUserProvider;
 
 @ExtendWith(MockitoExtension.class)
 class OnboardingServiceTest {
 
   private static final String IDENTITY_PROVIDER_SUBJECT =
     "test-identity-provider-subject";
+
+  private static final String ACCESS_TOKEN =
+    "test-access-token";
+
+  @Mock
+  private AuthenticatedUserProvider authenticatedUserProvider;
 
   @Mock
   private BusinessRepository businessRepository;
@@ -84,6 +92,18 @@ class OnboardingServiceTest {
         .existsByIdentityProviderSubject(IDENTITY_PROVIDER_SUBJECT)
     ).thenReturn(false);
 
+    when(
+      authenticatedUserProvider.get(
+        IDENTITY_PROVIDER_SUBJECT,
+        ACCESS_TOKEN
+      )
+    ).thenReturn(
+      new AuthenticatedUser(
+        IDENTITY_PROVIDER_SUBJECT,
+        email
+      )
+    );
+
     Business savedBusiness = mock(Business.class);
 
     when(savedBusiness.getId()).thenReturn(1L);
@@ -93,7 +113,7 @@ class OnboardingServiceTest {
 
     onboardingService.create(
       IDENTITY_PROVIDER_SUBJECT,
-      email,
+      ACCESS_TOKEN,
       request
     );
 

@@ -1,5 +1,6 @@
 package com.hanrolink.onboarding.controller;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,6 +21,7 @@ import com.hanrolink.onboarding.response.OnboardingCreateResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 
+@Profile("cognito")
 @RestController
 public class OnboardingController {
 
@@ -42,7 +44,10 @@ public class OnboardingController {
     @AuthenticationPrincipal Jwt jwt
   ) {
     return ResponseEntity.ok(
-      new OnboardingGetResponse(jwt.getClaimAsString("email"))
+      onboardingService.get(
+        jwt.getSubject(),
+        jwt.getTokenValue()
+      )
     );
   }
 
@@ -62,7 +67,11 @@ public class OnboardingController {
     @AuthenticationPrincipal Jwt jwt,
     @Valid @RequestBody OnboardingCreateRequest request
   ) {
-    onboardingService.create(jwt.getSubject(), jwt.getClaimAsString("email"), request);
+    onboardingService.create(
+      jwt.getSubject(),
+      jwt.getTokenValue(),
+      request
+    );
     return ResponseEntity
       .status(HttpStatus.CREATED)
       .body(

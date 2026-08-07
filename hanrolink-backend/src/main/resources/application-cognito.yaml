@@ -3,3 +3,4 @@ app:
     cognito:
       issuer-uri: ${COGNITO_ISSUER_URI}
       client-id: ${COGNITO_CLIENT_ID}
+      user-info-uri: ${COGNITO_USER_INFO_URI}

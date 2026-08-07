@@ -39,16 +39,12 @@ public class JwtDecoderConfig {
     OAuth2TokenValidator<Jwt> subjectValidator =
       new JwtClaimValidator<String>("sub", sub -> sub != null && !sub.isBlank());
 
-    OAuth2TokenValidator<Jwt> emailValidator =
-      new JwtClaimValidator<String>("email", email -> email != null && !email.isBlank());
-
     OAuth2TokenValidator<Jwt> validators =
       new DelegatingOAuth2TokenValidator<>(
         defaultValidators,
         tokenUseValidator,
         clientIdValidator,
-        subjectValidator,
-        emailValidator
+        subjectValidator
       );
 
     decoder.setJwtValidator(validators);

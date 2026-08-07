@@ -51,6 +51,12 @@
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
 
+    <!-- 外部REST API呼び出し支援 -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-restclient</artifactId>
+    </dependency>
+
     <!-- ORM / Database access (JPA, Hibernate) -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
