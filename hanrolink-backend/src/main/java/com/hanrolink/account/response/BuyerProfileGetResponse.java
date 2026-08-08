@@ -1,5 +1,7 @@
 package com.hanrolink.account.response;
 
+import java.util.Objects;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record BuyerProfileGetResponse(
@@ -15,4 +17,21 @@ public record BuyerProfileGetResponse(
   String businessAddressBuilding,
 
   String websiteUrl
-) {}
+) {
+  public BuyerProfileGetResponse {
+    Objects.requireNonNull(
+      businessName,
+      "BuyerProfileGetResponse.businessName must not be null"
+    );
+
+    Objects.requireNonNull(
+      businessAddressPrefecture,
+      "BuyerProfileGetResponse.businessAddressPrefecture must not be null"
+    );
+
+    Objects.requireNonNull(
+      businessAddressMunicipalityStreet,
+      "BuyerProfileGetResponse.businessAddressMunicipalityStreet must not be null"
+    );
+  }
+}

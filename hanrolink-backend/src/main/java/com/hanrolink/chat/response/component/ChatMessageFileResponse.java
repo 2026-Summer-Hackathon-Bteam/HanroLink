@@ -1,5 +1,7 @@
 package com.hanrolink.chat.response.component;
 
+import java.util.Objects;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record ChatMessageFileResponse(
@@ -12,4 +14,16 @@ public record ChatMessageFileResponse(
   String mimeType,
 
   Long fileSizeBytes
-) {}
+) {
+  public ChatMessageFileResponse {
+    Objects.requireNonNull(
+      url,
+      "ChatMessageFileResponse.url must not be null"
+    );
+
+    Objects.requireNonNull(
+      mimeType,
+      "ChatMessageFileResponse.mimeType must not be null"
+    );
+  }
+}
