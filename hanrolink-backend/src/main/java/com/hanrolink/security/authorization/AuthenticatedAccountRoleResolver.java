@@ -3,17 +3,19 @@ package com.hanrolink.security.authorization;
 import java.util.Arrays;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
 import com.hanrolink.account.enums.JwtAccountRole;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Component
 public class AuthenticatedAccountRoleResolver {
+
+  private static final Logger log =
+    LoggerFactory.getLogger(AuthenticatedAccountRoleResolver.class);
 
   private static final String GROUPS_CLAIM = "cognito:groups";
 
