@@ -41,14 +41,19 @@ public class AdminBusinessApprovalController {
     );
   }
 
-  // 管理者のみ利用可能
+  /**
+   * 審査対象の詳細情報を取得する
+   * @param businessUserAccountId 事業者ユーザーアカウントの公開識別子
+   * @return 審査対象の詳細情報
+   */
+  @RequiresAdmin
   @GetMapping(BusinessApprovalApi.V1.BY_ID)
   public ResponseEntity<AdminBusinessApprovalDetailResponse> getDetail(
     @PathVariable UUID businessUserAccountId
   ) {
-
-    // TODO: 承認待ちの担当者と事業者の詳細情報を取得して、ResponseEntity.ok(response)で返す
-    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    return ResponseEntity.ok(
+      adminBusinessApprovalService.getDetail(businessUserAccountId)
+    );
   }
 
   // 管理者のみ利用可能

@@ -22,6 +22,8 @@ public interface BusinessUserAccountRepository extends JpaRepository<BusinessUse
 
   boolean existsByIdentityProviderSubject(String identityProviderSubject);
 
+  Optional<BusinessUserAccount> findByPublicId(UUID publicId);
+
   @Query("""
     SELECT business
     FROM Business business

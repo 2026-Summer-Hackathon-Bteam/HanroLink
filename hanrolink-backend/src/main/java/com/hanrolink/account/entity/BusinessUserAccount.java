@@ -120,6 +120,10 @@ public class BusinessUserAccount {
     this.updatedAt = Instant.now();
   }
 
+  public Long getBusinessId() {
+    return businessId;
+  }
+
   public UUID getPublicId() {
     return publicId;
   }
@@ -130,5 +134,33 @@ public class BusinessUserAccount {
 
   public BusinessUserAccountReviewStatus getReviewStatus() {
     return reviewStatus;
+  }
+
+  public String getLastName() {
+    return lastName;
+  }
+
+  public String getFirstName() {
+    return firstName;
+  }
+
+  public String getLastNameKana() {
+    return lastNameKana;
+  }
+
+  public String getFirstNameKana() {
+    return firstNameKana;
+  }
+
+  public String getPhoneNumber() {
+    return phoneNumber;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public Instant getCreatedAt() {
+    return createdAt;
   }
 }
