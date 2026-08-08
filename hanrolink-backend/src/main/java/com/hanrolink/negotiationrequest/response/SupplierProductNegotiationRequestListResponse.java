@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record SupplierProductNegotiationRequestListResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  Long productNegotiationRequestId,
+  Long id,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   ProductSnapshotSummaryResponse product,
@@ -23,8 +23,8 @@ public record SupplierProductNegotiationRequestListResponse(
 ) {
   public SupplierProductNegotiationRequestListResponse {
     Objects.requireNonNull(
-      productNegotiationRequestId,
-      "SupplierProductNegotiationRequestListResponse.productNegotiationRequestId must not be null"
+      id,
+      "SupplierProductNegotiationRequestListResponse.id must not be null"
     );
 
     Objects.requireNonNull(

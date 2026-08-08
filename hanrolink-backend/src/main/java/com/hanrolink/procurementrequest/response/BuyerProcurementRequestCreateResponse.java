@@ -6,12 +6,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record BuyerProcurementRequestCreateResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  Long procurementRequestId
+  Long id
 ) {
   public BuyerProcurementRequestCreateResponse {
     Objects.requireNonNull(
-      procurementRequestId,
-      "BuyerProcurementRequestCreateResponse.procurementRequestId must not be null"
+      id,
+      "BuyerProcurementRequestCreateResponse.id must not be null"
     );
   }
 }
