@@ -22,7 +22,21 @@
   <!-- Java バージョン -->
   <properties>
     <java.version>25</java.version>
+    <aws.sdk.version>2.49.3</aws.sdk.version>
   </properties>
+
+  <!-- AWS SDKのバージョン管理 -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>bom</artifactId>
+        <version>${aws.sdk.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <!-- 依存関係 -->
   <dependencies>
@@ -45,16 +59,16 @@
       <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
     </dependency>
 
+    <!-- Cognito GetUser API -->
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>cognitoidentityprovider</artifactId>
+    </dependency>
+
     <!-- 入力値バリデーション（Bean Validation） -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
-    </dependency>
-
-    <!-- 外部REST API呼び出し支援 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-restclient</artifactId>
     </dependency>
 
     <!-- ORM / Database access (JPA, Hibernate) -->
