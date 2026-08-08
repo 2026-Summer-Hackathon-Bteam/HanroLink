@@ -12,19 +12,33 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hanrolink.businessapproval.api.BusinessApprovalApi;
 import com.hanrolink.businessapproval.response.AdminBusinessApprovalDetailResponse;
-import com.hanrolink.businessapproval.response.AdminBusinessApprovalPendingListResponse;
+import com.hanrolink.businessapproval.response.AdminBusinessApprovalListResponse;
+import com.hanrolink.businessapproval.service.AdminBusinessApprovalService;
+import com.hanrolink.security.authorization.policy.RequiresAdmin;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @RestController
 public class AdminBusinessApprovalController {
 
-  // 管理者のみ利用可能
-  @GetMapping(BusinessApprovalApi.V1.PENDING)
-  public ResponseEntity<List<AdminBusinessApprovalPendingListResponse>> listPending() {
+  private final AdminBusinessApprovalService adminBusinessApprovalService;
 
-    // TODO: 承認待ちの担当者アカウントと事業者情報を取得し、ResponseEntity.ok(response)で返す
-    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+  public AdminBusinessApprovalController(
+    AdminBusinessApprovalService adminBusinessApprovalService
+  ) {
+    this.adminBusinessApprovalService = adminBusinessApprovalService;
+  }
+
+  /**
+   * 審査待ちの事業者ユーザーアカウント一覧を取得する
+   * @return 審査待ちの事業者ユーザーアカウント一覧
+   */
+  @RequiresAdmin
+  @GetMapping(BusinessApprovalApi.V1.PENDING)
+  public ResponseEntity<List<AdminBusinessApprovalListResponse>> listPending() {
+    return ResponseEntity.ok(
+      adminBusinessApprovalService.listPending()
+    );
   }
 
   // 管理者のみ利用可能
