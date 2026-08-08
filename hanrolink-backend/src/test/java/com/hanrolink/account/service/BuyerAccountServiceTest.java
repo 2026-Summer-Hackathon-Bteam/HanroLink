@@ -68,8 +68,9 @@ class BuyerAccountServiceTest {
     );
 
     verify(businessUserAccountRepository, never())
-      .findBusinessByBusinessUserAccountPublicId(
-        targetBusinessUserAccountId
+      .findBusinessByBusinessUserAccountPublicIdAndRole(
+        targetBusinessUserAccountId,
+        BusinessUserAccountRole.BUYER
       );
   }
 }

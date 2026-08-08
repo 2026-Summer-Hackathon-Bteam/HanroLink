@@ -41,7 +41,10 @@ public class BuyerAccountService {
 
     Business targetBusiness =
       businessUserAccountRepository
-        .findBusinessByBusinessUserAccountPublicId(targetBusinessUserAccountId)
+        .findBusinessByBusinessUserAccountPublicIdAndRole(
+          targetBusinessUserAccountId,
+          BusinessUserAccountRole.BUYER
+        )
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     return new BuyerProfileGetResponse(

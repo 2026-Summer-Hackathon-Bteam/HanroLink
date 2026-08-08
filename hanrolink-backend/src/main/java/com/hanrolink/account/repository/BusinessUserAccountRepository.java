@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.hanrolink.account.entity.BusinessUserAccount;
+import com.hanrolink.account.enums.BusinessUserAccountRole;
 import com.hanrolink.business.entity.Business;
 
 @Repository
@@ -24,10 +25,14 @@ public interface BusinessUserAccountRepository extends JpaRepository<BusinessUse
     JOIN BusinessUserAccount businessUserAccount
       ON businessUserAccount.businessId = business.id
     WHERE businessUserAccount.publicId = :businessUserAccountPublicId
+      AND businessUserAccount.role = :businessUserAccountRole
     """)
-  Optional<Business> findBusinessByBusinessUserAccountPublicId(
+  Optional<Business> findBusinessByBusinessUserAccountPublicIdAndRole(
     @Param("businessUserAccountPublicId")
-    UUID businessUserAccountPublicId
+    UUID businessUserAccountPublicId,
+
+    @Param("businessUserAccountRole")
+    BusinessUserAccountRole role
   );
 
   @Query("""
