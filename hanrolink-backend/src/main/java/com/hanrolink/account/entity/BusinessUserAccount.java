@@ -108,6 +108,10 @@ public class BusinessUserAccount {
     this.email = email;
   }
 
+  public void approve() {
+    this.reviewStatus = BusinessUserAccountReviewStatus.APPROVED;
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();

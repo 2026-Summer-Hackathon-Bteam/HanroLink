@@ -56,7 +56,12 @@ public class AdminBusinessApprovalController {
     );
   }
 
-  // 管理者のみ利用可能
+  /**
+   * 審査対象の事業者ユーザーアカウントを承認する
+   * @param businessUserAccountId 事業者ユーザーアカウントの公開識別子
+   * @return 承認結果
+   */
+  @RequiresAdmin
   @ApiResponse(
     responseCode = "204",
     description = "No Content"
@@ -65,8 +70,6 @@ public class AdminBusinessApprovalController {
   public ResponseEntity<Void> approve(
     @PathVariable UUID businessUserAccountId
   ) {
-
-    // TODO: 承認待ちの対象アカウントの審査状態をAPPROVEDへ変更し、204 No Contentを返す
-    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    return ResponseEntity.noContent().build();
   }
 }

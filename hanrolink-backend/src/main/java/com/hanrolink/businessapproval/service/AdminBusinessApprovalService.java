@@ -93,4 +93,19 @@ public class AdminBusinessApprovalService {
       businessApprovalBusinessResponse
     );
   }
+
+  /**
+   * 審査対象の事業者ユーザーアカウントを承認する
+   * @param businessUserAccountId 事業者ユーザーアカウントの公開識別子
+   */
+  @Transactional
+  public void approve(
+    UUID businessUserAccountId
+  ) {
+    BusinessUserAccount businessUserAccount =
+      businessUserAccountRepository.findByPublicId(businessUserAccountId)
+      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+    businessUserAccount.approve();
+  }
 }
