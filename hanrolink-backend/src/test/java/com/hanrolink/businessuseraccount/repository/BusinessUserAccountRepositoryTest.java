@@ -16,12 +16,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
-import com.hanrolink.account.entity.BusinessUserAccount;
 import com.hanrolink.account.enums.BusinessUserAccountReviewStatus;
-import com.hanrolink.account.enums.BusinessUserAccountRole;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
-import com.hanrolink.business.entity.Business;
-import com.hanrolink.business.repository.BusinessRepository;
 import com.hanrolink.businessapproval.response.AdminBusinessApprovalListResponse;
 
 @DataJpaTest
@@ -41,43 +37,11 @@ class BusinessUserAccountRepositoryTest {
     new PostgreSQLContainer("postgres:17.7");
 
   @Autowired
-  private BusinessRepository businessRepository;
-
-  @Autowired
   private BusinessUserAccountRepository businessUserAccountRepository;
 
   @Test
-  void findsBusinessNameByIdentityProviderSubject() {
-    String identityProviderSubject = "cognito-sub-001";
-
-    Business business = new Business(
-      "テスト株式会社",
-      "テストカブシキガイシャ",
-      "https://example.com",
-      "1000001",
-      "東京都",
-      "千代田区千代田1-1",
-      null,
-      "0312345678"
-    );
-
-    Business savedBusiness =
-      businessRepository.saveAndFlush(business);
-
-    BusinessUserAccount businessUserAccount =
-      new BusinessUserAccount(
-        savedBusiness.getId(),
-        identityProviderSubject,
-        BusinessUserAccountRole.SUPPLIER,
-        "山田",
-        "太郎",
-        "ヤマダ",
-        "タロウ",
-        "09012345678",
-        "test@example.com"
-      );
-
-    businessUserAccountRepository.saveAndFlush(businessUserAccount);
+  void findBusinessNameByIdentityProviderSubject_shouldReturnBusinessName() {
+    String identityProviderSubject = "00000000-0000-0000-0000-000000000001";
 
     String businessName =
       businessUserAccountRepository
