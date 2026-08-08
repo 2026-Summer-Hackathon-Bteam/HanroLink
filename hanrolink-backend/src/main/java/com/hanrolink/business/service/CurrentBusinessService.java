@@ -1,12 +1,14 @@
 package com.hanrolink.business.service;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
 import com.hanrolink.business.response.CurrentBusinessGetResponse;
 
+@Service
 public class CurrentBusinessService {
 
   private final BusinessUserAccountRepository businessUserAccountRepository;
