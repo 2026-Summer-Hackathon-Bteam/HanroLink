@@ -1,14 +1,10 @@
-import type { components } from '../../shared/api/schema'
-
-type ProductStoryTemplate =
-  components['schemas']['ProductStorySectionTemplateOptionResponse']
+import type { ProductStoryTemplate } from './productFormTypes'
 
 export const productStoryTemplateMock = [
   {
     id: 1,
     title: '素材・原料',
-    imageHint:
-      '原材料そのもの、畑、果樹園、牧場、収穫前の素材、生産現場の写真',
+    imageHint: '原材料そのもの、畑、果樹園、牧場、収穫前の素材、生産現場の写真',
     bodyHelpText: `この商品に使っている素材や原料について教えてください。
       産地、品種、収穫時期、鮮度、栽培方法など、素材の良さが伝わる内容があれば入力してください。`,
     bodyExample:
@@ -21,7 +17,8 @@ export const productStoryTemplateMock = [
     imageHint: '地域の風景、農園、港、山、町並み、地域名が伝わる看板や背景',
     bodyHelpText: `この商品が生まれた地域や、地域ならではの特徴について教えてください。
       地域の気候、文化、地元食材、地域フェアで伝えやすい背景などがあれば入力してください`,
-    bodyExample: '地元で長く親しまれている果物を使った商品です。地域フェアや観光向けの売場で、産地の魅力を伝えやすい商品です。',
+    bodyExample:
+      '地元で長く親しまれている果物を使った商品です。地域フェアや観光向けの売場で、産地の魅力を伝えやすい商品です。',
     sortOrder: 2,
   },
   {
