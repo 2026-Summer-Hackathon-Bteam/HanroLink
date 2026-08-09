@@ -16,7 +16,7 @@ function FormRow({ label, htmlFor, children }: FormRowProps) {
         {label}
       </label>
 
-      <div className="p-3 flex gap-4 items-center">
+      <div className="p-3 flex gap-4 items-center min-w-0">
         {children}
       </div>
     </div>
