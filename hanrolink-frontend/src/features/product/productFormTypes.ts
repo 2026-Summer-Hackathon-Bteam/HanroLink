@@ -44,3 +44,13 @@ export type ProductInformationFormData = Omit<
 
 export type SupplierProductFormOptions =
   components['schemas']['SupplierProductFormOptionsResponse']
+
+type MonthlySupplyCapacityRequest =
+  components['schemas']['MonthlySupplyCapacityRequest']
+
+export type MonthlySupplyCapacityFormData = Omit<
+  MonthlySupplyCapacityRequest,
+  'availableQuantity'
+> & {
+  availableQuantity: number | ''
+}

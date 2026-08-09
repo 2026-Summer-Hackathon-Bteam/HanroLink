@@ -1,13 +1,39 @@
-import { useEffect, useState } from 'react'
-import {
-  type StoryFormChanges,
-  type StoryFormData,
-  type ProductInformationFormData,
+import { useEffect, useState, type SubmitEvent } from 'react'
+import type {
+  StoryFormChanges,
+  StoryFormData,
+  ProductInformationFormData,
+  MonthlySupplyCapacityFormData,
+  SupplierProductFormOptions,
 } from '../features/product/productFormTypes'
 import ProductStoryFieldset from '../features/product/components/ProductStoryFieldset'
 import FormRow from '../components/FormRow'
 import { getProductFormOptions } from '../features/product/productFormService'
-import type { SupplierProductFormOptions } from '../features/product/productFormTypes'
+
+const createInitialMonthlySupplyCapacities = (
+  currentDate = new Date(),
+): MonthlySupplyCapacityFormData[] => {
+  return Array.from({ length: 6 }, (_, index) => {
+    const targetDate = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + index,
+      1,
+    )
+    const year = targetDate.getFullYear()
+    const month = String(targetDate.getMonth() + 1).padStart(2, '0')
+
+    return {
+      targetMonth: `${year}-${month}`,
+      availableQuantity: '',
+    }
+  })
+}
+
+const formatTargetMonth = (targetMonth: string) => {
+  const [year, month] = targetMonth.split('-')
+
+  return `${year}年${Number(month)}月`
+}
 
 function ProductCreatePage() {
   const [stories, setStories] = useState<StoryFormData[]>([
@@ -59,6 +85,9 @@ function ProductCreatePage() {
     useState<SupplierProductFormOptions | null>(null)
   const [selectedProductCategoryGroupId, setSelectedProductCategoryGroupId] =
     useState<number | ''>('')
+  const [monthlySupplyCapacities, setMonthlySupplyCapacities] = useState<
+    MonthlySupplyCapacityFormData[]
+  >(createInitialMonthlySupplyCapacities)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -95,6 +124,27 @@ function ProductCreatePage() {
     )
   }
 
+  const handleMonthlySupplyCapacityChange = (
+    targetMonth: string,
+    value: string,
+  ) => {
+    setMonthlySupplyCapacities((previous) =>
+      previous.map((capacity) =>
+        capacity.targetMonth === targetMonth
+          ? {
+              ...capacity,
+              availableQuantity: value === '' ? '' : Number(value),
+            }
+          : capacity,
+      ),
+    )
+  }
+
+  const handleSubmit = (e:SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    // 入力内容の検証と送信処理を書く
+  }
+
   if (error) {
     return (
       <p role="alert" className="py-10 text-center text-error">
@@ -117,7 +167,7 @@ function ProductCreatePage() {
         <br />
         商品の魅力に合うものを選んで、商品のこだわりを伝えてください。
       </p>
-      <form className="flex flex-col mx-auto">
+      <form className="flex flex-col mx-auto" onSubmit={handleSubmit}>
         <h3 className="text-start pl-1">商品ストーリー</h3>
         <div className="[&>fieldset:not(:first-child)>legend]:border-t-0 mb-8">
           {stories.map((story) => (
@@ -142,7 +192,7 @@ function ProductCreatePage() {
                 name="mainImageFile"
                 type="file"
                 accept="image/png,image/jpeg,image/webp"
-                className="file:text-bg file:rounded-full file:bg-border file:px-4 file:py-2 min-w-0"
+                className="file:text-bg file:rounded-full file:bg-border file:px-4 file:py-2 min-w-0 w-full max-w-full"
                 onChange={(e) => {
                   setProductInformations((prev) => ({
                     ...prev,
@@ -168,71 +218,88 @@ function ProductCreatePage() {
               }}
               required
               maxLength={255}
+              className="w-full"
             />
           </FormRow>
 
-          <FormRow label="商品カテゴリー" htmlFor="productCategoryId">
-            <select
-              id="productCategoryGroupId"
-              name="productCategoryGroupId"
-              value={selectedProductCategoryGroupId}
-              onChange={(e) => {
-                const value = e.target.value
-                setSelectedProductCategoryGroupId(
-                  value === '' ? '' : Number(value),
-                )
-                setProductInformations((prev) => ({
-                  ...prev,
-                  productCategoryId: '',
-                }))
-              }}
-              aria-label="商品カテゴリーグループ"
-              required
-              className="h-11 w-full md:w-1/3 rounded-lg border-[0.5px] border-text px-3 shadow-sm"
-            >
-              <option value="">選択してください</option>
-              {[...productFormOptions.productCategoryGroups]
-                .sort((a, b) => a.sortOrder - b.sortOrder)
-                .map((pcg) => (
-                  <option key={pcg.id} value={pcg.id}>
-                    {pcg.name}
+          <FormRow label="商品カテゴリー" htmlFor="productCategoryGroupId">
+            <div className="flex flex-col gap-2 w-full min-w-0">
+              <div className="flex flex-col items-start md:flex-row md:items-center md:gap-2">
+                <label
+                  htmlFor="productCategoryGroupId"
+                  className="shrink-0 whitespace-nowrap"
+                >
+                  カテゴリーグループ：
+                </label>
+                <select
+                  id="productCategoryGroupId"
+                  name="productCategoryGroupId"
+                  value={selectedProductCategoryGroupId}
+                  onChange={(e) => {
+                    const value = e.target.value
+                    setSelectedProductCategoryGroupId(
+                      value === '' ? '' : Number(value),
+                    )
+                    setProductInformations((prev) => ({
+                      ...prev,
+                      productCategoryId: '',
+                    }))
+                  }}
+                  required
+                  className="h-11 w-full rounded-lg border-[0.5px] border-text px-3 shadow-sm md:w-80"
+                >
+                  <option value="">選択してください</option>
+                  {[...productFormOptions.productCategoryGroups]
+                    .sort((a, b) => a.sortOrder - b.sortOrder)
+                    .map((option) => (
+                      <option key={option.id} value={option.id}>
+                        {option.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+              <div className="flex flex-col items-start md:flex-row md:items-center md:gap-2">
+                <label
+                  htmlFor="productCategoryId"
+                  className="shrink-0 whitespace-nowrap"
+                >
+                  商品カテゴリー：
+                </label>
+                <select
+                  id="productCategoryId"
+                  name="productCategoryId"
+                  value={productInformations.productCategoryId}
+                  onChange={(e) => {
+                    const value = e.target.value
+                    setProductInformations((prev) => ({
+                      ...prev,
+                      productCategoryId: value === '' ? '' : Number(value),
+                    }))
+                  }}
+                  disabled={selectedProductCategoryGroupId === ''}
+                  required
+                  className="h-11 w-full rounded-lg border-[0.5px] border-text px-3 shadow-sm md:w-80 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <option value="">
+                    {selectedProductCategoryGroupId === ''
+                      ? '先にカテゴリーグループを選択してください'
+                      : '選択してください'}
                   </option>
-                ))}
-            </select>
-            <select
-              id="productCategoryId"
-              name="productCategoryId"
-              value={productInformations.productCategoryId}
-              onChange={(e) => {
-                const value = e.target.value
-                setProductInformations((prev) => ({
-                  ...prev,
-                  productCategoryId: value === '' ? '' : Number(value),
-                }))
-              }}
-              disabled={selectedProductCategoryGroupId === ''}
-              aria-label="商品カテゴリー"
-              required
-              className="h-11 w-full md:w-1/3 rounded-lg border-[0.5px] border-text px-3 shadow-sm"
-            >
-              <option value="">
-                {selectedProductCategoryGroupId === ''
-                  ? '先にカテゴリーグループを選択してください'
-                  : '選択してください'}
-              </option>
-              {[...productFormOptions.productCategories]
-                .filter(
-                  (pc) =>
-                    pc.productCategoryGroupId ===
-                    selectedProductCategoryGroupId,
-                )
-                .sort((a, b) => a.sortOrder - b.sortOrder)
-                .map((pc) => (
-                  <option key={pc.id} value={pc.id}>
-                    {pc.name}
-                  </option>
-                ))}
-            </select>
+                  {[...productFormOptions.productCategories]
+                    .filter(
+                      (option) =>
+                        option.productCategoryGroupId ===
+                        selectedProductCategoryGroupId,
+                    )
+                    .sort((a, b) => a.sortOrder - b.sortOrder)
+                    .map((option) => (
+                      <option key={option.id} value={option.id}>
+                        {option.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            </div>
           </FormRow>
 
           <FormRow label="賞味期限／消費期限" htmlFor="expirationType">
@@ -260,9 +327,9 @@ function ProductCreatePage() {
               className="h-11 w-full md:w-1/3 rounded-lg border-[0.5px] border-text px-3 shadow-sm"
             >
               <option value="">選択してください</option>
-              {productFormOptions.productExpirationTypes.map((pet) => (
-                <option key={pet.value} value={pet.value}>
-                  {pet.label}
+              {productFormOptions.productExpirationTypes.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
                 </option>
               ))}
             </select>
@@ -290,6 +357,7 @@ function ProductCreatePage() {
                 productInformations.expirationType === 'NOT_APPLICABLE' ||
                 productInformations.expirationType === ''
               }
+              className="w-full md:w-1/3"
             />
           </FormRow>
 
@@ -311,9 +379,9 @@ function ProductCreatePage() {
               <option value="">選択してください</option>
               {[...productFormOptions.mainIngredientRegions]
                 .sort((a, b) => a.sortOrder - b.sortOrder)
-                .map((mir) => (
-                  <option key={mir.id} value={mir.id}>
-                    {mir.name}
+                .map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.name}
                   </option>
                 ))}
             </select>
@@ -333,6 +401,7 @@ function ProductCreatePage() {
               }}
               required
               maxLength={255}
+              className="w-full md:w-1/3"
             />
           </FormRow>
 
@@ -351,6 +420,7 @@ function ProductCreatePage() {
               }}
               required
               min={1}
+              className="w-full md:w-1/3"
             />
           </FormRow>
 
@@ -368,6 +438,7 @@ function ProductCreatePage() {
                 }))
               }}
               min={1}
+              className="w-full md:w-1/3"
             />
           </FormRow>
 
@@ -417,6 +488,7 @@ function ProductCreatePage() {
                 }))
               }}
               min={1}
+              className="w-full md:w-1/3"
             />
           </FormRow>
 
@@ -434,6 +506,7 @@ function ProductCreatePage() {
                 }))
               }}
               min={1}
+              className="w-full md:w-1/3"
             />
           </FormRow>
 
@@ -450,6 +523,7 @@ function ProductCreatePage() {
                 }))
               }}
               maxLength={255}
+              className="w-full"
             />
           </FormRow>
 
@@ -465,6 +539,7 @@ function ProductCreatePage() {
                   certificationInformation: e.target.value,
                 }))
               }}
+              className="w-full"
             />
           </FormRow>
 
@@ -481,6 +556,7 @@ function ProductCreatePage() {
                 }))
               }}
               maxLength={255}
+              className="w-full"
             />
           </FormRow>
 
@@ -500,9 +576,87 @@ function ProductCreatePage() {
                 }))
               }}
               maxLength={255}
+              className="w-full"
             />
           </FormRow>
         </div>
+
+        <h3 className="mt-8 text-start pl-1">商品提供情報</h3>
+
+        <div className="overflow-hidden border border-border">
+          {/* スマホ・タブレット用の見出し */}
+          <div className="grid grid-cols-[8rem_minmax(0,1fr)] border-b border-border bg-textbg lg:hidden">
+            <div className="border-r border-border px-3 py-2 text-left">
+              提供可能月
+            </div>
+            <div className="px-3 py-2 text-left">提供可能数量</div>
+          </div>
+
+          <div className="lg:grid lg:grid-cols-[16rem_repeat(6,minmax(0,1fr))]">
+            {/* PC用の左側の項目名 */}
+            <div className="hidden bg-textbg lg:grid lg:grid-rows-2">
+              <div className="flex items-center border-b border-border px-5 py-4 text-left">
+                提供可能月
+              </div>
+              <div className="flex items-center px-5 py-4 text-left">
+                提供可能数量
+              </div>
+            </div>
+
+            {monthlySupplyCapacities.map((capacity) => {
+              const inputId = `availableQuantity-${capacity.targetMonth}`
+
+              return (
+                <div
+                  key={capacity.targetMonth}
+                  className="
+                    grid grid-cols-[8rem_minmax(0,1fr)]
+                    border-b border-border last:border-b-0
+                    lg:grid-cols-1 lg:grid-rows-2
+                    lg:border-b-0 lg:border-l
+                  "
+                >
+                  <label
+                    htmlFor={inputId}
+                    className="
+                      flex items-center bg-textbg px-3 py-3 text-left
+                      border-r border-border
+                      lg:justify-center lg:bg-bg
+                      lg:border-r-0 lg:border-b
+                    "
+                  >
+                    {formatTargetMonth(capacity.targetMonth)}
+                  </label>
+
+                  <div className="flex items-center p-3">
+                    <input
+                      id={inputId}
+                      name={inputId}
+                      type="number"
+                      min={1}
+                      required
+                      value={capacity.availableQuantity}
+                      onChange={(event) => {
+                        handleMonthlySupplyCapacityChange(
+                          capacity.targetMonth,
+                          event.target.value,
+                        )
+                      }}
+                      className="w-full text-right"
+                      aria-label={`${formatTargetMonth(capacity.targetMonth)}の提供可能数量`}
+                    />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+        <button
+          type="submit"
+          className="h-9 w-45 mx-auto mt-16 rounded-full border border-accent bg-accentbg"
+        >
+          登録する
+        </button>
       </form>
     </div>
   )
