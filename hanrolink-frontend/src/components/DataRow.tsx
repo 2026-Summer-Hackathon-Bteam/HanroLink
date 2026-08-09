@@ -12,7 +12,7 @@ function DataRow({ itemName, children }: DataRowProps) {
         {itemName}
       </dt>
 
-      <dd className="flex min-w-0 items-center gap-4 wrap-break-word p-3">{children}</dd>
+      <dd className="flex min-w-0 items-center gap-4 wrap-break-word p-3 text-start">{children}</dd>
     </div>
   )
 }

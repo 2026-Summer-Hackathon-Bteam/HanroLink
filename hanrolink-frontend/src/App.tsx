@@ -15,6 +15,7 @@ import AuthenticatedPageLayout from './layouts/AuthenticatedPageLayout'
 import MyPageRayout from './layouts/MyPageLayout'
 import AdminBusinessApprovalDetailPage from './pages/AdminBusinessApprovalDetailPage'
 import ProductCreatePage from './pages/ProductCreatePage'
+import BuyerProfilePage from './pages/BuyerProfilePage'
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
             <Route path="signup/complete" element={<SignupCompletePage />} />
             <Route path="admin/approvals/:businessUserAccountId" element={<AdminBusinessApprovalDetailPage />} />
             <Route path='products/new' element={<ProductCreatePage />}/>
+            <Route path='buyer/:businessUserAccountId' element={<BuyerProfilePage />} />
           </Route>
 
           <Route element={<MyPageRayout />}>
