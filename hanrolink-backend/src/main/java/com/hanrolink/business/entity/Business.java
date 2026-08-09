@@ -95,4 +95,24 @@ public class Business {
   public Long getId() {
     return id;
   }
+
+  public String getName() {
+    return name;
+  }
+
+  public String getWebsiteUrl() {
+    return websiteUrl;
+  }
+
+  public String getAddressPrefecture() {
+    return addressPrefecture;
+  }
+
+  public String getAddressMunicipalityStreet() {
+    return addressMunicipalityStreet;
+  }
+
+  public String getAddressBuilding() {
+    return addressBuilding;
+  }
 }
