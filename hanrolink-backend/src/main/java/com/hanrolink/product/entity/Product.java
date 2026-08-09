@@ -27,7 +27,11 @@ public class Product {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "supplier_account_id", nullable = false)
+  @Column(
+    name = "supplier_account_id",
+    updatable = false,
+    nullable = false
+  )
   private Long supplierAccountId;
 
   @Column(name = "product_category_id", nullable = false)

@@ -19,7 +19,11 @@ public class ProductStory {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "product_id", nullable = false)
+  @Column(
+    name = "product_id",
+    updatable = false,
+    nullable = false
+  )
   private Long productId;
 
   @Column(name = "product_story_section_template_id", nullable = false)

@@ -21,7 +21,11 @@ public class MonthlySupplyCapacity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "product_id", nullable = false)
+  @Column(
+    name = "product_id",
+    updatable = false,
+    nullable = false
+  )
   private Long productId;
 
   @Column(name = "target_month", nullable = false)
