@@ -2,14 +2,12 @@ package com.hanrolink.product.request;
 
 import java.util.List;
 
-
 import org.springframework.web.multipart.MultipartFile;
 
 import com.hanrolink.product.enums.ProductExpirationType;
 import com.hanrolink.product.enums.StorageType;
 import com.hanrolink.product.request.component.MonthlySupplyCapacityRequest;
 import com.hanrolink.product.request.component.ProductStoryUpdateRequest;
-import com.hanrolink.web.validation.NotEmptyFile;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

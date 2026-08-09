@@ -15,7 +15,7 @@ public record MyChatMessageListResponse(
   String senderBusinessName,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  boolean isMine,
+  Boolean isMine,
 
   String body,
 

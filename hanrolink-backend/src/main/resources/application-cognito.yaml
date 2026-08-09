@@ -1,0 +1,6 @@
+app:
+  security:
+    cognito:
+      issuer-uri: ${COGNITO_ISSUER_URI}
+      client-id: ${COGNITO_CLIENT_ID}
+      region: ${COGNITO_REGION}

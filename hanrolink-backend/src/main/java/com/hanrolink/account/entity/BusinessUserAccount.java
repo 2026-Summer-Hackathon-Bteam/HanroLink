@@ -43,7 +43,11 @@ public class BusinessUserAccount {
 
   @Enumerated(EnumType.STRING)
   @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-  @Column(columnDefinition = "business_user_account_role", nullable = false)
+  @Column(
+    columnDefinition = "business_user_account_role",
+    updatable = false,
+    nullable = false
+  )
   private BusinessUserAccountRole role;
 
   @Enumerated(EnumType.STRING)
@@ -53,7 +57,8 @@ public class BusinessUserAccount {
     columnDefinition = "business_user_account_review_status",
     nullable = false
   )
-  private BusinessUserAccountReviewStatus reviewStatus;
+  private BusinessUserAccountReviewStatus reviewStatus =
+    BusinessUserAccountReviewStatus.PENDING;
 
   @Column(name = "last_name", nullable = false)
   private String lastName;
@@ -81,6 +86,28 @@ public class BusinessUserAccount {
 
   protected BusinessUserAccount() {}
 
+  public BusinessUserAccount(
+    Long businessId,
+    String identityProviderSubject,
+    BusinessUserAccountRole role,
+    String lastName,
+    String firstName,
+    String lastNameKana,
+    String firstNameKana,
+    String phoneNumber,
+    String email
+  ) {
+    this.businessId = businessId;
+    this.identityProviderSubject = identityProviderSubject;
+    this.role = role;
+    this.lastName = lastName;
+    this.firstName = firstName;
+    this.lastNameKana = lastNameKana;
+    this.firstNameKana = firstNameKana;
+    this.phoneNumber = phoneNumber;
+    this.email = email;
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();
@@ -91,5 +118,13 @@ public class BusinessUserAccount {
   @PreUpdate
   private void onUpdate() {
     this.updatedAt = Instant.now();
+  }
+
+  public BusinessUserAccountRole getRole() {
+    return role;
+  }
+
+  public BusinessUserAccountReviewStatus getReviewStatus() {
+    return reviewStatus;
   }
 }

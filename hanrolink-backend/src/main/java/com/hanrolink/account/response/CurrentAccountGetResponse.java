@@ -1,15 +1,16 @@
 package com.hanrolink.account.response;
 
+import com.hanrolink.account.enums.AccountRole;
 import com.hanrolink.account.enums.BusinessUserAccountRegistrationApiStatus;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record CurrentAccountResponse(
+public record CurrentAccountGetResponse(
   @Schema(
     requiredMode = Schema.RequiredMode.REQUIRED,
     nullable = true
   )
-  CurrentAccountRole role,
+  AccountRole role,
 
   
   @Schema(
@@ -17,11 +18,4 @@ public record CurrentAccountResponse(
     nullable = true
   )
   BusinessUserAccountRegistrationApiStatus businessUserAccountRegistrationStatus
-) {
-
-  public enum CurrentAccountRole {
-    ADMIN,
-    SUPPLIER,
-    BUYER
-  }
-}
+) {}

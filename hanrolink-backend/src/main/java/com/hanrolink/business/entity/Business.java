@@ -20,7 +20,7 @@ public class Business {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long Id;
+  private Long id;
 
   @Column(nullable = false)
   private String name;
@@ -60,6 +60,26 @@ public class Business {
 
   protected Business() {}
 
+  public Business(
+    String name,
+    String nameKana,
+    String websiteUrl,
+    String addressPostalCode,
+    String addressPrefecture,
+    String addressMunicipalityStreet,
+    String addressBuilding,
+    String phoneNumber
+  ) {
+    this.name = name;
+    this.nameKana = nameKana;
+    this.websiteUrl = websiteUrl;
+    this.addressPostalCode = addressPostalCode;
+    this.addressPrefecture = addressPrefecture;
+    this.addressMunicipalityStreet = addressMunicipalityStreet;
+    this.addressBuilding = addressBuilding;
+    this.phoneNumber = phoneNumber;
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();
@@ -70,5 +90,9 @@ public class Business {
   @PreUpdate
   private void onUpdate() {
     this.updatedAt = Instant.now();
+  }
+
+  public Long getId() {
+    return id;
   }
 }
