@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -21,6 +23,8 @@ import com.hanrolink.product.request.SupplierProductUpdateRequest;
 import com.hanrolink.product.request.SupplierProductUpdateVisibilityRequest;
 import com.hanrolink.product.response.SupplierProductCreateResponse;
 import com.hanrolink.product.response.SupplierProductListResponse;
+import com.hanrolink.product.service.SupplierProductManagementService;
+import com.hanrolink.security.authorization.policy.RequiresApprovedSupplier;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -36,7 +40,21 @@ import jakarta.validation.Valid;
 @RestController
 public class SupplierProductManagementController {
 
-  // サプライヤーのみ利用可能
+  private final SupplierProductManagementService supplierProductManagementService;
+
+  public SupplierProductManagementController(
+    SupplierProductManagementService supplierProductManagementService
+  ) {
+    this.supplierProductManagementService = supplierProductManagementService;
+  }
+
+  /**
+   * 商品情報を新規作成することを受け付ける
+   * @param jwt 認証済みユーザーのJWT
+   * @param request 作成に必要な入力データ
+   * @return 商品の作成結果
+   */
+  @RequiresApprovedSupplier
   @Operation(
     requestBody =
       @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -55,13 +73,16 @@ public class SupplierProductManagementController {
   )
   @PostMapping(ProductApi.V1.BASE)
   public ResponseEntity<SupplierProductCreateResponse> create(
+    @AuthenticationPrincipal Jwt jwt,
     @Parameter(hidden = true)
     @Valid
     @ModelAttribute SupplierProductCreateRequest request
   ) {
-
-    // TODO: Service接続後、new SupplierProductCreateResponse(productId)をbodyに入れて201 Createdで返す
-    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    return ResponseEntity
+      .status(HttpStatus.CREATED)
+      .body(
+        supplierProductManagementService.create(jwt.getSubject(), request)
+      );
   }
 
   // 商品を登録したSupplierアカウントのみ利用可能

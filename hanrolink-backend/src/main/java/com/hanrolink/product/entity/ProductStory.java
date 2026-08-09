@@ -42,6 +42,20 @@ public class ProductStory {
 
   protected ProductStory() {}
 
+  public ProductStory(
+    Long productId,
+    Short productStorySectionTemplateId,
+    Short position,
+    String body,
+    String imageStorageKey
+  ) {
+    this.productId = productId;
+    this.productStorySectionTemplateId = productStorySectionTemplateId;
+    this.position = position;
+    this.body = body;
+    this.imageStorageKey = imageStorageKey;
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();

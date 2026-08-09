@@ -104,6 +104,44 @@ public class Product {
 
   protected Product() {}
 
+  public Product(
+    Long supplierAccountId,
+    Short productCategoryId,
+    Short mainIngredientRegionId,
+    String name,
+    String mainImageStorageKey,
+    String contentQuantity,
+    ProductExpirationType expirationType,
+    Short shelfLifeDays,
+    StorageType storageType,
+    Integer desiredRetailPrice,
+    String allergyInformation,
+    String certificationInformation,
+    String caseSize,
+    Integer unitsPerCase,
+    Integer minimumOrderQuantity,
+    Short shippingLeadTimeDays,
+    String salesAreaRestriction
+  ) {
+    this.supplierAccountId = supplierAccountId;
+    this.productCategoryId = productCategoryId;
+    this.mainIngredientRegionId = mainIngredientRegionId;
+    this.name = name;
+    this.mainImageStorageKey = mainImageStorageKey;
+    this.contentQuantity = contentQuantity;
+    this.expirationType = expirationType;
+    this.shelfLifeDays = shelfLifeDays;
+    this.storageType = storageType;
+    this.desiredRetailPrice = desiredRetailPrice;
+    this.allergyInformation = allergyInformation;
+    this.certificationInformation = certificationInformation;
+    this.caseSize = caseSize;
+    this.unitsPerCase = unitsPerCase;
+    this.minimumOrderQuantity = minimumOrderQuantity;
+    this.shippingLeadTimeDays = shippingLeadTimeDays;
+    this.salesAreaRestriction = salesAreaRestriction;
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();
@@ -114,5 +152,9 @@ public class Product {
   @PreUpdate
   private void onUpdate() {
     this.updatedAt = Instant.now();
+  }
+
+  public Long getId() {
+    return id;
   }
 }

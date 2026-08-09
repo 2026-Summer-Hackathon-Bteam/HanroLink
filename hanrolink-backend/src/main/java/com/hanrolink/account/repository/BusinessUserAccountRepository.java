@@ -25,6 +25,17 @@ public interface BusinessUserAccountRepository extends JpaRepository<BusinessUse
   Optional<BusinessUserAccount> findByPublicId(UUID publicId);
 
   @Query("""
+    SELECT businessUserAccount.id
+    FROM BusinessUserAccount businessUserAccount
+    WHERE businessUserAccount.identityProviderSubject
+      = :identityProviderSubject
+    """)
+  Optional<Long> findIdByIdentityProviderSubject(
+    @Param("identityProviderSubject")
+    String identityProviderSubject
+  );
+
+  @Query("""
     SELECT business
     FROM Business business
     JOIN BusinessUserAccount businessUserAccount
