@@ -69,6 +69,7 @@ public class AdminBusinessApprovalController {
   public ResponseEntity<Void> approve(
     @PathVariable UUID businessUserAccountId
   ) {
+    adminBusinessApprovalService.approve(businessUserAccountId);
     return ResponseEntity.noContent().build();
   }
 }
