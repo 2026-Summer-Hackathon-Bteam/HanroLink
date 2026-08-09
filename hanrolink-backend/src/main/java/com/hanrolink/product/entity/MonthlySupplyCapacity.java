@@ -18,7 +18,7 @@ public class MonthlySupplyCapacity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long Id;
+  private Long id;
 
   @Column(name = "product_id", nullable = false)
   private Long productId;
