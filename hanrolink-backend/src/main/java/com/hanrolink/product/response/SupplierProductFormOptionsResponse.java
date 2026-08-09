@@ -1,6 +1,7 @@
 package com.hanrolink.product.response;
 
 import java.util.List;
+import java.util.Objects;
 
 import com.hanrolink.product.response.component.ProductExpirationTypeOptionResponse;
 import com.hanrolink.product.response.component.ProductStorySectionTemplateOptionResponse;
@@ -29,4 +30,36 @@ public record SupplierProductFormOptionsResponse(
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   List<ProductStorySectionTemplateOptionResponse> productStorySectionTemplates
-) {}
+) {
+  public SupplierProductFormOptionsResponse {
+    Objects.requireNonNull(
+      productCategoryGroups,
+      "SupplierProductFormOptionsResponse.productCategoryGroups must not be null"
+    );
+
+    Objects.requireNonNull(
+      productCategories,
+      "SupplierProductFormOptionsResponse.productCategories must not be null"
+    );
+
+    Objects.requireNonNull(
+      mainIngredientRegions,
+      "SupplierProductFormOptionsResponse.mainIngredientRegions must not be null"
+    );
+
+    Objects.requireNonNull(
+      productExpirationTypes,
+      "SupplierProductFormOptionsResponse.productExpirationTypes must not be null"
+    );
+
+    Objects.requireNonNull(
+      storageTypes,
+      "SupplierProductFormOptionsResponse.storageTypes must not be null"
+    );
+
+    Objects.requireNonNull(
+      productStorySectionTemplates,
+      "SupplierProductFormOptionsResponse.productStorySectionTemplates must not be null"
+    );
+  }
+}

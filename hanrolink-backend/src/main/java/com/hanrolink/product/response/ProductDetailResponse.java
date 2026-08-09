@@ -1,6 +1,7 @@
 package com.hanrolink.product.response;
 
 import java.util.List;
+import java.util.Objects;
 
 import com.hanrolink.product.response.component.MonthlySupplyCapacityResponse;
 import com.hanrolink.product.response.component.ProductExpirationTypeResponse;
@@ -74,4 +75,81 @@ public record ProductDetailResponse(
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   Boolean hasMyActiveNegotiationRequest
-) {}
+) {
+  public ProductDetailResponse {
+    Objects.requireNonNull(
+      id,
+      "ProductDetailResponse.id must not be null"
+    );
+
+    Objects.requireNonNull(
+      name,
+      "ProductDetailResponse.name must not be null"
+    );
+
+    Objects.requireNonNull(
+      hidden,
+      "ProductDetailResponse.hidden must not be null"
+    );
+
+    Objects.requireNonNull(
+      productCategory,
+      "ProductDetailResponse.productCategory must not be null"
+    );
+
+    Objects.requireNonNull(
+      mainIngredientRegion,
+      "ProductDetailResponse.mainIngredientRegion must not be null"
+    );
+
+    Objects.requireNonNull(
+      contentQuantity,
+      "ProductDetailResponse.contentQuantity must not be null"
+    );
+
+    Objects.requireNonNull(
+      productExpirationType,
+      "ProductDetailResponse.productExpirationType must not be null"
+    );
+
+    Objects.requireNonNull(
+      storageType,
+      "ProductDetailResponse.storageType must not be null"
+    );
+
+    Objects.requireNonNull(
+      desiredRetailPrice,
+      "ProductDetailResponse.desiredRetailPrice must not be null"
+    );
+
+    Objects.requireNonNull(
+      mainImageUrl,
+      "ProductDetailResponse.mainImageUrl must not be null"
+    );
+
+    Objects.requireNonNull(
+      monthlySupplyCapacities,
+      "ProductDetailResponse.monthlySupplyCapacities must not be null"
+    );
+
+    Objects.requireNonNull(
+      productStories,
+      "ProductDetailResponse.productStories must not be null"
+    );
+
+    Objects.requireNonNull(
+      supplier,
+      "ProductDetailResponse.supplier must not be null"
+    );
+
+    Objects.requireNonNull(
+      permissions,
+      "ProductDetailResponse.permissions must not be null"
+    );
+
+    Objects.requireNonNull(
+      hasMyActiveNegotiationRequest,
+      "ProductDetailResponse.hasMyActiveNegotiationRequest must not be null"
+    );
+  }
+}
