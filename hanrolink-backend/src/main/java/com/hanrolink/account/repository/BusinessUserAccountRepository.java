@@ -1,5 +1,6 @@
 package com.hanrolink.account.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -10,7 +11,9 @@ import org.springframework.stereotype.Repository;
 
 import com.hanrolink.account.entity.BusinessUserAccount;
 import com.hanrolink.account.enums.BusinessUserAccountRole;
+import com.hanrolink.account.enums.BusinessUserAccountReviewStatus;
 import com.hanrolink.business.entity.Business;
+import com.hanrolink.businessapproval.response.AdminBusinessApprovalListResponse;
 
 @Repository
 public interface BusinessUserAccountRepository extends JpaRepository<BusinessUserAccount, Long> {
@@ -18,6 +21,8 @@ public interface BusinessUserAccountRepository extends JpaRepository<BusinessUse
   Optional<BusinessUserAccount> findByIdentityProviderSubject(String identityProviderSubject);
 
   boolean existsByIdentityProviderSubject(String identityProviderSubject);
+
+  Optional<BusinessUserAccount> findByPublicId(UUID publicId);
 
   @Query("""
     SELECT business
@@ -46,4 +51,22 @@ public interface BusinessUserAccountRepository extends JpaRepository<BusinessUse
     @Param("identityProviderSubject")
     String identityProviderSubject
   );
+
+  @Query("""
+    SELECT new com.hanrolink.businessapproval.response.AdminBusinessApprovalListResponse(
+      businessUserAccount.publicId,
+      business.name,
+      businessUserAccount.createdAt
+    )
+    FROM BusinessUserAccount businessUserAccount
+    JOIN Business business
+      ON business.id = businessUserAccount.businessId
+    WHERE businessUserAccount.reviewStatus = :reviewStatus
+    ORDER BY businessUserAccount.createdAt ASC
+    """)
+  List<AdminBusinessApprovalListResponse>
+    findBusinessUserAccountSummariesByReviewStatus(
+      @Param("reviewStatus")
+      BusinessUserAccountReviewStatus reviewStatus
+    );
 }

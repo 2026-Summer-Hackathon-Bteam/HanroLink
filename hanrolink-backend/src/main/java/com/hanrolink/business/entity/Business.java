@@ -100,8 +100,16 @@ public class Business {
     return name;
   }
 
+  public String getNameKana() {
+    return nameKana;
+  }
+
   public String getWebsiteUrl() {
     return websiteUrl;
+  }
+
+  public String getAddressPostalCode() {
+    return addressPostalCode;
   }
 
   public String getAddressPrefecture() {
@@ -114,5 +122,9 @@ public class Business {
 
   public String getAddressBuilding() {
     return addressBuilding;
+  }
+
+  public String getPhoneNumber() {
+    return phoneNumber;
   }
 }

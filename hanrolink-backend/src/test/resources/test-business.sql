@@ -1,0 +1,25 @@
+INSERT INTO businesses (
+  name,
+  name_kana,
+  website_url,
+  address_postal_code,
+  address_prefecture,
+  address_municipality_street,
+  address_building,
+  phone_number,
+  created_at,
+  updated_at
+)
+VALUES
+  (
+    'テスト株式会社',
+    'テストカブシキガイシャ',
+    'https://example.com',
+    '1000001',
+    '東京都',
+    '千代田区千代田1-1',
+    'テストビル',
+    '0312345678',
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+  );

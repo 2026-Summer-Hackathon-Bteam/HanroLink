@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record AdminBusinessApprovalPendingListResponse(
+public record AdminBusinessApprovalListResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   UUID businessUserAccountId,
 
