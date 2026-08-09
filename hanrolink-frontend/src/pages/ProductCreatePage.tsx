@@ -9,31 +9,10 @@ import type {
 import ProductStoryFieldset from '../features/product/components/ProductStoryFieldset'
 import FormRow from '../components/FormRow'
 import { getProductFormOptions } from '../features/product/productFormService'
-
-const createInitialMonthlySupplyCapacities = (
-  currentDate = new Date(),
-): MonthlySupplyCapacityFormData[] => {
-  return Array.from({ length: 6 }, (_, index) => {
-    const targetDate = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth() + index,
-      1,
-    )
-    const year = targetDate.getFullYear()
-    const month = String(targetDate.getMonth() + 1).padStart(2, '0')
-
-    return {
-      targetMonth: `${year}-${month}`,
-      availableQuantity: '',
-    }
-  })
-}
-
-const formatTargetMonth = (targetMonth: string) => {
-  const [year, month] = targetMonth.split('-')
-
-  return `${year}年${Number(month)}月`
-}
+import {
+  createTargetMonths,
+  formatTargetMonth,
+} from '../shared/utils/yearMonth'
 
 function ProductCreatePage() {
   const [stories, setStories] = useState<StoryFormData[]>([
@@ -87,7 +66,12 @@ function ProductCreatePage() {
     useState<number | ''>('')
   const [monthlySupplyCapacities, setMonthlySupplyCapacities] = useState<
     MonthlySupplyCapacityFormData[]
-  >(createInitialMonthlySupplyCapacities)
+  >(() => 
+    createTargetMonths().map((targetMonth) => ({
+      targetMonth,
+      availableQuantity: '',
+    }))
+)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -140,7 +124,7 @@ function ProductCreatePage() {
     )
   }
 
-  const handleSubmit = (e:SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
     // 入力内容の検証と送信処理を書く
   }
