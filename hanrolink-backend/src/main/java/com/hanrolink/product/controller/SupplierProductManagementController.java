@@ -85,12 +85,19 @@ public class SupplierProductManagementController {
       );
   }
 
-  // 商品を登録したSupplierアカウントのみ利用可能
+  /**
+   * 自身に紐づく商品一覧を取得する
+   * @param jwt 認証済みユーザーのJWT
+   * @return 商品一覧
+   */
+  @RequiresApprovedSupplier
   @GetMapping(ProductApi.V1.MINE)
-  public ResponseEntity<List<SupplierProductListResponse>> list() {
-
-    // TODO: Serviceから商品情報リストを取得し、ResponseEntity.ok(response)で返す
-    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+  public ResponseEntity<List<SupplierProductListResponse>> list(
+    @AuthenticationPrincipal Jwt jwt
+  ) {
+    return ResponseEntity.ok(
+      supplierProductManagementService.list(jwt.getSubject())
+    );
   }
 
   // 商品を登録したSupplierアカウントのみ利用可能

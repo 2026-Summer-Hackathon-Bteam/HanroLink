@@ -17,6 +17,7 @@ import com.hanrolink.product.repository.ProductRepository;
 import com.hanrolink.product.repository.ProductStoryRepository;
 import com.hanrolink.product.request.SupplierProductCreateRequest;
 import com.hanrolink.product.response.SupplierProductCreateResponse;
+import com.hanrolink.product.response.SupplierProductListResponse;
 
 @Service
 public class SupplierProductManagementService {
@@ -115,5 +116,34 @@ public class SupplierProductManagementService {
     return new SupplierProductCreateResponse(
       savedProduct.getId()
     );
+  }
+
+  /**
+   * 自身に紐づく商品一覧を取得する
+   * @param identityProviderSubject 認証プロバイダーのユーザー識別子
+   * @return 商品一覧
+   */
+  @Transactional(readOnly = true)
+  public List<SupplierProductListResponse> list(
+    String identityProviderSubject
+  ) {
+    Long supplierAccountId = businessUserAccountRepository
+      .findIdByIdentityProviderSubject(identityProviderSubject)
+      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+    return productRepository
+      .findListItemsBySupplierAccountId(supplierAccountId)
+      .stream()
+      .map(product ->
+        new SupplierProductListResponse(
+          product.id(),
+          product.name(),
+          // TODO: S3連携時にストレージキーを署名付きURLへ変換する
+          "dummy/" + product.mainImageStorageKey(),
+          product.hiddenAt() != null,
+          product.updatedAt()
+        )
+      )
+      .toList();
   }
 }
