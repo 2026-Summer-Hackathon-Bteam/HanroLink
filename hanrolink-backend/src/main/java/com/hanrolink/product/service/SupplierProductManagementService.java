@@ -16,6 +16,7 @@ import com.hanrolink.product.repository.MonthlySupplyCapacityRepository;
 import com.hanrolink.product.repository.ProductRepository;
 import com.hanrolink.product.repository.ProductStoryRepository;
 import com.hanrolink.product.request.SupplierProductCreateRequest;
+import com.hanrolink.product.request.SupplierProductUpdateVisibilityRequest;
 import com.hanrolink.product.response.SupplierProductCreateResponse;
 import com.hanrolink.product.response.SupplierProductListResponse;
 
@@ -145,5 +146,28 @@ public class SupplierProductManagementService {
         )
       )
       .toList();
+  }
+
+  /**
+   * 自身に紐づく商品の表示状態を更新する
+   * @param identityProviderSubject 認証プロバイダーのユーザー識別子
+   * @param productId 更新対象の商品ID
+   * @param request 表示状態の更新情報
+   */
+  @Transactional
+  public void updateVisibility(
+    String identityProviderSubject,
+    Long productId,
+    SupplierProductUpdateVisibilityRequest request
+  ) {
+    Long supplierAccountId = businessUserAccountRepository
+      .findIdByIdentityProviderSubject(identityProviderSubject)
+      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+    Product product = productRepository
+      .findByIdAndSupplierAccountIdAndDeletedAtIsNull(productId, supplierAccountId)
+      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+    product.updateVisibility(request.hidden());
   }
 }

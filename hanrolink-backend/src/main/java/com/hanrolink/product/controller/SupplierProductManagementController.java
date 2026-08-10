@@ -129,19 +129,30 @@ public class SupplierProductManagementController {
     return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
   }
 
-  // 商品を登録したSupplierアカウントのみ利用可能
+  /**
+   * 自身に紐づく商品の表示状態を更新する
+   * @param jwt 認証済みユーザーのJWT
+   * @param productId 更新対象の商品ID
+   * @param request 表示状態の更新情報
+   * @return 更新結果
+   */
+  @RequiresApprovedSupplier
   @ApiResponse(
     responseCode = "204",
     description = "No Content"
   )
   @PatchMapping(ProductApi.V1.VISIBILITY)
   public ResponseEntity<Void> updateVisibility(
+    @AuthenticationPrincipal Jwt jwt,
     @PathVariable Long productId,
     @Valid @RequestBody SupplierProductUpdateVisibilityRequest request
   ) {
-
-    // TODO: Serviceで登録元Supplierの商品情報の表示、非表示を切り替え、204 No Contentを返す
-    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    supplierProductManagementService.updateVisibility(
+      jwt.getSubject(),
+      productId,
+      request
+    );
+    return ResponseEntity.noContent().build();
   }
 
   // 商品を登録したSupplierアカウントのみ利用可能

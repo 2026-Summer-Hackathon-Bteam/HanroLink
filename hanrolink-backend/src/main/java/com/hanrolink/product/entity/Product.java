@@ -146,6 +146,19 @@ public class Product {
     this.salesAreaRestriction = salesAreaRestriction;
   }
 
+  public void updateVisibility(
+    boolean hidden
+  ) {
+    if (hidden && this.hiddenAt == null) {
+      this.hiddenAt = Instant.now();
+      return;
+    }
+
+    if (!hidden) {
+      this.hiddenAt = null;
+    }
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();
