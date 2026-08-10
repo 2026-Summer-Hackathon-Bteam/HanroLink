@@ -155,17 +155,23 @@ public class SupplierProductManagementController {
     return ResponseEntity.noContent().build();
   }
 
-  // 商品を登録したSupplierアカウントのみ利用可能
+  /**
+   * 自身に紐づく商品を削除する
+   * @param jwt 認証済みユーザーのJWT
+   * @param productId 削除対象の商品ID
+   * @return 削除結果
+   */
+  @RequiresApprovedSupplier
   @ApiResponse(
     responseCode = "204",
     description = "No Content"
   )
   @DeleteMapping(ProductApi.V1.BY_ID)
   public ResponseEntity<Void> delete(
+    @AuthenticationPrincipal Jwt jwt,
     @PathVariable Long productId
   ) {
-
-    // TODO: Serviceで登録元Supplierの商品情報を削除し、204 No Contentを返す
-    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    supplierProductManagementService.delete(jwt.getSubject(), productId);
+    return ResponseEntity.noContent().build();
   }
 }

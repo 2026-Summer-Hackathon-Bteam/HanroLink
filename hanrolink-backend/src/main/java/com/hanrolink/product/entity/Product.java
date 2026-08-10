@@ -159,6 +159,10 @@ public class Product {
     }
   }
 
+  public void delete() {
+    this.deletedAt = Instant.now();
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();

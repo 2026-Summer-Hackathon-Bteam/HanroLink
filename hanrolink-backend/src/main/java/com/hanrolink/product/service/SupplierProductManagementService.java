@@ -170,4 +170,25 @@ public class SupplierProductManagementService {
 
     product.updateVisibility(request.hidden());
   }
+
+  /**
+   * 自身に紐づく商品を削除する
+   * @param identityProviderSubject 認証プロバイダーのユーザー識別子
+   * @param productId 削除対象の商品ID
+   */
+  @Transactional
+  public void delete(
+    String identityProviderSubject,
+    Long productId
+  ) {
+    Long supplierAccountId = businessUserAccountRepository
+      .findIdByIdentityProviderSubject(identityProviderSubject)
+      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+    Product product = productRepository
+      .findByIdAndSupplierAccountIdAndDeletedAtIsNull(productId, supplierAccountId)
+      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+    product.delete();
+  }
 }
