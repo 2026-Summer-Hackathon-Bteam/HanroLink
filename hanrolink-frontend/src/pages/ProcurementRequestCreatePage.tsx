@@ -138,7 +138,7 @@ function ProcurementRequestCreatePage() {
             <textarea
               id="description"
               name="description"
-              className="w-full h-30"
+              className="w-full h-30 p-2"
               value={procurementRequestInformations.description}
               onChange={(e) =>
                 setProcurementRequestInformations((prev) => ({
