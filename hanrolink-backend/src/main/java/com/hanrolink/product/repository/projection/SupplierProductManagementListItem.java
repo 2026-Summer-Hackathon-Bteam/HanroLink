@@ -2,7 +2,7 @@ package com.hanrolink.product.repository.projection;
 
 import java.time.Instant;
 
-public record SupplierProductListItem(
+public record SupplierProductManagementListItem(
   Long id,
 
   String name,

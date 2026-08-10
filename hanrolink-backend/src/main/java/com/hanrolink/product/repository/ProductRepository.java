@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.hanrolink.product.entity.Product;
-import com.hanrolink.product.repository.projection.SupplierProductListItem;
+import com.hanrolink.product.repository.projection.SupplierProductManagementListItem;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
@@ -17,7 +17,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   Optional<Product> findByIdAndSupplierAccountIdAndDeletedAtIsNull(Long id, Long supplierAccountId);
 
   @Query("""
-    SELECT new com.hanrolink.product.repository.projection.SupplierProductListItem(
+    SELECT new com.hanrolink.product.repository.projection.SupplierProductManagementListItem(
       product.id,
       product.name,
       product.mainImageStorageKey,
@@ -29,7 +29,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       AND product.deletedAt IS NULL
     ORDER BY product.updatedAt DESC
     """)
-  List<SupplierProductListItem> findListItemsBySupplierAccountId(
+  List<SupplierProductManagementListItem> findManagementListItemsBySupplierAccountId(
     @Param("supplierAccountId")
     Long supplierAccountId
   );
