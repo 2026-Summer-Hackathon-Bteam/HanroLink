@@ -16,6 +16,7 @@ import MyPageRayout from './layouts/MyPageLayout'
 import AdminBusinessApprovalDetailPage from './pages/AdminBusinessApprovalDetailPage'
 import ProductCreatePage from './pages/ProductCreatePage'
 import BuyerProfilePage from './pages/BuyerProfilePage'
+import ProcurementRequestCreatePage from './pages/ProcurementRequestCreatePage'
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
             <Route path="admin/approvals/:businessUserAccountId" element={<AdminBusinessApprovalDetailPage />} />
             <Route path='products/new' element={<ProductCreatePage />}/>
             <Route path='buyer/:businessUserAccountId' element={<BuyerProfilePage />} />
+            <Route path='/procurement-requests/new' element={<ProcurementRequestCreatePage />}/>
           </Route>
 
           <Route element={<MyPageRayout />}>
