@@ -18,10 +18,7 @@ public record ProductStorySectionTemplateOptionResponse(
   String bodyHelpText,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  String bodyExample,
-
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  Short sortOrder
+  String bodyExample
 ) {
   public ProductStorySectionTemplateOptionResponse {
     Objects.requireNonNull(
@@ -47,11 +44,6 @@ public record ProductStorySectionTemplateOptionResponse(
     Objects.requireNonNull(
       bodyExample,
       "ProductStorySectionTemplateOptionResponse.bodyExample must not be null"
-    );
-
-    Objects.requireNonNull(
-      sortOrder,
-      "ProductStorySectionTemplateOptionResponse.sortOrder must not be null"
     );
   }
 }

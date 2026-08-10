@@ -9,10 +9,7 @@ public record RegionOptionResponse(
   Short id,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  String name,
-
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  Short sortOrder
+  String name
 ) {
   public RegionOptionResponse {
     Objects.requireNonNull(
@@ -23,11 +20,6 @@ public record RegionOptionResponse(
     Objects.requireNonNull(
       name,
       "RegionOptionResponse.name must not be null"
-    );
-
-    Objects.requireNonNull(
-      sortOrder,
-      "RegionOptionResponse.sortOrder must not be null"
     );
   }
 }
