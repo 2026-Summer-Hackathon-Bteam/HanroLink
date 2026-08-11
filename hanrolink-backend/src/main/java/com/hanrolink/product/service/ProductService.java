@@ -219,6 +219,7 @@ public class ProductService {
    * @param request 商品の検索条件
    * @return 商品一覧
    */
+  @Transactional(readOnly = true)
   public ProductSearchListResponse search(
     ProductSearchRequest request
   ) {
