@@ -22,7 +22,7 @@ public interface MonthlySupplyCapacityRepository extends JpaRepository<MonthlySu
     )
     FROM MonthlySupplyCapacity monthlySupplyCapacity
     WHERE monthlySupplyCapacity.productId = :productId
-    ORDER BY monthlySupplyCapacity.targetMonth ASC
+    ORDER BY monthlySupplyCapacity.targetMonth DESC
     """)
   List<MonthlySupplyCapacityProjection> findListByProductId(
     @Param("productId")
