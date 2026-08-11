@@ -263,24 +263,14 @@ public class ProductService {
     }
 
     // 月別供給可能量の商品IDごとの分類
-    Map<Long, List<MonthlySupplyCapacityResponse>>
+    Map<Long, List<ProductSearchMonthlySupplyCapacityProjection>>
       monthlySupplyCapacitiesByProductId =
         monthlySupplyCapacities
           .stream()
           .collect(
             Collectors.groupingBy(
               monthlySupplyCapacity ->
-                monthlySupplyCapacity.productId(),
-              Collectors.mapping(
-                monthlySupplyCapacity ->
-                  new MonthlySupplyCapacityResponse(
-                    YearMonth.from(
-                      monthlySupplyCapacity.targetMonth()
-                    ),
-                    monthlySupplyCapacity.availableQuantity()
-                  ),
-                Collectors.toList()
-              )
+                monthlySupplyCapacity.productId()
             )
           );
 
@@ -296,11 +286,13 @@ public class ProductService {
             product.businessName(),
             product.productCategoryName(),
             product.mainIngredientRegionName(),
-            monthlySupplyCapacitiesByProductId
-              .getOrDefault(
-                product.id(),
-                List.of()
-              ),
+            toLatestMonthlySupplyCapacityResponses(
+              monthlySupplyCapacitiesByProductId
+                .getOrDefault(
+                  product.id(),
+                  List.of()
+                )
+            ),
             // TODO: S3連携時にストレージキーを署名付きURLへ変換する
             "dummy/" + product.mainImageStorageKey()
           )
@@ -374,6 +366,33 @@ public class ProductService {
     return months
       .stream()
       .map(month -> month.atDay(1))
+      .toList();
+  }
+
+  private List<MonthlySupplyCapacityResponse> toLatestMonthlySupplyCapacityResponses(
+    List<ProductSearchMonthlySupplyCapacityProjection> monthlySupplyCapacities
+  ) {
+    Comparator<ProductSearchMonthlySupplyCapacityProjection> byTargetMonth =
+      Comparator.comparing(
+        monthlySupplyCapacity ->
+          monthlySupplyCapacity.targetMonth()
+      );
+
+    return monthlySupplyCapacities
+      .stream()
+      .sorted(byTargetMonth.reversed())
+      .limit(
+        MonthlySupplyCapacityPolicy.TARGET_MONTH_COUNT
+      )
+      .sorted(byTargetMonth)
+      .map(monthlySupplyCapacity ->
+        new MonthlySupplyCapacityResponse(
+          YearMonth.from(
+            monthlySupplyCapacity.targetMonth()
+          ),
+          monthlySupplyCapacity.availableQuantity()
+        )
+      )
       .toList();
   }
 }
