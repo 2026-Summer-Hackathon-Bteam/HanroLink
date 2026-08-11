@@ -1,4 +1,5 @@
-FROM eclipse-temurin:25-jdk
+# ---- ビルドステージ ----
+FROM eclipse-temurin:25-jdk AS build
 
 WORKDIR /app
 
@@ -13,6 +14,13 @@ COPY src src
 
 RUN ./mvnw clean package -DskipTests
 
+# ---- 実行ステージ ----
+FROM eclipse-temurin:25-jre
+
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8080
 
-CMD ["sh", "-c", "java -jar target/*.jar"]
+CMD ["java", "-jar", "app.jar"]
