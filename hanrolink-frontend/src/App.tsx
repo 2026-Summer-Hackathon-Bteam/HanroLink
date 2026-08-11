@@ -17,6 +17,7 @@ import AdminBusinessApprovalDetailPage from './pages/AdminBusinessApprovalDetail
 import ProductCreatePage from './pages/ProductCreatePage'
 import BuyerProfilePage from './pages/BuyerProfilePage'
 import ProcurementRequestCreatePage from './pages/ProcurementRequestCreatePage'
+import ProductDetailPage from './pages/ProductDetailPage'
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
             <Route path='products/new' element={<ProductCreatePage />}/>
             <Route path='buyer/:businessUserAccountId' element={<BuyerProfilePage />} />
             <Route path='/procurement-requests/new' element={<ProcurementRequestCreatePage />}/>
+            <Route path='/products/:productId' element={<ProductDetailPage />}/>
           </Route>
 
           <Route element={<MyPageRayout />}>
