@@ -1,0 +1,17 @@
+FROM eclipse-temurin:25-jdk
+
+WORKDIR /app
+
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
+
+RUN chmod +x mvnw
+RUN ./mvnw dependency:go-offline
+
+COPY src src
+
+EXPOSE 8080
+
+# ソース変更をすぐ反映するため、java-jarをビルドして実行するのではなく、mvn spring-boot:runで起動する
+CMD ["./mvnw", "spring-boot:run", "-Dspring-boot.run.profiles=dev"]

@@ -146,6 +146,13 @@
       <version>3.0.3</version>
     </dependency>
 
+    <!-- 開発時の自動再起動 / ホットリロード -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-devtools</artifactId>
+      <optional>true</optional>
+    </dependency>
+
     <!-- テスト -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
