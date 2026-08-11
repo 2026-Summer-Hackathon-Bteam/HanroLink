@@ -63,11 +63,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       product.shippingLeadTimeDays,
       product.salesAreaRestriction,
       product.mainImageStorageKey,
-      business.supplierBusinessName,
-      business.supplierBusinessAddressPrefecture,
-      business.supplierBusinessAddressMunicipalityStreet,
-      business.supplierBusinessAddressBuilding,
-      business.supplierBusinessWebsiteUrl
+      business.name,
+      business.addressPrefecture,
+      business.addressMunicipalityStreet,
+      business.addressBuilding,
+      business.websiteUrl
     )
     FROM Product product
     JOIN BusinessUserAccount businessUserAccount
