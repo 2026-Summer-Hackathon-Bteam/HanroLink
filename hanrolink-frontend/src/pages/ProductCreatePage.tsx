@@ -408,24 +408,6 @@ function ProductCreatePage() {
             />
           </FormRow>
 
-          <FormRow label="１ケースあたり入数（任意）" htmlFor="unitsPerCase">
-            <input
-              id="unitsPerCase"
-              name="unitsPerCase"
-              type="number"
-              value={productInformations.unitsPerCase}
-              onChange={(e) => {
-                const value = e.target.value
-                setProductInformations((prev) => ({
-                  ...prev,
-                  unitsPerCase: value === '' ? '' : Number(value),
-                }))
-              }}
-              min={1}
-              className="w-full md:w-1/3"
-            />
-          </FormRow>
-
           <FormRow label="保存方法" htmlFor="storageType">
             <select
               id="storageType"
@@ -453,6 +435,24 @@ function ProductCreatePage() {
                 </option>
               ))}
             </select>
+          </FormRow>
+
+          <FormRow label="１ケースあたり入数（任意）" htmlFor="unitsPerCase">
+            <input
+              id="unitsPerCase"
+              name="unitsPerCase"
+              type="number"
+              value={productInformations.unitsPerCase}
+              onChange={(e) => {
+                const value = e.target.value
+                setProductInformations((prev) => ({
+                  ...prev,
+                  unitsPerCase: value === '' ? '' : Number(value),
+                }))
+              }}
+              min={1}
+              className="w-full md:w-1/3"
+            />
           </FormRow>
 
           <FormRow
