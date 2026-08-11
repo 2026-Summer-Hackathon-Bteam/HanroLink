@@ -91,7 +91,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   Optional<ProductDetailProjection> findDetailById(
     @Param("productId")
     Long productId,
-
     @Param("authenticatedAccountId")
     Long authenticatedAccountId
   );
