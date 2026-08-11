@@ -1,6 +1,7 @@
 package com.hanrolink.product.service;
 
 import java.time.Instant;
+import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -92,7 +93,17 @@ public class ProductService {
         .findListByProductId(
           productId,
           Pageable.ofSize(MonthlySupplyCapacityPolicy.TARGET_MONTH_COUNT)
-        );
+        )
+        .stream()
+        .map(monthlySupplyCapacity ->
+          new MonthlySupplyCapacityResponse(
+            YearMonth.from(
+              monthlySupplyCapacity.targetMonth()
+            ),
+            monthlySupplyCapacity.availableQuantity()
+          )
+        )
+        .toList();
 
     List<ProductStoryResponse> productStories = productStoryRepository
       .findListByProductId(productId)
