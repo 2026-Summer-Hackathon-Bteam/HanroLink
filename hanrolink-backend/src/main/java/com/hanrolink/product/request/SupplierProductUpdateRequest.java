@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.hanrolink.product.enums.ProductExpirationType;
 import com.hanrolink.product.enums.StorageType;
+import com.hanrolink.product.policy.MonthlySupplyCapacityPolicy;
 import com.hanrolink.product.request.component.MonthlySupplyCapacityRequest;
 import com.hanrolink.product.request.component.ProductStoryUpdateRequest;
 
@@ -68,7 +69,11 @@ public record SupplierProductUpdateRequest(
   String salesAreaRestriction,
 
   @NotNull
-  @Size(min = 6, max = 6, message = "6か月分指定してください")
+  @Size(
+    min = MonthlySupplyCapacityPolicy.TARGET_MONTH_COUNT,
+    max = MonthlySupplyCapacityPolicy.TARGET_MONTH_COUNT,
+    message = "{min}か月分指定してください"
+  )
   @Valid
   List<@NotNull MonthlySupplyCapacityRequest> monthlySupplyCapacities,
 

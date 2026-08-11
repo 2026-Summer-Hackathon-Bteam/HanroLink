@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.hanrolink.product.enums.ProductExpirationType;
 import com.hanrolink.product.enums.StorageType;
+import com.hanrolink.product.policy.MonthlySupplyCapacityPolicy;
 import com.hanrolink.product.request.component.MonthlySupplyCapacityRequest;
 import com.hanrolink.product.request.component.ProductStoryCreateRequest;
 import com.hanrolink.web.validation.NotEmptyFile;
@@ -75,7 +76,11 @@ public record SupplierProductCreateRequest(
   String salesAreaRestriction,
 
   @NotNull
-  @Size(min = 6, max = 6, message = "6か月分指定してください")
+  @Size(
+    min = MonthlySupplyCapacityPolicy.TARGET_MONTH_COUNT,
+    max = MonthlySupplyCapacityPolicy.TARGET_MONTH_COUNT,
+    message = "{min}か月分指定してください"
+  )
   @Valid
   List<@NotNull MonthlySupplyCapacityRequest> monthlySupplyCapacities,
 
@@ -84,10 +89,10 @@ public record SupplierProductCreateRequest(
   @Valid
   List<@NotNull ProductStoryCreateRequest> productStories
 ) {
-  @AssertTrue(message = "当月から連続する6か月を指定してください")
-  public boolean hasSixSupplyMonthsFromCurrentMonth() {
+  @AssertTrue(message = "当月から連続する" + MonthlySupplyCapacityPolicy.TARGET_MONTH_COUNT + "か月を指定してください")
+  public boolean hasConsecutiveSupplyMonthsFromCurrentMonth() {
     if (monthlySupplyCapacities == null
-      || monthlySupplyCapacities.size() != 6
+      || monthlySupplyCapacities.size() != MonthlySupplyCapacityPolicy.TARGET_MONTH_COUNT
       || monthlySupplyCapacities.stream().anyMatch(
         item -> item == null || item.targetMonth() == null
       )
@@ -105,7 +110,7 @@ public record SupplierProductCreateRequest(
     YearMonth currentMonth = YearMonth.now(ZoneId.of("Asia/Tokyo"));
 
     return IntStream
-      .range(0, 6)
+      .range(0, MonthlySupplyCapacityPolicy.TARGET_MONTH_COUNT)
       .allMatch(monthOffset ->
         supplyMonths
           .get(monthOffset)
