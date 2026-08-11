@@ -5,6 +5,7 @@ import { getProductDetailData } from '../features/product/productDetailService'
 import { formatTargetMonth } from '../shared/utils/yearMonth'
 import mainVisual from '../assets/mainvisual.png'
 import DataRow from '../components/DataRow'
+import ProductStorySection from '../features/product/components/ProductStorySection'
 
 function ProductDetailPage() {
   const [productDetailData, setProductDetailData] =
@@ -49,52 +50,53 @@ function ProductDetailPage() {
   }
 
   const availableMonths = productDetailData.monthlySupplyCapacities
-  .filter(capacity => capacity.availableQuantity > 0)
-  .map(capacity=> {
-    const [,month] = capacity.targetMonth.split('-')
-    return `${Number(month)}月`
-  }).join('、')
+    .filter((capacity) => capacity.availableQuantity > 0)
+    .map((capacity) => {
+      const [, month] = capacity.targetMonth.split('-')
+      return `${Number(month)}月`
+    })
+    .join('、')
 
   return (
     <div className="mx-auto max-w-300 px-4 text-center md:px-6 lg:px-8">
       {productDetailData.permissions.canManage && (
-  <section
-    aria-labelledby="product-management-title"
-    className="mt-6 border-y border-dashed border-border bg-textbg/30 px-4 py-4"
-  >
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <h3
-        id="product-management-title"
-        className="text-left text-base font-bold"
-      >
-        商品管理
-      </h3>
-
-      <div className="flex flex-wrap gap-3">
-        <Link
-          to={`/products/${productDetailData.id}/edit`}
-          className="rounded-full bg-accent px-5 py-2 text-bg"
+        <section
+          aria-labelledby="product-management-title"
+          className="mt-6 border-y border-dashed border-border bg-textbg/30 px-4 py-4"
         >
-          編集する
-        </Link>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h3
+              id="product-management-title"
+              className="text-left text-base font-bold"
+            >
+              商品管理
+            </h3>
 
-        <button
-          type="button"
-          className="rounded-full bg-accent px-5 py-2 text-bg"
-        >
-          {productDetailData.hidden ? '公開する' : '非表示にする'}
-        </button>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                to={`/products/${productDetailData.id}/edit`}
+                className="rounded-full bg-accent px-5 py-2 text-bg"
+              >
+                編集する
+              </Link>
 
-        <button
-          type="button"
-          className="rounded-full border border-error px-5 py-2 text-error"
-        >
-          削除する
-        </button>
-      </div>
-    </div>
-  </section>
-)}
+              <button
+                type="button"
+                className="rounded-full bg-accent px-5 py-2 text-bg"
+              >
+                {productDetailData.hidden ? '公開する' : '非表示にする'}
+              </button>
+
+              <button
+                type="button"
+                className="rounded-full border border-error px-5 py-2 text-error"
+              >
+                削除する
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
 
       <div className="mb-12">
         <h2 className="mb-0!">{productDetailData.name}</h2>
@@ -107,33 +109,11 @@ function ProductDetailPage() {
       </div>
       {/* ストーリーセクション */}
       <section className="mb-20">
-        <article className="flex flex-col mb-6 md:flex-row">
-          <div className="aspect-4/3 w-full shrink-0 overflow-hidden md:w-[38%]">
-            <img src={productDetailData.productStories[0].imageUrl} className="h-full w-full object-cover" alt='ストーリー画像１'/>
-          </div>
-          <div className="min-w-0 md:w-[45%]">
-            <h3 className="mt-5 border-b border-border pb-2 text-left text-2xl font-bold text-accent textaccent pl-2 pr-4">
-              {productDetailData.productStories[0].sectionTitle}
-            </h3>
-            <p className="mt-3 whitespace-pre-wrap text-left leading-7 pl-2 pr-4">
-              {productDetailData.productStories[0].body}
-            </p>
-          </div>
-        </article>
-
-        <article className="flex flex-col mb-6 md:flex-row-reverse">
-          <div className="aspect-4/3 w-full shrink-0 overflow-hidden md:w-[38%]">
-            <img src={productDetailData.productStories[0].imageUrl} className="h-full w-full object-cover" alt='ストーリー画像２'/>
-          </div>
-          <div className="min-w-0 md:w-[45%]">
-            <h3 className="mt-5 border-b border-border pb-2 text-right text-2xl font-bold text-accent textaccent pl-4 pr-2">
-              {productDetailData.productStories[1].sectionTitle}
-            </h3>
-            <p className="mt-3 whitespace-pre-wrap text-left leading-7 pl-4 pr-2">
-              {productDetailData.productStories[1].body}
-            </p>
-          </div>
-        </article>
+        {[...productDetailData.productStories]
+          .sort((a, b) => a.position - b.position)
+          .map((story) => (
+            <ProductStorySection key={story.id} story={story} />
+          ))}
       </section>
       {/* 商品概要 */}
       <section className="mb-20 flex flex-col items-center gap-4 lg:flex-row">
@@ -204,12 +184,27 @@ function ProductDetailPage() {
               })}
             </div>
           </div>
-          <button
-            type="button"
-            className="h-9 w-45 block mx-auto lg:ml-0 lg:mr-auto mt-8 rounded-full bg-accent text-bg textaccent"
-          >
-            商談希望を送る
-          </button>
+          <div className="lg:flex lg:items-baseline">
+            <button
+              type="button"
+              className="h-9 w-45 block mx-auto lg:ml-0 lg:mr-auto mt-8 rounded-full bg-accent text-bg textaccent disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={
+                !productDetailData.permissions.canCreateNegotiationRequest ||
+                productDetailData.hasMyActiveNegotiationRequest
+              }
+            >
+              商談希望を送る
+            </button>
+            {productDetailData.hasMyActiveNegotiationRequest ? (
+              <p className="pt-2 lg:flex-1 lg:text-left lg:pl-2 lg:pt-0">
+                すでに有効な商談希望があります。
+              </p>
+            ) : !productDetailData.permissions.canCreateNegotiationRequest ? (
+              <p className="pt-2 lg:flex-1 lg:text-left lg:pl-2 lg:pt-0">
+                サプライヤーは商品に商談希望を送ることはできません。
+              </p>
+            ) : null}
+          </div>
         </div>
       </section>
 
@@ -282,7 +277,9 @@ function ProductDetailPage() {
       <section>
         <h3 className="mb-1 text-left">サプライヤー情報</h3>
         <dl className="flex flex-col mx-auto overflow-hidden border border-border divide-y divide-border">
-          <DataRow itemName="会社名">{productDetailData.supplier.businessName}</DataRow>
+          <DataRow itemName="会社名">
+            {productDetailData.supplier.businessName}
+          </DataRow>
           <DataRow itemName="会社住所">
             {[
               productDetailData.supplier.businessAddressPrefecture,

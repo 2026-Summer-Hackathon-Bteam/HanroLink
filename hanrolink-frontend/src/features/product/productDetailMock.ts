@@ -96,6 +96,15 @@ export const productDetailMock = {
 素材の風味を残すため、丁寧に少量ずつ製造しています。`,
       imageUrl: mainVisual,
     },
+    {
+      id: 4,
+      productStorySectionTemplateId: 4,
+      position: 4,
+      sectionTitle: '製法・加工の工夫',
+      body: `果実感を残すため、加熱時間を調整しながら少量ずつ仕上げています。
+香りが残るよう、素材の状態を見ながら丁寧に加工しています。`,
+      imageUrl: mainVisual,
+    },
   ],
 
   supplier: {
