@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import com.hanrolink.account.entity.BusinessUserAccount;
 import com.hanrolink.account.enums.BusinessUserAccountRole;
+import com.hanrolink.account.repository.projection.AuthenticatedBusinessUserAccountProjection;
 import com.hanrolink.account.enums.BusinessUserAccountReviewStatus;
 import com.hanrolink.business.entity.Business;
 import com.hanrolink.businessapproval.response.AdminBusinessApprovalListResponse;
@@ -34,6 +35,21 @@ public interface BusinessUserAccountRepository extends JpaRepository<BusinessUse
     @Param("identityProviderSubject")
     String identityProviderSubject
   );
+
+  @Query("""
+    SELECT new com.hanrolink.account.repository.projection.AuthenticatedBusinessUserAccountProjection(
+      businessUserAccount.id,
+      businessUserAccount.role
+    )
+    FROM BusinessUserAccount businessUserAccount
+    WHERE businessUserAccount.identityProviderSubject
+      = :identityProviderSubject
+    """)
+  Optional<AuthenticatedBusinessUserAccountProjection>
+    findAuthenticatedAccountByIdentityProviderSubject(
+      @Param("identityProviderSubject")
+      String identityProviderSubject
+    );
 
   @Query("""
     SELECT business
