@@ -24,7 +24,7 @@ public interface MonthlySupplyCapacityRepository extends JpaRepository<MonthlySu
     WHERE monthlySupplyCapacity.productId = :productId
     ORDER BY monthlySupplyCapacity.targetMonth DESC
     """)
-  List<MonthlySupplyCapacityProjection> findListByProductId(
+  List<MonthlySupplyCapacityProjection> findLatestListByProductId(
     @Param("productId")
     Long productId,
     Pageable pageable

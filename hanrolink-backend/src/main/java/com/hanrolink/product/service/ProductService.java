@@ -102,7 +102,7 @@ public class ProductService {
 
     List<MonthlySupplyCapacityResponse> monthlySupplyCapacities =
       monthlySupplyCapacityRepository
-        .findListByProductId(
+        .findLatestListByProductId(
           productId,
           Pageable.ofSize(MonthlySupplyCapacityPolicy.TARGET_MONTH_COUNT)
         )
