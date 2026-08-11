@@ -54,3 +54,17 @@ export type MonthlySupplyCapacityFormData = Omit<
 > & {
   availableQuantity: number | ''
 }
+
+export type ProductFormValues = {
+  productInformations: ProductInformationFormData
+  stories: StoryFormData[]
+  monthlySupplyCapacities: MonthlySupplyCapacityFormData[]
+}
+
+export type ProductFormMode = 'create' | 'edit'
+
+export type ProductFormProps = {
+  mode: ProductFormMode
+  initialValues: ProductFormValues
+  onSubmit: (values: ProductFormValues) => void | Promise<void>
+}

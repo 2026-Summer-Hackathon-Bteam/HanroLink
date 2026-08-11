@@ -3,15 +3,18 @@ import type {
   StoryFormData,
   ProductStoryTemplate,
   StoryFormChanges,
+  ProductFormMode,
 } from '../productFormTypes'
 
 type ProductStoryFieldsetProps = {
+  mode: ProductFormMode
   story: StoryFormData
   templates: ProductStoryTemplate[]
   onChange: (position: number, changes: StoryFormChanges) => void
 }
 
 function ProductStoryFieldset({
+  mode,
   story,
   templates,
   onChange,
@@ -81,7 +84,7 @@ function ProductStoryFieldset({
                   imageFile: e.target.files?.[0] ?? null,
                 })
               }}
-              required
+              required={mode === 'create'}
             />
           </div>
         </FormRow>
