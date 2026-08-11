@@ -4,12 +4,8 @@ import java.time.Instant;
 
 public record SupplierProductListProjection(
   Long id,
-
   String name,
-
   String mainImageStorageKey,
-
   Instant hiddenAt,
-
   Instant updatedAt
 ) {}
