@@ -133,7 +133,7 @@ public class SupplierProductManagementService {
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     return productRepository
-      .findManagementListItemsBySupplierAccountId(supplierAccountId)
+      .findManagementListBySupplierAccountId(supplierAccountId)
       .stream()
       .map(product ->
         new SupplierProductListResponse(

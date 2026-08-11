@@ -29,7 +29,7 @@ public class PublicProductService {
   @Transactional(readOnly = true)
   public List<PublicProductListResponse> list() {
     return productRepository
-      .findPublicListItems(Pageable.ofSize(PRODUCT_LIST_LIMIT))
+      .findPublicList(Pageable.ofSize(PRODUCT_LIST_LIMIT))
       .stream()
       .map(product ->
         new PublicProductListResponse(

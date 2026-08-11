@@ -1,6 +1,6 @@
 package com.hanrolink.product.repository.projection;
 
-public record PublicProductListItem(
+public record PublicProductListProjection(
   String name,
 
   String supplierBusinessName,

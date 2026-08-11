@@ -10,8 +10,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.hanrolink.product.entity.Product;
-import com.hanrolink.product.repository.projection.PublicProductListItem;
-import com.hanrolink.product.repository.projection.SupplierProductManagementListItem;
+import com.hanrolink.product.repository.projection.PublicProductListProjection;
+import com.hanrolink.product.repository.projection.SupplierProductListProjection;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
@@ -19,7 +19,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   Optional<Product> findByIdAndSupplierAccountIdAndDeletedAtIsNull(Long id, Long supplierAccountId);
 
   @Query("""
-    SELECT new com.hanrolink.product.repository.projection.PublicProductListItem(
+    SELECT new com.hanrolink.product.repository.projection.PublicProductListProjection(
       product.name,
       business.name,
       product.mainImageStorageKey
@@ -35,12 +35,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       product.updatedAt DESC,
       product.id DESC
     """)
-  List<PublicProductListItem> findPublicListItems(
+  List<PublicProductListProjection> findPublicList(
     Pageable pageable
   );
 
   @Query("""
-    SELECT new com.hanrolink.product.repository.projection.SupplierProductManagementListItem(
+    SELECT new com.hanrolink.product.repository.projection.SupplierProductListProjection(
       product.id,
       product.name,
       product.mainImageStorageKey,
@@ -52,7 +52,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       AND product.deletedAt IS NULL
     ORDER BY product.updatedAt DESC
     """)
-  List<SupplierProductManagementListItem> findManagementListItemsBySupplierAccountId(
+  List<SupplierProductListProjection> findManagementListBySupplierAccountId(
     @Param("supplierAccountId")
     Long supplierAccountId
   );
