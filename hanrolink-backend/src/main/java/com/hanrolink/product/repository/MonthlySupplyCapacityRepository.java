@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import com.hanrolink.product.entity.MonthlySupplyCapacity;
 import com.hanrolink.product.repository.projection.MonthlySupplyCapacityProjection;
+import com.hanrolink.product.repository.projection.ProductSearchMonthlySupplyCapacityProjection;
 
 @Repository
 public interface MonthlySupplyCapacityRepository extends JpaRepository<MonthlySupplyCapacity, Long> {
@@ -27,5 +28,22 @@ public interface MonthlySupplyCapacityRepository extends JpaRepository<MonthlySu
     @Param("productId")
     Long productId,
     Pageable pageable
+  );
+
+  @Query("""
+    SELECT new com.hanrolink.product.repository.projection.ProductSearchMonthlySupplyCapacityProjection(
+      monthlySupplyCapacity.productId,
+      monthlySupplyCapacity.targetMonth,
+      monthlySupplyCapacity.availableQuantity
+    )
+    FROM MonthlySupplyCapacity monthlySupplyCapacity
+    WHERE monthlySupplyCapacity.productId IN :productIds
+    ORDER BY
+      monthlySupplyCapacity.productId ASC,
+      monthlySupplyCapacity.targetMonth ASC
+    """)
+  List<ProductSearchMonthlySupplyCapacityProjection> findSearchListByProductIds(
+    @Param("productIds")
+    List<Long> productIds
   );
 }

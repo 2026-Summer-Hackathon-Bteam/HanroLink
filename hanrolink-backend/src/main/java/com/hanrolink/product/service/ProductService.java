@@ -1,10 +1,15 @@
 package com.hanrolink.product.service;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,16 +24,22 @@ import com.hanrolink.account.repository.BusinessUserAccountRepository;
 import com.hanrolink.account.repository.projection.AuthenticatedBusinessUserAccountProjection;
 import com.hanrolink.negotiationrequest.policy.NegotiationRequestPolicy;
 import com.hanrolink.negotiationrequest.repository.ProductNegotiationRequestRepository;
+import com.hanrolink.pagination.response.component.PaginationResponse;
 import com.hanrolink.product.policy.MonthlySupplyCapacityPolicy;
 import com.hanrolink.product.repository.MonthlySupplyCapacityRepository;
 import com.hanrolink.product.repository.ProductRepository;
 import com.hanrolink.product.repository.ProductStoryRepository;
 import com.hanrolink.product.repository.projection.ProductDetailProjection;
+import com.hanrolink.product.repository.projection.ProductSearchListItemProjection;
+import com.hanrolink.product.repository.projection.ProductSearchMonthlySupplyCapacityProjection;
+import com.hanrolink.product.request.ProductSearchRequest;
 import com.hanrolink.product.response.ProductDetailResponse;
+import com.hanrolink.product.response.ProductSearchListResponse;
 import com.hanrolink.product.response.component.MonthlySupplyCapacityResponse;
 import com.hanrolink.product.response.component.ProductExpirationTypeResponse;
 import com.hanrolink.product.response.component.ProductMainIngredientRegionResponse;
 import com.hanrolink.product.response.component.ProductPermissionsResponse;
+import com.hanrolink.product.response.component.ProductSearchListItemResponse;
 import com.hanrolink.product.response.component.ProductStoryResponse;
 import com.hanrolink.product.response.component.ProductSupplierResponse;
 import com.hanrolink.product.response.component.StorageTypeResponse;
@@ -196,6 +207,114 @@ public class ProductService {
     );
   }
 
+  /**
+   * 指定された条件に基づく商品一覧を取得する
+   * @param request 商品の検索条件
+   * @return 商品一覧
+   */
+  public ProductSearchListResponse search(
+    ProductSearchRequest request
+  ) {
+    // 検索条件の生成
+    List<LocalDate> availableSupplyMonths =
+      toMonthStartDates(
+        request.availableSupplyMonths()
+      );
+
+    Pageable pageable = PageRequest.of(
+      request.page() - 1,
+      request.pageSize()
+    );
+
+    // 条件に一致する商品情報の取得
+    Page<ProductSearchListItemProjection> productPage =
+      productRepository.findSearchList(
+        availableSupplyMonths,
+        request.mainIngredientRegionIds(),
+        request.productCategoryGroupIds(),
+        request.productCategoryIds(),
+        request.storageTypes(),
+        pageable
+      );
+
+    // 検索結果に含まれる商品の月別供給可能量の一括取得
+    List<Long> productIds =
+      productPage
+        .getContent()
+        .stream()
+        .map(productSearchList ->
+          productSearchList.id()
+        )
+        .toList();
+
+    List<ProductSearchMonthlySupplyCapacityProjection> monthlySupplyCapacities =
+      List.of();
+
+    if (!productIds.isEmpty()) {
+      monthlySupplyCapacities = monthlySupplyCapacityRepository
+        .findSearchListByProductIds(productIds);
+    }
+
+    // 月別供給可能量の商品IDごとの分類
+    Map<Long, List<MonthlySupplyCapacityResponse>>
+      monthlySupplyCapacitiesByProductId =
+        monthlySupplyCapacities
+          .stream()
+          .collect(
+            Collectors.groupingBy(
+              monthlySupplyCapacity ->
+                monthlySupplyCapacity.productId(),
+              Collectors.mapping(
+                monthlySupplyCapacity ->
+                  new MonthlySupplyCapacityResponse(
+                    YearMonth.from(
+                      monthlySupplyCapacity.targetMonth()
+                    ),
+                    monthlySupplyCapacity.availableQuantity()
+                  ),
+                Collectors.toList()
+              )
+            )
+          );
+
+    // 商品ごとの検索結果レスポンスの生成
+    List<ProductSearchListItemResponse> products =
+      productPage
+        .getContent()
+        .stream()
+        .map(product ->
+          new ProductSearchListItemResponse(
+            product.id(),
+            product.name(),
+            product.businessName(),
+            product.productCategoryName(),
+            product.mainIngredientRegionName(),
+            monthlySupplyCapacitiesByProductId
+              .getOrDefault(
+                product.id(),
+                List.of()
+              ),
+            // TODO: S3連携時にストレージキーを署名付きURLへ変換する
+            "dummy/" + product.mainImageStorageKey()
+          )
+        )
+        .toList();
+
+    // ページング情報を含む検索結果全体のレスポンスの生成
+    PaginationResponse pagination =
+      new PaginationResponse(
+        productPage.getNumber() + 1,
+        productPage.getSize(),
+        productPage.getTotalElements(),
+        productPage.getTotalPages()
+      );
+
+    return new ProductSearchListResponse(
+      products,
+      pagination
+    );
+  }
+
   private ProductDetailViewer resolveViewer(
     JwtAccountRole authenticatedJwtAccountRole,
     String identityProviderSubject
@@ -237,4 +356,17 @@ public class ProductService {
     Long id,
     AccountRole role
   ) {}
+
+  private List<LocalDate> toMonthStartDates(
+    List<YearMonth> months
+  ) {
+    if (months == null) {
+      return List.of();
+    }
+
+    return months
+      .stream()
+      .map(month -> month.atDay(1))
+      .toList();
+  }
 }

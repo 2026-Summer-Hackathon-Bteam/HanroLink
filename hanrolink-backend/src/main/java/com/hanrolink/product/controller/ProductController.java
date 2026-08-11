@@ -1,9 +1,6 @@
 package com.hanrolink.product.controller;
 
-import java.util.List;
-
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -66,16 +63,21 @@ public class ProductController {
     );
   }
 
-  // 管理者、サプライヤー、バイヤー利用可能
+  /**
+   * 指定された条件に基づいて商品一覧を検索する
+   * @param request 商品の検索条件
+   * @return 商品の検索結果
+   */
+  @RequiresAdminOrApprovedBusinessUserAccount
   @GetMapping(ProductApi.V1.BASE)
-  public ResponseEntity<List<ProductSearchListResponse>> search(
+  public ResponseEntity<ProductSearchListResponse> search(
     @Valid
     @ParameterObject
     @ModelAttribute
     ProductSearchRequest request
   ) {
-
-    // TODO: Serviceから商品情報リストを取得し、ResponseEntity.ok(response)で返す
-    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    return ResponseEntity.ok(
+      productService.search(request)
+    );
   }
 }
