@@ -3,9 +3,8 @@ package com.hanrolink.product.request;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.IntStream;
-
-import org.springframework.web.multipart.MultipartFile;
 
 import com.hanrolink.product.enums.ProductExpirationType;
 import com.hanrolink.product.enums.StorageType;
@@ -13,7 +12,6 @@ import com.hanrolink.product.policy.MonthlySupplyCapacityPolicy;
 import com.hanrolink.product.policy.ProductStoryPolicy;
 import com.hanrolink.product.request.component.MonthlySupplyCapacityRequest;
 import com.hanrolink.product.request.component.ProductStoryCreateRequest;
-import com.hanrolink.web.validation.NotEmptyFile;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
@@ -36,8 +34,7 @@ public record SupplierProductCreateRequest(
   Short mainIngredientRegionId,
 
   @NotNull
-  @NotEmptyFile
-  MultipartFile mainImageFile,
+  UUID mainImagePendingFileUploadId,
 
   @NotBlank
   @Size(max = 255)

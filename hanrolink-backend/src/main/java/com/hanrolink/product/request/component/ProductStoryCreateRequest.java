@@ -1,8 +1,6 @@
 package com.hanrolink.product.request.component;
 
-import org.springframework.web.multipart.MultipartFile;
-
-import com.hanrolink.web.validation.NotEmptyFile;
+import java.util.UUID;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -26,6 +24,5 @@ public record ProductStoryCreateRequest(
   String body,
 
   @NotNull
-  @NotEmptyFile
-  MultipartFile imageFile
+  UUID pendingFileUploadId
 ) {}
