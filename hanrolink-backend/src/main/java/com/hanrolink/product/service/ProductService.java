@@ -24,6 +24,7 @@ import com.hanrolink.account.exception.UnsupportedJwtAccountRoleException;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
 import com.hanrolink.account.repository.projection.AuthenticatedBusinessUserAccountProjection;
 import com.hanrolink.negotiationrequest.policy.NegotiationRequestPolicy;
+import com.hanrolink.negotiationrequest.policy.ProductNegotiationRequestPolicy;
 import com.hanrolink.negotiationrequest.repository.ProductNegotiationRequestRepository;
 import com.hanrolink.pagination.response.component.PaginationResponse;
 import com.hanrolink.product.policy.MonthlySupplyCapacityPolicy;
@@ -144,17 +145,24 @@ public class ProductService {
       authenticatedAccount.id() != null
         && authenticatedAccount.id().equals(product.supplierAccountId());
 
-    boolean canCreateNegotiationRequest =
-      authenticatedAccount.role() == AccountRole.BUYER;
-
+    boolean canCreateNegotiationRequest = false;
     boolean hasMyActiveNegotiationRequest = false;
 
-    if (canCreateNegotiationRequest) {
+    if (authenticatedAccount.role() == AccountRole.BUYER) {
       Instant activeSince =
         Instant.now().minus(
           NegotiationRequestPolicy.ACTIVE_PERIOD_DAYS,
           ChronoUnit.DAYS
         );
+
+      long activeNegotiationRequestCount = productNegotiationRequestRepository
+        .countActiveByBuyerAccountId(
+          authenticatedAccount.id(),
+          activeSince
+        );
+
+      canCreateNegotiationRequest =
+        activeNegotiationRequestCount < ProductNegotiationRequestPolicy.MAX_ACTIVE_REQUEST_COUNT;
 
       hasMyActiveNegotiationRequest =
         productNegotiationRequestRepository

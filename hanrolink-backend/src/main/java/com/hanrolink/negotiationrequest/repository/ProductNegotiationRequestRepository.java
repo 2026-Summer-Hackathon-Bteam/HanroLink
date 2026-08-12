@@ -13,6 +13,19 @@ import com.hanrolink.negotiationrequest.entity.ProductNegotiationRequest;
 public interface ProductNegotiationRequestRepository extends JpaRepository<ProductNegotiationRequest, Long> {
 
   @Query("""
+    SELECT COUNT(productNegotiationRequest)
+    FROM ProductNegotiationRequest productNegotiationRequest
+    WHERE productNegotiationRequest.buyerAccountId = :buyerAccountId
+      AND productNegotiationRequest.createdAt >= :activeSince
+    """)
+  long countActiveByBuyerAccountId(
+    @Param("buyerAccountId")
+    Long buyerAccountId,
+    @Param("activeSince")
+    Instant activeSince
+  );
+
+  @Query("""
     SELECT COUNT(productNegotiationRequest) > 0
     FROM ProductNegotiationRequest productNegotiationRequest
     WHERE productNegotiationRequest.productId = :productId
