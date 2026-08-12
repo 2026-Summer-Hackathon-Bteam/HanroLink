@@ -32,6 +32,7 @@ import com.hanrolink.product.request.SupplierProductCreateRequest;
 import com.hanrolink.product.request.SupplierProductUpdateVisibilityRequest;
 import com.hanrolink.product.request.SupplierProductUpdateRequest;
 import com.hanrolink.product.request.component.MonthlySupplyCapacityRequest;
+import com.hanrolink.product.request.component.ProductStoryCreateRequest;
 import com.hanrolink.product.request.component.ProductStoryUpdateRequest;
 import com.hanrolink.product.response.SupplierProductCreateResponse;
 import com.hanrolink.product.response.SupplierProductListResponse;
@@ -78,19 +79,42 @@ public class SupplierProductManagementService {
     String identityProviderSubject,
     SupplierProductCreateRequest request
   ) {
-    // TODO: S3連携時に、商品画像の保存キー生成とアップロード処理を追加する
-    String mainImageStorageKey = "dummy/product-main-images/" + UUID.randomUUID();
-
     Long supplierAccountId = businessUserAccountRepository
       .findIdByIdentityProviderSubject(identityProviderSubject)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+    // 代表画像のアップロード情報の検証
+    PendingFileUpload mainImageUpload = findUsablePendingFileUpload(
+      request.mainImagePendingFileUploadId(),
+      supplierAccountId,
+      FileUploadUsage.PRODUCT_MAIN_IMAGE
+    );
+    // TODO: S3上における代表画像の存在・MIMEタイプ・サイズの確認
+
+    // 商品ストーリー画像のアップロード情報の検証
+    Map<UUID, PendingFileUpload> storyImageUploadsByPendingFileUploadId =
+      new HashMap<>();
+
+    for (ProductStoryCreateRequest productStoryRequest : request.productStories()) {
+      PendingFileUpload storyImageUpload = findUsablePendingFileUpload(
+        productStoryRequest.pendingFileUploadId(),
+        supplierAccountId,
+        FileUploadUsage.PRODUCT_STORY_IMAGE
+      );
+
+      // TODO: S3上における商品ストーリー画像の存在・MIMEタイプ・サイズの確認
+      storyImageUploadsByPendingFileUploadId.put(
+        productStoryRequest.pendingFileUploadId(),
+        storyImageUpload
+      );
+    }
 
     Product product = new Product(
       supplierAccountId,
       request.productCategoryId(),
       request.mainIngredientRegionId(),
       request.name(),
-      mainImageStorageKey,
+      mainImageUpload.getStorageKey(),
       request.contentQuantity(),
       request.expirationType(),
       request.shelfLifeDays(),
@@ -104,7 +128,6 @@ public class SupplierProductManagementService {
       request.shippingLeadTimeDays(),
       request.salesAreaRestriction()
     );
-
     Product savedProduct = productRepository.save(product);
 
     List<MonthlySupplyCapacity> monthlySupplyCapacities =
@@ -118,25 +141,33 @@ public class SupplierProductManagementService {
           )
         )
         .toList();
-
     monthlySupplyCapacityRepository.saveAll(monthlySupplyCapacities);
 
     List<ProductStory> productStories =
       request.productStories()
         .stream()
-        .map(productStoryRequest ->
-          new ProductStory(
+        .map(productStoryRequest -> {
+          PendingFileUpload storyImageUpload =
+            storyImageUploadsByPendingFileUploadId.get(
+              productStoryRequest.pendingFileUploadId()
+            );
+
+          return new ProductStory(
             savedProduct.getId(),
             productStoryRequest.productStorySectionTemplateId(),
             productStoryRequest.position(),
             productStoryRequest.body(),
-            // TODO: S3連携時に、商品画像の保存キー生成とアップロード処理を追加する
-            "dummy/product-story-images/" + UUID.randomUUID()
-          )
-        )
+            storyImageUpload.getStorageKey()
+          );
+        })
         .toList();
-
     productStoryRepository.saveAll(productStories);
+
+    // 商品へ紐付けたアップロード待ち情報の削除
+    pendingFileUploadRepository.delete(mainImageUpload);
+    pendingFileUploadRepository.deleteAll(
+      storyImageUploadsByPendingFileUploadId.values()
+    );
 
     return new SupplierProductCreateResponse(
       savedProduct.getId()
