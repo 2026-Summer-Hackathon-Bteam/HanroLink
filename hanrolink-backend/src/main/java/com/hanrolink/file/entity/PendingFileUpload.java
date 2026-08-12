@@ -36,7 +36,6 @@ public class PendingFileUpload {
   @Column(name = "storage_key", nullable = false)
   private String storageKey;
 
-  
   @Enumerated(EnumType.STRING)
   @JdbcTypeCode(SqlTypes.NAMED_ENUM)
   @Column(
@@ -59,6 +58,20 @@ public class PendingFileUpload {
 
   protected PendingFileUpload() {}
 
+  public PendingFileUpload(
+    Long businessUserAccountId,
+    String storageKey,
+    FileUploadUsage usage,
+    String mimeType,
+    Long fileSizeBytes
+  ) {
+    this.businessUserAccountId = businessUserAccountId;
+    this.storageKey = storageKey;
+    this.usage = usage;
+    this.mimeType = mimeType;
+    this.fileSizeBytes = fileSizeBytes;
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();
@@ -69,5 +82,9 @@ public class PendingFileUpload {
   @PreUpdate
   private void onUpdate() {
     this.updatedAt = Instant.now();
+  }
+
+  public UUID getPublicId() {
+    return publicId;
   }
 }

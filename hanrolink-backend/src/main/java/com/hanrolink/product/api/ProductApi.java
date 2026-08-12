@@ -11,6 +11,7 @@ public final class ProductApi {
     public static final String MINE = ApiPath.API_V1 + "/me/products";
     public static final String BY_ID = BASE + "/{productId}";
     public static final String VISIBILITY = BY_ID + "/visibility";
+    public static final String IMAGE_UPLOADS = BASE + "/image-uploads";
     public static final String FORM_OPTIONS = BASE + "/form-options";
     public static final String SEARCH_OPTIONS = BASE + "/search-options";
 
