@@ -345,6 +345,10 @@ function ProductDetailPage() {
             <DataRow itemName="アレルギー表示">
               {productDetailData.allergyInformation ?? '-'}
             </DataRow>
+
+            <DataRow itemName="販売エリアの制限">
+              {productDetailData.salesAreaRestriction ?? '-'}
+            </DataRow>
           </dl>
         </div>
       </section>
