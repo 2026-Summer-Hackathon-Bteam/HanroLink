@@ -1,7 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import type { ProductDetail } from '../features/product/productDetailTypes'
-import { getProductDetailData } from '../features/product/productDetailService'
+import {
+  getProductDetailData,
+  deleteProduct,
+  updateProductVisibility,
+} from '../features/product/productDetailService'
 import { formatTargetMonth } from '../shared/utils/yearMonth'
 import mainVisual from '../assets/mainvisual.png'
 import DataRow from '../components/DataRow'
@@ -12,6 +16,11 @@ function ProductDetailPage() {
     useState<ProductDetail | null>(null)
   const navigate = useNavigate()
   const [error, setError] = useState('')
+  const deleteDialogRef = useRef<HTMLDialogElement>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState('')
+  const [isUpdatingVisibility, setIsUpdatingVisibility] = useState(false)
+  const [visibilityError, setVisibilityError] = useState('')
 
   useEffect(() => {
     let isCancelled = false
@@ -36,6 +45,43 @@ function ProductDetailPage() {
       isCancelled = true
     }
   }, [])
+
+  const handleDelete = async () => {
+    if (isDeleting || !productDetailData) return
+
+    setIsDeleting(true)
+    setDeleteError('')
+
+    try {
+      await deleteProduct(productDetailData.id)
+      deleteDialogRef.current?.close()
+      navigate('/mypage/supplier')
+    } catch {
+      setDeleteError('商品の削除に失敗しました。')
+      setIsDeleting(false)
+    }
+  }
+
+  const handleVisibilityChange = async () => {
+    if (isUpdatingVisibility || !productDetailData) return
+
+    const nextHidden = !productDetailData.hidden
+
+    setIsUpdatingVisibility(true)
+    setVisibilityError('')
+
+    try {
+      await updateProductVisibility(productDetailData.id, nextHidden)
+
+      setProductDetailData((current) =>
+        current ? { ...current, hidden: nextHidden } : current,
+      )
+    } catch {
+      setVisibilityError('商品の公開状態の変更に失敗しました。')
+    } finally {
+      setIsUpdatingVisibility(false)
+    }
+  }
 
   if (error) {
     return (
@@ -82,20 +128,49 @@ function ProductDetailPage() {
 
               <button
                 type="button"
-                className="rounded-full bg-accent px-5 py-2 text-bg"
+                className={
+                  productDetailData.hidden
+                    ? 'rounded-full bg-accent px-5 py-2 text-bg disabled:cursor-not-allowed disabled:opacity-50'
+                    : 'rounded-full border border-error px-5 py-2 disabled:cursor-not-allowed disabled:opacity-50'
+                }
+                onClick={handleVisibilityChange}
+                disabled={isUpdatingVisibility}
               >
-                {productDetailData.hidden ? '公開する' : '非表示にする'}
+                {isUpdatingVisibility
+                  ? '変更中...'
+                  : productDetailData.hidden
+                    ? '公開する'
+                    : '非表示にする'}
               </button>
 
               <button
                 type="button"
                 className="rounded-full border border-error px-5 py-2 text-error"
+                onClick={() => deleteDialogRef.current?.showModal()}
               >
                 削除する
               </button>
             </div>
+            {visibilityError && (
+              <p role="alert" className="mt-3 text-left text-sm text-error">
+                {visibilityError}
+              </p>
+            )}
           </div>
         </section>
+      )}
+
+      {productDetailData.hidden && productDetailData.permissions.canManage && (
+        <div
+          role="status"
+          className="mt-6 border-y border-dashed border-border bg-textbg/40 px-4 py-3 text-left"
+        >
+          <p className="font-bold text-accent">この商品は現在非表示です</p>
+          <p className="mt-1 text-sm">
+            バイヤーの商品検索や商品一覧には表示されません。
+            上の「公開する」ボタンから再公開できます。
+          </p>
+        </div>
       )}
 
       <div className="mb-12">
@@ -313,6 +388,47 @@ function ProductDetailPage() {
       >
         前のページに戻る
       </button>
+
+      <dialog
+        ref={deleteDialogRef}
+        aria-labelledby="delete-product-title"
+        className="m-auto w-[min(90vw,28rem)] rounded-lg border-0 bg-bg p-6 shadow-xl backdrop:bg-black/50"
+      >
+        <h3 id="delete-product-title" className="text-lg font-bold">
+          商品を削除しますか？
+        </h3>
+
+        <p className="mt-4">「{productDetailData.name}」を削除します。</p>
+
+        <p className="mt-2 text-sm text-error">
+          削除した商品は復元できません。
+        </p>
+
+        <div className="mt-6 flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={() => deleteDialogRef.current?.close()}
+            className="rounded-full border border-accent px-5 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isDeleting}
+          >
+            キャンセル
+          </button>
+
+          <button
+            type="button"
+            className="rounded-full bg-error px-5 py-2 text-bg  disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={handleDelete}
+            disabled={isDeleting}
+          >
+            {isDeleting ? '削除中...' : '削除する'}
+          </button>
+          {deleteError && (
+            <p role="alert" className="mt-3 text-sm text-error">
+              {deleteError}
+            </p>
+          )}
+        </div>
+      </dialog>
     </div>
   )
 }
