@@ -1,16 +1,18 @@
 import type { components } from '../../shared/api/schema'
 
 export type StoryFormData = {
+  id?: number
   position: number
   productStorySectionTemplateId: number | ''
   imageFile: File | null
+  existingImageUrl?: string
   body: string
 }
 
 export type ProductStoryTemplate =
   components['schemas']['ProductStorySectionTemplateOptionResponse']
 
-export type StoryFormChanges = Partial<Omit<StoryFormData, 'position'>>
+export type StoryFormChanges = Partial<Omit<StoryFormData, 'id' | 'position' | 'existingImageUrl'>>
 
 type SupplierProductCreateRequest =
   components['schemas']['SupplierProductCreateRequest']
@@ -63,8 +65,12 @@ export type ProductFormValues = {
 
 export type ProductFormMode = 'create' | 'edit'
 
+export type ProductFormInitialValues = ProductFormValues & {
+  existingMainImageUrl?: string
+}
+
 export type ProductFormProps = {
   mode: ProductFormMode
-  initialValues: ProductFormValues
+  initialValues: ProductFormInitialValues
   onSubmit: (values: ProductFormValues) => void | Promise<void>
 }

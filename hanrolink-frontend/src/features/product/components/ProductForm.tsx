@@ -34,6 +34,16 @@ function ProductForm({ mode, initialValues, onSubmit }: ProductFormProps) {
 
         if (!isCancelled) {
           setProductFormOptions(result)
+
+          const selectedCategory = result.productCategories.find(
+            (category) =>
+              category.id ===
+              initialValues.productInformations.productCategoryId,
+          )
+
+          setSelectedProductCategoryGroupId(
+            selectedCategory?.productCategoryGroupId ?? '',
+          )
         }
       } catch {
         if (!isCancelled) {
@@ -49,7 +59,7 @@ function ProductForm({ mode, initialValues, onSubmit }: ProductFormProps) {
     return () => {
       isCancelled = true
     }
-  }, [])
+  }, [initialValues.productInformations.productCategoryId])
 
   const handleStoryChange = (position: number, changes: StoryFormChanges) => {
     setStories((prev) =>
@@ -114,7 +124,17 @@ function ProductForm({ mode, initialValues, onSubmit }: ProductFormProps) {
 
       <h3 className="text-start pl-1">商品情報</h3>
       <div className="overflow-hidden border border-border divide-y divide-border">
-        <FormRow label="商品写真" htmlFor="mainImageFile">
+        {initialValues.existingMainImageUrl && (
+          <FormRow label="現在登録されている画像">
+            <img
+              src={initialValues.existingMainImageUrl}
+              alt={`${productInformations.name}の現在の商品画像`}
+              className="aspect-4/3 w-40 rounded-md object-cover"
+            />
+          </FormRow>
+        )}
+
+        <FormRow label={mode === 'create' ? '商品写真' : '商品写真を変更'} htmlFor="mainImageFile">
           <div className="w-full flex flex-col items-start gap-2 min-w-0">
             <p className="text-start">
               商品のメイン画像、サムネイル画像として使用されます。
