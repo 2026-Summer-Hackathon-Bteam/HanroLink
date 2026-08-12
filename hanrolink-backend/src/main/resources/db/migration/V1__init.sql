@@ -213,6 +213,28 @@ CREATE TABLE monthly_procurement_quantities (
     REFERENCES procurement_requests(id)
 );
 
+CREATE TYPE file_upload_usage AS ENUM (
+  'PRODUCT_MAIN_IMAGE',
+  'PRODUCT_STORY_IMAGE',
+  'MESSAGE_ATTACHMENT'
+);
+
+CREATE TABLE pending_file_uploads (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  public_id UUID UNIQUE NOT NULL,
+  business_user_account_id BIGINT NOT NULL,
+  storage_key VARCHAR(255) UNIQUE NOT NULL,
+  usage file_upload_usage NOT NULL,
+  mime_type VARCHAR(100) NOT NULL,
+  file_size_bytes BIGINT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+  CONSTRAINT fk_pending_file_uploads_business_user_account
+    FOREIGN KEY (business_user_account_id)
+    REFERENCES business_user_accounts(id)
+);
+
 CREATE TABLE pending_file_deletions (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   storage_key VARCHAR(255) UNIQUE NOT NULL,

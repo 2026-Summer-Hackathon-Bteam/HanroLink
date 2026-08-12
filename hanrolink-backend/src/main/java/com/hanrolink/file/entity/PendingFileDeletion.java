@@ -1,4 +1,4 @@
-package com.hanrolink.filedeletion.entity;
+package com.hanrolink.file.entity;
 
 import java.time.Instant;
 
