@@ -3,13 +3,11 @@ package com.hanrolink.product.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,10 +24,6 @@ import com.hanrolink.product.response.SupplierProductListResponse;
 import com.hanrolink.product.service.SupplierProductManagementService;
 import com.hanrolink.security.authorization.policy.RequiresApprovedSupplier;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 
@@ -55,18 +49,6 @@ public class SupplierProductManagementController {
    * @return 商品の作成結果
    */
   @RequiresApprovedSupplier
-  @Operation(
-    requestBody =
-      @io.swagger.v3.oas.annotations.parameters.RequestBody(
-        required = true,
-        content = @Content(
-          mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
-          schema = @Schema(
-            implementation = SupplierProductCreateRequest.class
-          )
-        )
-      )
-  )
   @ApiResponse(
     responseCode = "201",
     description = "Created"
@@ -74,9 +56,7 @@ public class SupplierProductManagementController {
   @PostMapping(ProductApi.V1.BASE)
   public ResponseEntity<SupplierProductCreateResponse> create(
     @AuthenticationPrincipal Jwt jwt,
-    @Parameter(hidden = true)
-    @Valid
-    @ModelAttribute SupplierProductCreateRequest request
+    @Valid @RequestBody SupplierProductCreateRequest request
   ) {
     return ResponseEntity
       .status(HttpStatus.CREATED)
@@ -101,18 +81,6 @@ public class SupplierProductManagementController {
   }
 
   // 商品を登録したSupplierアカウントのみ利用可能
-  @Operation(
-    requestBody =
-      @io.swagger.v3.oas.annotations.parameters.RequestBody(
-        required = true,
-        content = @Content(
-          mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
-          schema = @Schema(
-            implementation = SupplierProductUpdateRequest.class
-          )
-        )
-      )
-  )
   @ApiResponse(
     responseCode = "204",
     description = "No Content"
@@ -120,9 +88,7 @@ public class SupplierProductManagementController {
   @PutMapping(ProductApi.V1.BY_ID)
   public ResponseEntity<Void> update(
     @PathVariable Long productId,
-    @Parameter(hidden = true)
-    @Valid
-    @ModelAttribute SupplierProductUpdateRequest request
+    @Valid @RequestBody SupplierProductUpdateRequest request
   ) {
 
     // TODO: Serviceで商品情報を更新し、204 No Contentを返す

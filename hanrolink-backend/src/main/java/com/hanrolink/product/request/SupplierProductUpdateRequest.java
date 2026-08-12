@@ -1,8 +1,7 @@
 package com.hanrolink.product.request;
 
 import java.util.List;
-
-import org.springframework.web.multipart.MultipartFile;
+import java.util.UUID;
 
 import com.hanrolink.product.enums.ProductExpirationType;
 import com.hanrolink.product.enums.StorageType;
@@ -30,7 +29,7 @@ public record SupplierProductUpdateRequest(
   @Positive
   Short mainIngredientRegionId,
 
-  MultipartFile mainImageFile,
+  UUID mainImagePendingFileUploadId,
 
   @NotBlank
   @Size(max = 255)
