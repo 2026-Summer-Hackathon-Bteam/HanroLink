@@ -18,6 +18,8 @@ import com.hanrolink.product.response.SupplierProductImageUploadCreateResponse;
 @Service
 public class SupplierProductImageUploadService {
 
+  private static final String PRODUCT_IMAGE_MIME_TYPE = "image/webp";
+
   private final BusinessUserAccountRepository businessUserAccountRepository;
 
   private final PendingFileUploadRepository pendingFileUploadRepository;
@@ -48,7 +50,7 @@ public class SupplierProductImageUploadService {
 
     String imageStorageKey = createStorageKey(request.usage());
 
-    // TODO: ストレージキーの作成と署名付きURLの作成
+    // TODO: S3連携時に署名付きURLを生成し、ダミー値を置き換える
     String uploadUrl = "dummy/" + UUID.randomUUID();
 
     PendingFileUpload pendingFileUpload =
@@ -56,7 +58,7 @@ public class SupplierProductImageUploadService {
         supplierAccountId,
         imageStorageKey,
         fileUploadUsageOf(request.usage()),
-        "image/webp",
+        PRODUCT_IMAGE_MIME_TYPE,
         request.fileSizeBytes()
       );
 
