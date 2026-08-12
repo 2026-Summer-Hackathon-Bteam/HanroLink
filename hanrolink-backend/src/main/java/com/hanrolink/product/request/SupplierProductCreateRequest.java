@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.hanrolink.product.enums.ProductExpirationType;
 import com.hanrolink.product.enums.StorageType;
 import com.hanrolink.product.policy.MonthlySupplyCapacityPolicy;
+import com.hanrolink.product.policy.ProductStoryPolicy;
 import com.hanrolink.product.request.component.MonthlySupplyCapacityRequest;
 import com.hanrolink.product.request.component.ProductStoryCreateRequest;
 import com.hanrolink.web.validation.NotEmptyFile;
@@ -85,7 +86,11 @@ public record SupplierProductCreateRequest(
   List<@NotNull MonthlySupplyCapacityRequest> monthlySupplyCapacities,
 
   @NotNull
-  @Size(min = 4, max = 4, message = "4つすべて入力してください")
+  @Size(
+    min = ProductStoryPolicy.REQUIRED_COUNT,
+    max = ProductStoryPolicy.REQUIRED_COUNT,
+    message = "{min}つすべて入力してください"
+  )
   @Valid
   List<@NotNull ProductStoryCreateRequest> productStories
 ) {
@@ -121,7 +126,7 @@ public record SupplierProductCreateRequest(
   @AssertTrue(message = "重複しない位置を指定してください")
   public boolean hasUniqueStoryPositions() {
     if (productStories == null
-      || productStories.size() != 4
+      || productStories.size() != ProductStoryPolicy.REQUIRED_COUNT
       || productStories.stream().anyMatch(
         item -> item == null || item.position() == null
       ) 
@@ -135,6 +140,6 @@ public record SupplierProductCreateRequest(
         productStory.position()
       )
       .distinct()
-      .count() == 4;
+      .count() == ProductStoryPolicy.REQUIRED_COUNT;
   }
 }
