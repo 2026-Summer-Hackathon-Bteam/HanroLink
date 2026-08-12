@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
@@ -35,6 +36,7 @@ public class SupplierProductImageUploadService {
    * @param request 商品画像のアップロード情報
    * @return 作成した商品画像のアップロード情報
    */
+  @Transactional
   public SupplierProductImageUploadCreateResponse create(
     String identityProviderSubject,
     SupplierProductImageUploadCreateRequest request
