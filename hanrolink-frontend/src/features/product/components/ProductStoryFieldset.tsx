@@ -3,15 +3,18 @@ import type {
   StoryFormData,
   ProductStoryTemplate,
   StoryFormChanges,
+  ProductFormMode,
 } from '../productFormTypes'
 
 type ProductStoryFieldsetProps = {
+  mode: ProductFormMode
   story: StoryFormData
   templates: ProductStoryTemplate[]
   onChange: (position: number, changes: StoryFormChanges) => void
 }
 
 function ProductStoryFieldset({
+  mode,
   story,
   templates,
   onChange,
@@ -58,8 +61,21 @@ function ProductStoryFieldset({
           </select>
         </FormRow>
 
+        {story.existingImageUrl && (
+          <FormRow label="現在登録されている画像">
+            <img
+              src={story.existingImageUrl}
+              alt={`商品ストーリー${story.position}の現在の画像`}
+              className="aspect-4/3 w-40 rounded-md object-cover"
+            />
+          </FormRow>
+        )}
         <FormRow
-          label={`写真${story.position}`}
+          label={
+            mode === 'create'
+              ? `写真${story.position}`
+              : `写真${story.position}を変更`
+          }
           htmlFor={`image-${story.position}`}
         >
           <div className="w-full flex flex-col items-start gap-2 min-w-0">
@@ -81,7 +97,7 @@ function ProductStoryFieldset({
                   imageFile: e.target.files?.[0] ?? null,
                 })
               }}
-              required
+              required={mode === 'create'}
             />
           </div>
         </FormRow>
