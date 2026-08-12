@@ -1,7 +1,15 @@
 package com.hanrolink.product.service;
 
+import java.time.Instant;
+import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -9,6 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
+import com.hanrolink.file.entity.PendingFileUpload;
+import com.hanrolink.file.enums.FileUploadUsage;
+import com.hanrolink.file.policy.PendingFileUploadPolicy;
+import com.hanrolink.file.repository.PendingFileUploadRepository;
+import com.hanrolink.file.service.PendingFileDeletionService;
 import com.hanrolink.product.entity.MonthlySupplyCapacity;
 import com.hanrolink.product.entity.Product;
 import com.hanrolink.product.entity.ProductStory;
@@ -17,6 +30,9 @@ import com.hanrolink.product.repository.ProductRepository;
 import com.hanrolink.product.repository.ProductStoryRepository;
 import com.hanrolink.product.request.SupplierProductCreateRequest;
 import com.hanrolink.product.request.SupplierProductUpdateVisibilityRequest;
+import com.hanrolink.product.request.SupplierProductUpdateRequest;
+import com.hanrolink.product.request.component.MonthlySupplyCapacityRequest;
+import com.hanrolink.product.request.component.ProductStoryUpdateRequest;
 import com.hanrolink.product.response.SupplierProductCreateResponse;
 import com.hanrolink.product.response.SupplierProductListResponse;
 
@@ -31,16 +47,24 @@ public class SupplierProductManagementService {
 
   private final ProductStoryRepository productStoryRepository;
 
+  private final PendingFileUploadRepository pendingFileUploadRepository;
+
+  private final PendingFileDeletionService pendingFileDeletionService;
+
   public SupplierProductManagementService(
     BusinessUserAccountRepository businessUserAccountRepository,
     ProductRepository productRepository,
     MonthlySupplyCapacityRepository monthlySupplyCapacityRepository,
-    ProductStoryRepository productStoryRepository
+    ProductStoryRepository productStoryRepository,
+    PendingFileUploadRepository pendingFileUploadRepository,
+    PendingFileDeletionService pendingFileDeletionService
   ) {
     this.businessUserAccountRepository = businessUserAccountRepository;
     this.productRepository = productRepository;
     this.monthlySupplyCapacityRepository = monthlySupplyCapacityRepository;
     this.productStoryRepository = productStoryRepository;
+    this.pendingFileUploadRepository = pendingFileUploadRepository;
+    this.pendingFileDeletionService = pendingFileDeletionService;
   }
 
   /**
@@ -149,6 +173,207 @@ public class SupplierProductManagementService {
   }
 
   /**
+   * 自身に紐づく商品情報を更新する
+   * @param identityProviderSubject 認証プロバイダーのユーザー識別子
+   * @param productId 更新対象の商品ID
+   * @param request 商品の更新情報
+   */
+  @Transactional
+  public void update(
+    String identityProviderSubject,
+    Long productId,
+    SupplierProductUpdateRequest request
+  ) {
+    // 認証済みユーザーが所有する更新対象商品の取得
+    Long supplierAccountId = businessUserAccountRepository
+      .findIdByIdentityProviderSubject(identityProviderSubject)
+      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+    Product product = productRepository
+      .findByIdAndSupplierAccountIdAndDeletedAtIsNull(productId, supplierAccountId)
+      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+    // 商品に紐づく既存関連情報の取得
+    List<MonthlySupplyCapacity> monthlySupplyCapacities =
+      monthlySupplyCapacityRepository.findAllByProductId(productId);
+    List<ProductStory> productStories =
+      productStoryRepository.findAllByProductId(productId);
+
+    // リクエストの商品ストーリーIDと登録済みIDの完全一致確認
+    Set<Long> registeredProductStoryIds =
+      productStories
+        .stream()
+        .map(productStory ->
+          productStory.getId()
+        )
+        .collect(Collectors.toSet());
+
+    List<Long> requestedProductStoryIdList =
+      request.productStories()
+        .stream()
+        .map(productStoryUpdateRequest ->
+          productStoryUpdateRequest.id()
+        )
+        .toList();
+
+    Set<Long> requestedProductStoryIds =
+      new HashSet<>(requestedProductStoryIdList);
+
+    if (requestedProductStoryIds.size() != requestedProductStoryIdList.size()
+      || !registeredProductStoryIds.equals(requestedProductStoryIds)
+    ) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    }
+
+    // 代表画像が指定された場合の利用可否確認と画像の差し替え
+    if (request.mainImagePendingFileUploadId() != null) {
+      PendingFileUpload mainImageUpload = findUsablePendingFileUpload(
+        request.mainImagePendingFileUploadId(),
+        supplierAccountId,
+        FileUploadUsage.PRODUCT_MAIN_IMAGE
+      );
+      // TODO: S3上における新しい画像の存在確認
+      String oldMainImageStorageKey = product.getMainImageStorageKey();
+
+      product.updateMainImageStorageKey(mainImageUpload.getStorageKey());
+      pendingFileDeletionService.create(oldMainImageStorageKey);
+      pendingFileUploadRepository.delete(mainImageUpload);
+    }
+
+    // 指定された商品ストーリー画像の利用可否確認
+    Map<Long, PendingFileUpload> storyImageUploadsByProductStoryId = new HashMap<>();
+
+    for (ProductStoryUpdateRequest productStoryRequest : request.productStories()) {
+      if (productStoryRequest.pendingFileUploadId() == null) {
+        continue;
+      }
+
+      PendingFileUpload storyImageUpload = findUsablePendingFileUpload(
+        productStoryRequest.pendingFileUploadId(),
+        supplierAccountId,
+        FileUploadUsage.PRODUCT_STORY_IMAGE
+      );
+
+      // TODO: S3上における新しい画像の存在確認
+      storyImageUploadsByProductStoryId.put(
+        productStoryRequest.id(),
+        storyImageUpload
+      );
+    }
+
+    // 商品の基本情報の更新
+    product.update(
+      request.productCategoryId(),
+      request.mainIngredientRegionId(),
+      request.name(),
+      request.contentQuantity(),
+      request.expirationType(),
+      request.shelfLifeDays(),
+      request.storageType(),
+      request.desiredRetailPrice(),
+      request.allergyInformation(),
+      request.certificationInformation(),
+      request.caseSize(),
+      request.unitsPerCase(),
+      request.minimumOrderQuantity(),
+      request.shippingLeadTimeDays(),
+      request.salesAreaRestriction()
+    );
+
+    // 月間供給可能数の対象月ごとの更新・追加・削除
+    Map<YearMonth, MonthlySupplyCapacity> existingMonthlySupplyCapacitiesByTargetMonth =
+      monthlySupplyCapacities
+        .stream()
+        .collect(
+          Collectors.toMap(
+            monthlySupplyCapacity -> monthlySupplyCapacity.getTargetMonth(),
+            monthlySupplyCapacity -> monthlySupplyCapacity
+          )
+        );
+
+    Set<YearMonth> requestedTargetMonths = new HashSet<>();
+    List<MonthlySupplyCapacity> newMonthlySupplyCapacities = new ArrayList<>();
+
+    for (MonthlySupplyCapacityRequest monthlySupplyCapacityRequest
+      : request.monthlySupplyCapacities()
+    ) {
+      YearMonth targetMonth = monthlySupplyCapacityRequest.targetMonth();
+      requestedTargetMonths.add(targetMonth);
+
+      MonthlySupplyCapacity existingMonthlySupplyCapacity =
+        existingMonthlySupplyCapacitiesByTargetMonth.get(targetMonth);
+
+      if (existingMonthlySupplyCapacity == null) {
+        newMonthlySupplyCapacities.add(
+          new MonthlySupplyCapacity(
+            productId,
+            targetMonth,
+            monthlySupplyCapacityRequest.availableQuantity()
+          )
+        );
+        continue;
+      }
+
+      existingMonthlySupplyCapacity.updateAvailableQuantity(
+        monthlySupplyCapacityRequest.availableQuantity()
+      );
+    }
+
+    List<MonthlySupplyCapacity> unusedMonthlySupplyCapacities =
+      monthlySupplyCapacities
+        .stream()
+        .filter(monthlySupplyCapacity ->
+          !requestedTargetMonths.contains(
+            monthlySupplyCapacity.getTargetMonth()
+          )
+        )
+        .toList();
+
+    monthlySupplyCapacityRepository.deleteAll(unusedMonthlySupplyCapacities);
+    monthlySupplyCapacityRepository.saveAll(newMonthlySupplyCapacities);
+
+    // 商品ストーリーの内容と画像のIDごとの更新
+    Map<Long, ProductStory> existingProductStoriesById =
+      productStories
+        .stream()
+        .collect(
+          Collectors.toMap(
+            productStory -> productStory.getId(),
+            productStory -> productStory
+          )
+        );
+
+    for (ProductStoryUpdateRequest productStoryRequest : request.productStories()) {
+      ProductStory existingProductStory = existingProductStoriesById.get(
+        productStoryRequest.id()
+      );
+
+      existingProductStory.update(
+        productStoryRequest.productStorySectionTemplateId(),
+        productStoryRequest.position(),
+        productStoryRequest.body()
+      );
+
+      PendingFileUpload storyImageUpload =
+        storyImageUploadsByProductStoryId.get(
+          productStoryRequest.id()
+        );
+
+      if (storyImageUpload == null) {
+        continue;
+      }
+
+      String oldImageStorageKey = existingProductStory.getImageStorageKey();
+
+      existingProductStory.updateImageStorageKey(
+        storyImageUpload.getStorageKey()
+      );
+      pendingFileDeletionService.create(oldImageStorageKey);
+      pendingFileUploadRepository.delete(storyImageUpload);
+    }
+  }
+
+  /**
    * 自身に紐づく商品の表示状態を更新する
    * @param identityProviderSubject 認証プロバイダーのユーザー識別子
    * @param productId 更新対象の商品ID
@@ -190,5 +415,32 @@ public class SupplierProductManagementService {
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     product.delete();
+  }
+
+  private PendingFileUpload findUsablePendingFileUpload(
+    UUID pendingFileUploadId,
+    Long businessUserAccountId,
+    FileUploadUsage expectedUsage
+  ) {
+    PendingFileUpload pendingFileUpload = pendingFileUploadRepository
+      .findByPublicIdAndBusinessUserAccountId(
+        pendingFileUploadId,
+        businessUserAccountId
+      )
+      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+    if (pendingFileUpload.getUsage() != expectedUsage) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    }
+
+    Instant expiresAt = pendingFileUpload
+      .getCreatedAt()
+      .plus(PendingFileUploadPolicy.VALID_DURATION);
+
+    if (!expiresAt.isAfter(Instant.now())) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    }
+
+    return pendingFileUpload;
   }
 }

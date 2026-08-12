@@ -52,6 +52,12 @@ public class MonthlySupplyCapacity {
     this.availableQuantity = availableQuantity;
   }
 
+  public void updateAvailableQuantity(
+    Integer availableQuantity
+  ) {
+    this.availableQuantity = availableQuantity;
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();
@@ -62,5 +68,9 @@ public class MonthlySupplyCapacity {
   @PreUpdate
   private void onUpdate() {
     this.updatedAt = Instant.now();
+  }
+
+  public YearMonth getTargetMonth() {
+    return YearMonth.from(targetMonth);
   }
 }

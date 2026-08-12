@@ -1,7 +1,10 @@
 package com.hanrolink.product.request;
 
+import java.time.YearMonth;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 import com.hanrolink.product.enums.ProductExpirationType;
 import com.hanrolink.product.enums.StorageType;
@@ -11,6 +14,7 @@ import com.hanrolink.product.request.component.MonthlySupplyCapacityRequest;
 import com.hanrolink.product.request.component.ProductStoryUpdateRequest;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -85,4 +89,52 @@ public record SupplierProductUpdateRequest(
   )
   @Valid
   List<@NotNull ProductStoryUpdateRequest> productStories
-) {}
+) {
+  @AssertTrue(message = "当月から連続する" + MonthlySupplyCapacityPolicy.TARGET_MONTH_COUNT + "か月を指定してください")
+  public boolean hasConsecutiveSupplyMonthsFromCurrentMonth() {
+    if (monthlySupplyCapacities == null
+      || monthlySupplyCapacities.size() != MonthlySupplyCapacityPolicy.TARGET_MONTH_COUNT
+      || monthlySupplyCapacities.stream().anyMatch(
+        item -> item == null || item.targetMonth() == null
+      )
+    ) {
+      return true;
+    }
+
+    List<YearMonth> supplyMonths =
+      monthlySupplyCapacities
+        .stream()
+        .map(item -> item.targetMonth())
+        .sorted()
+        .toList();
+    YearMonth currentMonth = YearMonth.now(ZoneId.of("Asia/Tokyo"));
+
+    return IntStream
+      .range(0, MonthlySupplyCapacityPolicy.TARGET_MONTH_COUNT)
+      .allMatch(monthOffset ->
+        supplyMonths
+          .get(monthOffset)
+          .equals(currentMonth.plusMonths(monthOffset))
+      );
+  }
+
+  @AssertTrue(message = "重複しない位置を指定してください")
+  public boolean hasUniqueStoryPositions() {
+    if (productStories == null
+      || productStories.size() != ProductStoryPolicy.REQUIRED_COUNT
+      || productStories.stream().anyMatch(
+        item -> item == null || item.position() == null
+      ) 
+    ) {
+      return true;
+    }
+
+    return productStories
+      .stream()
+      .map(productStory ->
+        productStory.position()
+      )
+      .distinct()
+      .count() == ProductStoryPolicy.REQUIRED_COUNT;
+  }
+}

@@ -87,4 +87,16 @@ public class PendingFileUpload {
   public UUID getPublicId() {
     return publicId;
   }
+
+  public String getStorageKey() {
+    return storageKey;
+  }
+
+  public FileUploadUsage getUsage() {
+    return usage;
+  }
+
+  public Instant getCreatedAt() {
+    return createdAt;
+  }
 }

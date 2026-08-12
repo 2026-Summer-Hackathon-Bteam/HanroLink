@@ -159,6 +159,46 @@ public class Product {
     }
   }
 
+  public void update(
+    Short productCategoryId,
+    Short mainIngredientRegionId,
+    String name,
+    String contentQuantity,
+    ProductExpirationType expirationType,
+    Short shelfLifeDays,
+    StorageType storageType,
+    Integer desiredRetailPrice,
+    String allergyInformation,
+    String certificationInformation,
+    String caseSize,
+    Integer unitsPerCase,
+    Integer minimumOrderQuantity,
+    Short shippingLeadTimeDays,
+    String salesAreaRestriction
+  ) {
+    this.productCategoryId = productCategoryId;
+    this.mainIngredientRegionId = mainIngredientRegionId;
+    this.name = name;
+    this.contentQuantity = contentQuantity;
+    this.expirationType = expirationType;
+    this.shelfLifeDays = shelfLifeDays;
+    this.storageType = storageType;
+    this.desiredRetailPrice = desiredRetailPrice;
+    this.allergyInformation = allergyInformation;
+    this.certificationInformation = certificationInformation;
+    this.caseSize = caseSize;
+    this.unitsPerCase = unitsPerCase;
+    this.minimumOrderQuantity = minimumOrderQuantity;
+    this.shippingLeadTimeDays = shippingLeadTimeDays;
+    this.salesAreaRestriction = salesAreaRestriction;
+  }
+
+  public void updateMainImageStorageKey(
+    String mainImageStorageKey
+  ) {
+    this.mainImageStorageKey = mainImageStorageKey;
+  }
+
   public void delete() {
     this.deletedAt = Instant.now();
   }
@@ -177,5 +217,9 @@ public class Product {
 
   public Long getId() {
     return id;
+  }
+
+  public String getMainImageStorageKey() {
+    return mainImageStorageKey;
   }
 }

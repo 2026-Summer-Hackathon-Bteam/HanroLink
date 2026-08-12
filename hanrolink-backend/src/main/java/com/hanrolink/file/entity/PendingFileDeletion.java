@@ -30,6 +30,12 @@ public class PendingFileDeletion {
 
   protected PendingFileDeletion() {}
 
+  public PendingFileDeletion(
+    String storageKey
+  ) {
+    this.storageKey = storageKey;
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();

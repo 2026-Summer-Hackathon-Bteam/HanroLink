@@ -80,19 +80,30 @@ public class SupplierProductManagementController {
     );
   }
 
-  // 商品を登録したSupplierアカウントのみ利用可能
+  /**
+   * 商品情報を更新することを受け付ける
+   * @param jwt 認証済みユーザーのJWT
+   * @param productId 更新対象の商品ID
+   * @param request 商品の更新情報
+   * @return 更新結果
+   */
+  @RequiresApprovedSupplier
   @ApiResponse(
     responseCode = "204",
     description = "No Content"
   )
   @PutMapping(ProductApi.V1.BY_ID)
   public ResponseEntity<Void> update(
+    @AuthenticationPrincipal Jwt jwt,
     @PathVariable Long productId,
     @Valid @RequestBody SupplierProductUpdateRequest request
   ) {
-
-    // TODO: Serviceで商品情報を更新し、204 No Contentを返す
-    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    supplierProductManagementService.update(
+      jwt.getSubject(),
+      productId,
+      request
+    );
+    return ResponseEntity.noContent().build();
   }
 
   /**

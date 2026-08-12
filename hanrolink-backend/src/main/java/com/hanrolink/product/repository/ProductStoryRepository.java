@@ -13,6 +13,8 @@ import com.hanrolink.product.repository.projection.ProductStoryProjection;
 @Repository
 public interface ProductStoryRepository extends JpaRepository<ProductStory, Long> {
 
+  List<ProductStory> findAllByProductId(Long productId);
+
   @Query("""
     SELECT new com.hanrolink.product.repository.projection.ProductStoryProjection(
       productStory.id,

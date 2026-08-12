@@ -15,6 +15,8 @@ import com.hanrolink.product.repository.projection.ProductSearchMonthlySupplyCap
 @Repository
 public interface MonthlySupplyCapacityRepository extends JpaRepository<MonthlySupplyCapacity, Long> {
 
+  List<MonthlySupplyCapacity> findAllByProductId(Long productId);
+
   @Query("""
     SELECT new com.hanrolink.product.repository.projection.MonthlySupplyCapacityProjection(
       monthlySupplyCapacity.targetMonth,

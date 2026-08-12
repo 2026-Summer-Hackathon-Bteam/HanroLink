@@ -60,6 +60,22 @@ public class ProductStory {
     this.imageStorageKey = imageStorageKey;
   }
 
+  public void update(
+    Short productStorySectionTemplateId,
+    Short position,
+    String body
+  ) {
+    this.productStorySectionTemplateId = productStorySectionTemplateId;
+    this.position = position;
+    this.body = body;
+  }
+
+  public void updateImageStorageKey(
+    String imageStorageKey
+  ) {
+    this.imageStorageKey = imageStorageKey;
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();
@@ -70,5 +86,13 @@ public class ProductStory {
   @PreUpdate
   private void onUpdate() {
     this.updatedAt = Instant.now();
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public String getImageStorageKey() {
+    return imageStorageKey;
   }
 }
