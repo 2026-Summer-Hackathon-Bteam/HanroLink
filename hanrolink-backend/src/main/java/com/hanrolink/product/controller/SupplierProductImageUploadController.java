@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,6 +13,7 @@ import com.hanrolink.product.response.SupplierProductImageUploadCreateResponse;
 import com.hanrolink.product.service.SupplierProductImageUploadService;
 import com.hanrolink.security.authorization.policy.RequiresApprovedSupplier;
 
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 
@@ -42,8 +42,7 @@ public class SupplierProductImageUploadController {
   @PostMapping(ProductApi.V1.IMAGE_UPLOADS)
   public ResponseEntity<SupplierProductImageUploadCreateResponse> create(
     @AuthenticationPrincipal Jwt jwt,
-    @Valid
-    @ModelAttribute SupplierProductImageUploadCreateRequest request
+    @Valid @RequestBody SupplierProductImageUploadCreateRequest request
   ) {
     return ResponseEntity
       .status(HttpStatus.CREATED)
