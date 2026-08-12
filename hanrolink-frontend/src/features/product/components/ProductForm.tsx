@@ -134,7 +134,10 @@ function ProductForm({ mode, initialValues, onSubmit }: ProductFormProps) {
           </FormRow>
         )}
 
-        <FormRow label={mode === 'create' ? '商品写真' : '商品写真を変更'} htmlFor="mainImageFile">
+        <FormRow
+          label={mode === 'create' ? '商品写真' : '商品写真を変更'}
+          htmlFor="mainImageFile"
+        >
           <div className="w-full flex flex-col items-start gap-2 min-w-0">
             <p className="text-start">
               商品のメイン画像、サムネイル画像として使用されます。
@@ -288,29 +291,32 @@ function ProductForm({ mode, initialValues, onSubmit }: ProductFormProps) {
         </FormRow>
 
         <FormRow label="賞味期限／消費期限&emsp;日数" htmlFor="shelfLifeDays">
-          <input
-            id="shelfLifeDays"
-            name="shelfLifeDays"
-            type="number"
-            value={productInformations.shelfLifeDays}
-            onChange={(e) => {
-              const value = e.target.value
-              setProductInformations((prev) => ({
-                ...prev,
-                shelfLifeDays: value === '' ? '' : Number(value),
-              }))
-            }}
-            required={
-              productInformations.expirationType === 'BEST_BEFORE' ||
-              productInformations.expirationType === 'USE_BY'
-            }
-            min={1}
-            disabled={
-              productInformations.expirationType === 'NOT_APPLICABLE' ||
-              productInformations.expirationType === ''
-            }
-            className="w-full md:w-1/3"
-          />
+          <div className="flex gap-2 items-center w-full">
+            <input
+              id="shelfLifeDays"
+              name="shelfLifeDays"
+              type="number"
+              value={productInformations.shelfLifeDays}
+              onChange={(e) => {
+                const value = e.target.value
+                setProductInformations((prev) => ({
+                  ...prev,
+                  shelfLifeDays: value === '' ? '' : Number(value),
+                }))
+              }}
+              required={
+                productInformations.expirationType === 'BEST_BEFORE' ||
+                productInformations.expirationType === 'USE_BY'
+              }
+              min={1}
+              disabled={
+                productInformations.expirationType === 'NOT_APPLICABLE' ||
+                productInformations.expirationType === ''
+              }
+              className="w-full md:w-1/3"
+            />
+            <p>日</p>
+          </div>
         </FormRow>
 
         <FormRow label="主原料産地" htmlFor="mainIngredientRegionId">
@@ -358,22 +364,25 @@ function ProductForm({ mode, initialValues, onSubmit }: ProductFormProps) {
         </FormRow>
 
         <FormRow label="希望小売価格" htmlFor="desiredRetailPrice">
-          <input
-            id="desiredRetailPrice"
-            name="desiredRetailPrice"
-            type="number"
-            value={productInformations.desiredRetailPrice}
-            onChange={(e) => {
-              const value = e.target.value
-              setProductInformations((prev) => ({
-                ...prev,
-                desiredRetailPrice: value === '' ? '' : Number(value),
-              }))
-            }}
-            required
-            min={1}
-            className="w-full md:w-1/3"
-          />
+          <div className="flex gap-2 items-center w-full">
+            <input
+              id="desiredRetailPrice"
+              name="desiredRetailPrice"
+              type="number"
+              value={productInformations.desiredRetailPrice}
+              onChange={(e) => {
+                const value = e.target.value
+                setProductInformations((prev) => ({
+                  ...prev,
+                  desiredRetailPrice: value === '' ? '' : Number(value),
+                }))
+              }}
+              required
+              min={1}
+              className="w-full md:w-1/3"
+            />
+            <p>円</p>
+          </div>
         </FormRow>
 
         <FormRow label="保存方法" htmlFor="storageType">
@@ -426,21 +435,24 @@ function ProductForm({ mode, initialValues, onSubmit }: ProductFormProps) {
           label="発注リードタイム（任意）"
           htmlFor="shippingLeadTimeDays"
         >
-          <input
-            id="shippingLeadTimeDays"
-            name="shippingLeadTimeDays"
-            type="number"
-            value={productInformations.shippingLeadTimeDays}
-            onChange={(e) => {
-              const value = e.target.value
-              setProductInformations((prev) => ({
-                ...prev,
-                shippingLeadTimeDays: value === '' ? '' : Number(value),
-              }))
-            }}
-            min={1}
-            className="w-full md:w-1/3"
-          />
+          <div className="flex gap-2 items-center w-full">
+            <input
+              id="shippingLeadTimeDays"
+              name="shippingLeadTimeDays"
+              type="number"
+              value={productInformations.shippingLeadTimeDays}
+              onChange={(e) => {
+                const value = e.target.value
+                setProductInformations((prev) => ({
+                  ...prev,
+                  shippingLeadTimeDays: value === '' ? '' : Number(value),
+                }))
+              }}
+              min={1}
+              className="w-full md:w-1/3"
+            />
+            <p>日</p>
+          </div>
         </FormRow>
 
         <FormRow label="最低納品数量（任意）" htmlFor="minimumOrderQuantity">
@@ -593,7 +605,7 @@ function ProductForm({ mode, initialValues, onSubmit }: ProductFormProps) {
                         event.target.value,
                       )
                     }}
-                    className="w-full text-right"
+                    className="w-full text-left"
                     aria-label={`${formatTargetMonth(capacity.targetMonth)}の提供可能数量`}
                   />
                 </div>
