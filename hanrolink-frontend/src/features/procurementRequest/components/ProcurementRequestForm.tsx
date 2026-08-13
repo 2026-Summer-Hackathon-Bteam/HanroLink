@@ -13,6 +13,7 @@ function ProcurementRequestForm({
   mode,
   initialValues,
   onSubmit,
+  onCancel,
 }: ProcurementRequestFormProps) {
   const [procurementRequestInformations, setProcurementRequestInformations] =
     useState<ProcurementRequestFormData>(
@@ -399,12 +400,24 @@ function ProcurementRequestForm({
           })}
         </div>
       </div>
-      <button
-        type="submit"
-        className="h-9 w-45 mx-auto mt-16 rounded-full border border-accent bg-accentbg"
-      >
-        {mode === 'create' ? '登録する' : '更新する'}
-      </button>
+
+      <div className="mt-16 flex justify-center gap-4">
+        {mode === 'edit' && onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="flex h-9 w-45 items-center justify-center rounded-full border border-accent bg-bg"
+          >
+            キャンセル
+          </button>
+        )}
+        <button
+          type="submit"
+          className="h-9 w-45 rounded-full border border-accent bg-accentbg"
+        >
+          {mode === 'create' ? '登録する' : '更新する'}
+        </button>
+      </div>
       {formError && (
         <p role="alert" className="text-center mt-2 text-error">
           {formError}

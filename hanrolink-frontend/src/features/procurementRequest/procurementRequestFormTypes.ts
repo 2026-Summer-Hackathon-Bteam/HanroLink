@@ -31,14 +31,15 @@ export type ProcurementRequestFormOptions =
   components['schemas']['BuyerProcurementRequestFormOptionsResponse']
 
 export type ProcurementRequestFormValues = {
-  procurementRequestInformations:ProcurementRequestFormData
-  monthlyProcurementQuantities:MonthlyProcurementQuantityFormData[]
+  procurementRequestInformations: ProcurementRequestFormData
+  monthlyProcurementQuantities: MonthlyProcurementQuantityFormData[]
 }
 
 export type ProcurementRequestFormMode = 'create' | 'edit'
 
 export type ProcurementRequestFormProps = {
-  mode:ProcurementRequestFormMode
-  initialValues:ProcurementRequestFormValues
+  mode: ProcurementRequestFormMode
+  initialValues: ProcurementRequestFormValues
   onSubmit: (values: ProcurementRequestFormValues) => void | Promise<void>
+  onCancel?: () => void
 }

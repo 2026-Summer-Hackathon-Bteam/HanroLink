@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import ProductForm from '../features/product/components/ProductForm'
 import { getProductDetailData } from '../features/product/productDetailService'
 import type { ProductDetail } from '../features/product/productDetailTypes'
@@ -68,6 +68,7 @@ function ProductEditPage() {
     productId !== undefined &&
     Number.isInteger(parsedProductId) &&
     parsedProductId > 0
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!isValidProductId) {
@@ -100,6 +101,10 @@ function ProductEditPage() {
       isCancelled = true
     }
   }, [isValidProductId, parsedProductId])
+
+  const handleCancel = () => {
+    navigate(-1)
+  }
 
   const handleUpdate = (values: ProductFormValues) => {
     void values
@@ -134,6 +139,7 @@ function ProductEditPage() {
         mode="edit"
         initialValues={initialValues}
         onSubmit={handleUpdate}
+        onCancel={handleCancel}
       />
     </div>
   )

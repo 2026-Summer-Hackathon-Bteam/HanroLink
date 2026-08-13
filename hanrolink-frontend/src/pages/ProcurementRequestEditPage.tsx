@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import ProcurementRequestForm from '../features/procurementRequest/components/ProcurementRequestForm'
 import { getProcurementRequestDetailData } from '../features/procurementRequest/procurementRequestDetailService'
 import type { ProcurementRequestFormValues } from '../features/procurementRequest/procurementRequestFormTypes'
@@ -44,6 +44,7 @@ function ProcurementRequestEditPage() {
     procurementRequestId !== undefined &&
     Number.isInteger(parsedProcurementRequestId) &&
     parsedProcurementRequestId > 0
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!isValidProcurementRequestId) return
@@ -76,6 +77,10 @@ function ProcurementRequestEditPage() {
       isCancelled = true
     }
   }, [isValidProcurementRequestId, parsedProcurementRequestId])
+
+  const handleCancel = () => {
+    navigate(-1)
+  }
 
   const handleUpdate = (values: ProcurementRequestFormValues) => {
     void values
@@ -110,6 +115,7 @@ function ProcurementRequestEditPage() {
         mode="edit"
         initialValues={initialValues}
         onSubmit={handleUpdate}
+        onCancel={handleCancel}
       />
     </div>
   )

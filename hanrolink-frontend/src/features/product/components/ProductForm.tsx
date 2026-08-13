@@ -12,7 +12,7 @@ import ProductStoryFieldset from './ProductStoryFieldset'
 import { formatTargetMonth } from '../../../shared/utils/yearMonth'
 import type { ProductFormProps } from '../productFormTypes'
 
-function ProductForm({ mode, initialValues, onSubmit }: ProductFormProps) {
+function ProductForm({ mode, initialValues, onSubmit, onCancel }: ProductFormProps) {
   const [stories, setStories] = useState<StoryFormData[]>(initialValues.stories)
   const [productInformations, setProductInformations] =
     useState<ProductInformationFormData>(initialValues.productInformations)
@@ -614,12 +614,23 @@ function ProductForm({ mode, initialValues, onSubmit }: ProductFormProps) {
           })}
         </div>
       </div>
+      <div className="mt-16 flex justify-center gap-4">
+        {mode === 'edit' && onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="flex h-9 w-45 items-center justify-center rounded-full border border-accent bg-bg"
+          >
+            キャンセル
+          </button>
+        )}
       <button
         type="submit"
-        className="h-9 w-45 mx-auto mt-16 rounded-full border border-accent bg-accentbg"
+        className="h-9 w-45 rounded-full border border-accent bg-accentbg"
       >
         {mode === 'create' ? '登録する' : '更新する'}
       </button>
+      </div>
     </form>
   )
 }
