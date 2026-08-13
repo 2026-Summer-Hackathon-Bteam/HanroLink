@@ -1,6 +1,7 @@
 package com.hanrolink.product.controller;
 
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -24,6 +25,7 @@ import jakarta.validation.Valid;
  * 商品情報の閲覧API。
  * Supplierによる自社商品の管理は {@link SupplierProductManagementController}で扱う。
  */
+@Profile("s3")
 @RestController
 public class ProductController {
 

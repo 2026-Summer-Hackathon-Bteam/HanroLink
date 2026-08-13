@@ -2,6 +2,7 @@ package com.hanrolink.product.controller;
 
 import java.util.List;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,6 +32,7 @@ import jakarta.validation.Valid;
  * 認証中のSupplierが自身の商品情報を管理するためのController。
  * 他のSupplierが登録した商品情報は操作対象に含まない。
  */
+@Profile("s3")
 @RestController
 public class SupplierProductManagementController {
 

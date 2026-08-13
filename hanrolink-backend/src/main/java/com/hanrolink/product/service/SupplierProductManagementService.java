@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,8 @@ import com.hanrolink.file.enums.FileUploadUsage;
 import com.hanrolink.file.policy.PendingFileUploadPolicy;
 import com.hanrolink.file.repository.PendingFileUploadRepository;
 import com.hanrolink.file.service.PendingFileDeletionService;
+import com.hanrolink.infrastructure.s3.S3DownloadUrlGenerator;
+import com.hanrolink.infrastructure.s3.S3UploadedFileVerifier;
 import com.hanrolink.product.entity.MonthlySupplyCapacity;
 import com.hanrolink.product.entity.Product;
 import com.hanrolink.product.entity.ProductStory;
@@ -37,6 +40,7 @@ import com.hanrolink.product.request.component.ProductStoryUpdateRequest;
 import com.hanrolink.product.response.SupplierProductCreateResponse;
 import com.hanrolink.product.response.SupplierProductListResponse;
 
+@Profile("s3")
 @Service
 public class SupplierProductManagementService {
 
@@ -52,13 +56,19 @@ public class SupplierProductManagementService {
 
   private final PendingFileDeletionService pendingFileDeletionService;
 
+  private final S3UploadedFileVerifier s3UploadedFileVerifier;
+
+  private final S3DownloadUrlGenerator s3DownloadUrlGenerator;
+
   public SupplierProductManagementService(
     BusinessUserAccountRepository businessUserAccountRepository,
     ProductRepository productRepository,
     MonthlySupplyCapacityRepository monthlySupplyCapacityRepository,
     ProductStoryRepository productStoryRepository,
     PendingFileUploadRepository pendingFileUploadRepository,
-    PendingFileDeletionService pendingFileDeletionService
+    PendingFileDeletionService pendingFileDeletionService,
+    S3UploadedFileVerifier s3UploadedFileVerifier,
+    S3DownloadUrlGenerator s3DownloadUrlGenerator
   ) {
     this.businessUserAccountRepository = businessUserAccountRepository;
     this.productRepository = productRepository;
@@ -66,6 +76,8 @@ public class SupplierProductManagementService {
     this.productStoryRepository = productStoryRepository;
     this.pendingFileUploadRepository = pendingFileUploadRepository;
     this.pendingFileDeletionService = pendingFileDeletionService;
+    this.s3UploadedFileVerifier = s3UploadedFileVerifier;
+    this.s3DownloadUrlGenerator = s3DownloadUrlGenerator;
   }
 
   /**
@@ -89,7 +101,6 @@ public class SupplierProductManagementService {
       supplierAccountId,
       FileUploadUsage.PRODUCT_MAIN_IMAGE
     );
-    // TODO: S3上における代表画像の存在・MIMEタイプ・サイズの確認
 
     // 商品ストーリー画像のアップロード情報の検証
     Map<UUID, PendingFileUpload> storyImageUploadsByPendingFileUploadId =
@@ -102,7 +113,6 @@ public class SupplierProductManagementService {
         FileUploadUsage.PRODUCT_STORY_IMAGE
       );
 
-      // TODO: S3上における商品ストーリー画像の存在・MIMEタイプ・サイズの確認
       storyImageUploadsByPendingFileUploadId.put(
         productStoryRequest.pendingFileUploadId(),
         storyImageUpload
@@ -194,8 +204,7 @@ public class SupplierProductManagementService {
         new SupplierProductListResponse(
           product.id(),
           product.name(),
-          // TODO: S3連携時にストレージキーを署名付きURLへ変換する
-          "dummy/" + product.mainImageStorageKey(),
+          s3DownloadUrlGenerator.generate(product.mainImageStorageKey()),
           product.hiddenAt() != null,
           product.updatedAt()
         )
@@ -263,7 +272,6 @@ public class SupplierProductManagementService {
         supplierAccountId,
         FileUploadUsage.PRODUCT_MAIN_IMAGE
       );
-      // TODO: S3上における新しい画像の存在確認
       String oldMainImageStorageKey = product.getMainImageStorageKey();
 
       product.updateMainImageStorageKey(mainImageUpload.getStorageKey());
@@ -285,7 +293,6 @@ public class SupplierProductManagementService {
         FileUploadUsage.PRODUCT_STORY_IMAGE
       );
 
-      // TODO: S3上における新しい画像の存在確認
       storyImageUploadsByProductStoryId.put(
         productStoryRequest.id(),
         storyImageUpload
@@ -470,6 +477,18 @@ public class SupplierProductManagementService {
 
     if (!expiresAt.isAfter(Instant.now())) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    }
+
+    boolean isValidWebp = s3UploadedFileVerifier.isValidWebp(
+      pendingFileUpload.getStorageKey(),
+      pendingFileUpload.getFileSizeBytes()
+    );
+
+    if (!isValidWebp) {
+      throw new ResponseStatusException(
+        HttpStatus.BAD_REQUEST,
+        "アップロードされたファイルを確認できません"
+      );
     }
 
     return pendingFileUpload;

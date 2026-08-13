@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ import com.hanrolink.account.enums.JwtAccountRole;
 import com.hanrolink.account.exception.UnsupportedJwtAccountRoleException;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
 import com.hanrolink.account.repository.projection.AuthenticatedBusinessUserAccountProjection;
+import com.hanrolink.infrastructure.s3.S3DownloadUrlGenerator;
 import com.hanrolink.negotiationrequest.policy.NegotiationRequestPolicy;
 import com.hanrolink.negotiationrequest.policy.ProductNegotiationRequestPolicy;
 import com.hanrolink.negotiationrequest.repository.ProductNegotiationRequestRepository;
@@ -47,6 +49,7 @@ import com.hanrolink.product.response.component.ProductSupplierResponse;
 import com.hanrolink.product.response.component.StorageTypeResponse;
 import com.hanrolink.productcategory.response.component.ProductCategoryResponse;
 
+@Profile("s3")
 @Service
 public class ProductService {
 
@@ -60,18 +63,22 @@ public class ProductService {
 
   private final BusinessUserAccountRepository businessUserAccountRepository;
 
+  private final S3DownloadUrlGenerator s3DownloadUrlGenerator;
+
   public ProductService(
     ProductRepository productRepository,
     MonthlySupplyCapacityRepository monthlySupplyCapacityRepository,
     ProductStoryRepository productStoryRepository,
     ProductNegotiationRequestRepository productNegotiationRequestRepository,
-    BusinessUserAccountRepository businessUserAccountRepository
+    BusinessUserAccountRepository businessUserAccountRepository,
+    S3DownloadUrlGenerator s3DownloadUrlGenerator
   ) {
     this.productRepository = productRepository;
     this.monthlySupplyCapacityRepository = monthlySupplyCapacityRepository;
     this.productStoryRepository = productStoryRepository;
     this.productNegotiationRequestRepository = productNegotiationRequestRepository;
     this.businessUserAccountRepository = businessUserAccountRepository;
+    this.s3DownloadUrlGenerator = s3DownloadUrlGenerator;
   }
 
   /**
@@ -134,8 +141,7 @@ public class ProductService {
           productStory.position(),
           productStory.sectionTitle(),
           productStory.body(),
-          // TODO: S3連携時にストレージキーを署名付きURLへ変換する
-          "dummy/" + productStory.imageStorageKey()
+          s3DownloadUrlGenerator.generate(productStory.imageStorageKey())
         )
       )
       .toList();
@@ -203,8 +209,7 @@ public class ProductService {
       product.minimumOrderQuantity(),
       product.shippingLeadTimeDays(),
       product.salesAreaRestriction(),
-      // TODO: S3連携時にストレージキーを署名付きURLへ変換する
-      "dummy/" + product.mainImageStorageKey(),
+      s3DownloadUrlGenerator.generate(product.mainImageStorageKey()),
       monthlySupplyCapacities,
       productStories,
       new ProductSupplierResponse(
@@ -302,8 +307,7 @@ public class ProductService {
                   List.of()
                 )
             ),
-            // TODO: S3連携時にストレージキーを署名付きURLへ変換する
-            "dummy/" + product.mainImageStorageKey()
+            s3DownloadUrlGenerator.generate(product.mainImageStorageKey())
           )
         )
         .toList();

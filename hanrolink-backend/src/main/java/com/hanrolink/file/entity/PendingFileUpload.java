@@ -96,6 +96,14 @@ public class PendingFileUpload {
     return usage;
   }
 
+  public String getMimeType() {
+    return mimeType;
+  }
+
+  public Long getFileSizeBytes() {
+    return fileSizeBytes;
+  }
+
   public Instant getCreatedAt() {
     return createdAt;
   }

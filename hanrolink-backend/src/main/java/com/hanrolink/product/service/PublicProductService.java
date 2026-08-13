@@ -2,13 +2,16 @@ package com.hanrolink.product.service;
 
 import java.util.List;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.hanrolink.infrastructure.s3.S3DownloadUrlGenerator;
 import com.hanrolink.product.repository.ProductRepository;
 import com.hanrolink.product.response.PublicProductListResponse;
 
+@Profile("s3")
 @Service
 public class PublicProductService {
 
@@ -16,10 +19,14 @@ public class PublicProductService {
 
   private final ProductRepository productRepository;
 
+  private final S3DownloadUrlGenerator s3DownloadUrlGenerator;
+
   public PublicProductService(
-    ProductRepository productRepository
+    ProductRepository productRepository,
+    S3DownloadUrlGenerator s3DownloadUrlGenerator
   ) {
     this.productRepository = productRepository;
+    this.s3DownloadUrlGenerator = s3DownloadUrlGenerator;
   }
 
   /**
@@ -35,8 +42,7 @@ public class PublicProductService {
         new PublicProductListResponse(
           product.name(),
           product.supplierBusinessName(),
-          // TODO: S3連携時にストレージキーを署名付きURLへ変換する
-          "dummy/" + product.mainImageStorageKey()
+          s3DownloadUrlGenerator.generate(product.mainImageStorageKey())
         )
       )
       .toList();

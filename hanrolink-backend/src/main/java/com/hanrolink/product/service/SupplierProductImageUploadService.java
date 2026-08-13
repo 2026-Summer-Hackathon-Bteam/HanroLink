@@ -2,6 +2,7 @@ package com.hanrolink.product.service;
 
 import java.util.UUID;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,10 +12,12 @@ import com.hanrolink.account.repository.BusinessUserAccountRepository;
 import com.hanrolink.file.entity.PendingFileUpload;
 import com.hanrolink.file.enums.FileUploadUsage;
 import com.hanrolink.file.repository.PendingFileUploadRepository;
+import com.hanrolink.infrastructure.s3.S3UploadUrlGenerator;
 import com.hanrolink.product.enums.ProductImageUsage;
 import com.hanrolink.product.request.SupplierProductImageUploadCreateRequest;
 import com.hanrolink.product.response.SupplierProductImageUploadCreateResponse;
 
+@Profile("s3")
 @Service
 public class SupplierProductImageUploadService {
 
@@ -24,12 +27,16 @@ public class SupplierProductImageUploadService {
 
   private final PendingFileUploadRepository pendingFileUploadRepository;
 
+  private final S3UploadUrlGenerator s3UploadUrlGenerator;
+
   public SupplierProductImageUploadService(
     BusinessUserAccountRepository businessUserAccountRepository,
-    PendingFileUploadRepository pendingFileUploadRepository
+    PendingFileUploadRepository pendingFileUploadRepository,
+    S3UploadUrlGenerator s3UploadUrlGenerator
   ) {
     this.businessUserAccountRepository = businessUserAccountRepository;
     this.pendingFileUploadRepository = pendingFileUploadRepository;
+    this.s3UploadUrlGenerator = s3UploadUrlGenerator;
   }
 
   /**
@@ -50,8 +57,10 @@ public class SupplierProductImageUploadService {
 
     String imageStorageKey = createStorageKey(request.usage());
 
-    // TODO: S3連携時に署名付きURLを生成し、ダミー値を置き換える
-    String uploadUrl = "dummy/" + UUID.randomUUID();
+    String uploadUrl = s3UploadUrlGenerator.generate(
+      imageStorageKey,
+      PRODUCT_IMAGE_MIME_TYPE
+    );
 
     PendingFileUpload pendingFileUpload =
       new PendingFileUpload(

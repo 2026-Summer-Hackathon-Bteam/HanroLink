@@ -65,6 +65,19 @@
       <artifactId>cognitoidentityprovider</artifactId>
     </dependency>
 
+    <!-- Amazon S3連携（署名付きURLの発行・ファイル情報の取得・削除） -->
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>s3</artifactId>
+    </dependency>
+
+    <!-- WebP画像の読み込み・検証 -->
+    <dependency>
+      <groupId>com.twelvemonkeys.imageio</groupId>
+      <artifactId>imageio-webp</artifactId>
+      <version>3.14.0</version>
+    </dependency>
+
     <!-- 入力値バリデーション（Bean Validation） -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
