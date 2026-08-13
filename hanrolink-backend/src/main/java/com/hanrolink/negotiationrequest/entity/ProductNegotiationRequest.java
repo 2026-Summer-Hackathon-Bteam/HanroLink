@@ -26,7 +26,7 @@ public class ProductNegotiationRequest {
   @Column(name = "buyer_account_id", nullable = false)
   private Long buyerAccountId;
 
-  @Column(name = "product_id", nullable = false)
+  @Column(name = "product_id")
   private Long productId;
 
   @JdbcTypeCode(SqlTypes.JSON)

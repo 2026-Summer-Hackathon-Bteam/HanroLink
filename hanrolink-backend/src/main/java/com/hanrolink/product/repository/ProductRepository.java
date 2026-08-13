@@ -22,7 +22,7 @@ import com.hanrolink.product.repository.projection.SupplierProductListProjection
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-  Optional<Product> findByIdAndSupplierAccountIdAndDeletedAtIsNull(Long id, Long supplierAccountId);
+  Optional<Product> findByIdAndSupplierAccountId(Long id, Long supplierAccountId);
 
   @Query("""
     SELECT new com.hanrolink.product.repository.projection.PublicProductListProjection(
@@ -35,8 +35,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       ON businessUserAccount.id = product.supplierAccountId
     JOIN Business business
       ON business.id = businessUserAccount.businessId
-    WHERE product.deletedAt IS NULL
-      AND product.hiddenAt IS NULL
+    WHERE product.hiddenAt IS NULL
     ORDER BY
       product.updatedAt DESC,
       product.id DESC
@@ -84,7 +83,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     JOIN Region region
       ON region.id = product.mainIngredientRegionId
     WHERE product.id = :productId
-      AND product.deletedAt IS NULL
       AND (
         product.hiddenAt IS NULL
         OR (
@@ -118,8 +116,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       ON productCategory.id = product.productCategoryId
     JOIN Region region
       ON region.id = product.mainIngredientRegionId
-    WHERE product.deletedAt IS NULL
-      AND product.hiddenAt IS NULL
+    WHERE product.hiddenAt IS NULL
       AND (
         :#{#mainIngredientRegionIds == null || #mainIngredientRegionIds.isEmpty()} = true
         OR product.mainIngredientRegionId IN :mainIngredientRegionIds
@@ -173,7 +170,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     )
     FROM Product product
     WHERE product.supplierAccountId = :supplierAccountId
-      AND product.deletedAt IS NULL
     ORDER BY product.updatedAt DESC
     """)
   List<SupplierProductListProjection> findManagementListBySupplierAccountId(

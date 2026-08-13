@@ -230,7 +230,7 @@ public class SupplierProductManagementService {
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     Product product = productRepository
-      .findByIdAndSupplierAccountIdAndDeletedAtIsNull(productId, supplierAccountId)
+      .findByIdAndSupplierAccountId(productId, supplierAccountId)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     // 商品に紐づく既存関連情報の取得
@@ -428,7 +428,7 @@ public class SupplierProductManagementService {
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     Product product = productRepository
-      .findByIdAndSupplierAccountIdAndDeletedAtIsNull(productId, supplierAccountId)
+      .findByIdAndSupplierAccountId(productId, supplierAccountId)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     product.updateVisibility(request.hidden());
@@ -449,10 +449,19 @@ public class SupplierProductManagementService {
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     Product product = productRepository
-      .findByIdAndSupplierAccountIdAndDeletedAtIsNull(productId, supplierAccountId)
+      .findByIdAndSupplierAccountId(productId, supplierAccountId)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-    product.delete();
+    // 商品を削除する前に、関連画像を削除待ちとして登録
+    List<String> imageStorageKeys = productStoryRepository
+      .findImageStorageKeysByProductId(productId);
+
+    for (String imageStorageKey : imageStorageKeys) {
+      pendingFileDeletionService.create(imageStorageKey);
+    }
+    pendingFileDeletionService.create(product.getMainImageStorageKey());
+
+    productRepository.delete(product);
   }
 
   private PendingFileUpload findUsablePendingFileUpload(

@@ -97,9 +97,6 @@ public class Product {
   @Column(name = "hidden_at")
   private Instant hiddenAt;
 
-  @Column(name = "deleted_at")
-  private Instant deletedAt;
-
   @Column(name = "created_at", updatable = false, nullable = false)
   private Instant createdAt;
 
@@ -197,10 +194,6 @@ public class Product {
     String mainImageStorageKey
   ) {
     this.mainImageStorageKey = mainImageStorageKey;
-  }
-
-  public void delete() {
-    this.deletedAt = Instant.now();
   }
 
   @PrePersist

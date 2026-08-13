@@ -16,6 +16,17 @@ public interface ProductStoryRepository extends JpaRepository<ProductStory, Long
   List<ProductStory> findAllByProductId(Long productId);
 
   @Query("""
+    SELECT productStory.imageStorageKey
+    FROM ProductStory productStory
+    WHERE productStory.productId = :productId
+    ORDER BY productStory.position ASC
+    """)
+  List<String> findImageStorageKeysByProductId(
+    @Param("productId")
+    Long productId
+  );
+
+  @Query("""
     SELECT new com.hanrolink.product.repository.projection.ProductStoryProjection(
       productStory.id,
       productStory.productStorySectionTemplateId,
