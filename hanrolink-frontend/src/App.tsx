@@ -20,6 +20,7 @@ import ProcurementRequestCreatePage from './pages/ProcurementRequestCreatePage'
 import ProductDetailPage from './pages/ProductDetailPage'
 import ProductEditPage from './pages/ProductEditPage'
 import ProcurementRequestDetailPage from './pages/ProcurementRequestDetailPage'
+import ProcurementRequestEditPage from './pages/ProcurementRequestEditPage'
 
 function App() {
   return (
@@ -67,6 +68,10 @@ function App() {
             <Route
               path="/procurement-requests/:procurementRequestId"
               element={<ProcurementRequestDetailPage />}
+            />
+            <Route
+              path="/procurement-requests/:procurementRequestId/edit"
+              element={<ProcurementRequestEditPage />}
             />
           </Route>
 
