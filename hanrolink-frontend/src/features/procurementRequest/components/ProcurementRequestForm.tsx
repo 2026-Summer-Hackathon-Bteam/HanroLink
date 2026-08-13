@@ -390,7 +390,7 @@ function ProcurementRequestForm({
                         event.target.value,
                       )
                     }}
-                    className="w-full text-right"
+                    className="w-full text-left"
                     aria-label={`${formatTargetMonth(quantity.targetMonth)}の希望数量`}
                   />
                 </div>
