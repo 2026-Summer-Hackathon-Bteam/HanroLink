@@ -426,12 +426,12 @@ function ProductDetailPage() {
           >
             {isDeleting ? '削除中...' : '削除する'}
           </button>
-          {deleteError && (
-            <p role="alert" className="mt-3 text-sm text-error">
-              {deleteError}
-            </p>
-          )}
         </div>
+        {deleteError && (
+          <p role="alert" className="mt-3 text-sm text-error">
+            {deleteError}
+          </p>
+        )}
       </dialog>
     </div>
   )

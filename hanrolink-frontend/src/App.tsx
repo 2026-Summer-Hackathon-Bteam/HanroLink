@@ -19,6 +19,8 @@ import BuyerProfilePage from './pages/BuyerProfilePage'
 import ProcurementRequestCreatePage from './pages/ProcurementRequestCreatePage'
 import ProductDetailPage from './pages/ProductDetailPage'
 import ProductEditPage from './pages/ProductEditPage'
+import ProcurementRequestDetailPage from './pages/ProcurementRequestDetailPage'
+import ProcurementRequestEditPage from './pages/ProcurementRequestEditPage'
 
 function App() {
   return (
@@ -42,12 +44,35 @@ function App() {
               element={<BusinessProfileSetupPage />}
             />
             <Route path="signup/complete" element={<SignupCompletePage />} />
-            <Route path="admin/approvals/:businessUserAccountId" element={<AdminBusinessApprovalDetailPage />} />
-            <Route path='products/new' element={<ProductCreatePage />}/>
-            <Route path='buyer/:businessUserAccountId' element={<BuyerProfilePage />} />
-            <Route path='/procurement-requests/new' element={<ProcurementRequestCreatePage />}/>
-            <Route path='/products/:productId' element={<ProductDetailPage />}/>
-            <Route path='/products/:productId/edit' element={<ProductEditPage />}/>
+            <Route
+              path="admin/approvals/:businessUserAccountId"
+              element={<AdminBusinessApprovalDetailPage />}
+            />
+            <Route path="products/new" element={<ProductCreatePage />} />
+            <Route
+              path="buyer/:businessUserAccountId"
+              element={<BuyerProfilePage />}
+            />
+            <Route
+              path="/procurement-requests/new"
+              element={<ProcurementRequestCreatePage />}
+            />
+            <Route
+              path="/products/:productId"
+              element={<ProductDetailPage />}
+            />
+            <Route
+              path="/products/:productId/edit"
+              element={<ProductEditPage />}
+            />
+            <Route
+              path="/procurement-requests/:procurementRequestId"
+              element={<ProcurementRequestDetailPage />}
+            />
+            <Route
+              path="/procurement-requests/:procurementRequestId/edit"
+              element={<ProcurementRequestEditPage />}
+            />
           </Route>
 
           <Route element={<MyPageRayout />}>

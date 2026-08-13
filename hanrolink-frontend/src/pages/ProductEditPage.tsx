@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import ProductForm from '../features/product/components/ProductForm'
 import { getProductDetailData } from '../features/product/productDetailService'
 import type { ProductDetail } from '../features/product/productDetailTypes'
@@ -68,6 +68,7 @@ function ProductEditPage() {
     productId !== undefined &&
     Number.isInteger(parsedProductId) &&
     parsedProductId > 0
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!isValidProductId) {
@@ -81,6 +82,10 @@ function ProductEditPage() {
         const detail = await getProductDetailData(parsedProductId)
 
         if (!isCancelled) {
+          if (!detail.permissions.canManage) {
+            setError('この商品情報を編集する権限がありません。')
+            return
+          }
           setInitialValues(convertToInitialValues(detail))
         }
       } catch {
@@ -96,6 +101,10 @@ function ProductEditPage() {
       isCancelled = true
     }
   }, [isValidProductId, parsedProductId])
+
+  const handleCancel = () => {
+    navigate(-1)
+  }
 
   const handleUpdate = (values: ProductFormValues) => {
     void values
@@ -130,6 +139,7 @@ function ProductEditPage() {
         mode="edit"
         initialValues={initialValues}
         onSubmit={handleUpdate}
+        onCancel={handleCancel}
       />
     </div>
   )

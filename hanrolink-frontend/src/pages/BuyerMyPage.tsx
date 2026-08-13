@@ -98,7 +98,7 @@ function BuyerMyPage() {
                       >
                         <td>
                           <Link
-                            to={`/recruitments/${rn.procurementRequest.id}`}
+                            to={`/procurement-requests/${rn.procurementRequest.id}`}
                           >
                             {rn.procurementRequest.title}
                           </Link>
@@ -203,7 +203,7 @@ function BuyerMyPage() {
                     className="rounded-lg bg-bg p-3 shadow-md  ring-1 ring-text/10"
                   >
                     <Link
-                      to={`/recruitments/${pr.id}`}
+                      to={`/procurement-requests/${pr.id}`}
                       className="flex gap-3"
                     >
                       <div className="min-w-0 flex-1">

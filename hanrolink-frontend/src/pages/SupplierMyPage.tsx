@@ -165,7 +165,7 @@ function SupplierMyPage() {
                       >
                         <td>
                           <Link
-                            to={`/recruitments/${sn.procurementRequest.id}`}
+                            to={`/procurement-requests/${sn.procurementRequest.id}`}
                           >
                             {sn.procurementRequest.title}
                           </Link>

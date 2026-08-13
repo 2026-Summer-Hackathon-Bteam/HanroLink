@@ -12,7 +12,9 @@ export type StoryFormData = {
 export type ProductStoryTemplate =
   components['schemas']['ProductStorySectionTemplateOptionResponse']
 
-export type StoryFormChanges = Partial<Omit<StoryFormData, 'id' | 'position' | 'existingImageUrl'>>
+export type StoryFormChanges = Partial<
+  Omit<StoryFormData, 'id' | 'position' | 'existingImageUrl'>
+>
 
 type SupplierProductCreateRequest =
   components['schemas']['SupplierProductCreateRequest']
@@ -73,4 +75,5 @@ export type ProductFormProps = {
   mode: ProductFormMode
   initialValues: ProductFormInitialValues
   onSubmit: (values: ProductFormValues) => void | Promise<void>
+  onCancel?: () => void
 }
