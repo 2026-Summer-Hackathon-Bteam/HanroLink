@@ -81,6 +81,10 @@ function ProductEditPage() {
         const detail = await getProductDetailData(parsedProductId)
 
         if (!isCancelled) {
+          if (!detail.permissions.canManage) {
+            setError('この商品情報を編集する権限がありません。')
+            return
+          }
           setInitialValues(convertToInitialValues(detail))
         }
       } catch {
