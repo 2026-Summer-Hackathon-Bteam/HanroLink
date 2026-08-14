@@ -40,9 +40,6 @@ public class ProcurementRequest {
   @Column(name = "delivery_shelf_life_days")
   private Short deliveryShelfLifeDays;
 
-  @Column(name = "deleted_at")
-  private Instant deletedAt;
-
   @Column(name = "created_at", updatable = false, nullable = false)
   private Instant createdAt;
 

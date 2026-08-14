@@ -177,7 +177,6 @@ CREATE TABLE procurement_requests (
   required_trade_terms TEXT,
   desired_unit_price INT,
   delivery_shelf_life_days SMALLINT,
-  deleted_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
@@ -199,6 +198,7 @@ CREATE TABLE procurement_request_storage_types (
   CONSTRAINT fk_procurement_request_storage_types_procurement_request
     FOREIGN KEY (procurement_request_id)
     REFERENCES procurement_requests(id)
+    ON DELETE CASCADE
 );
 
 CREATE TABLE monthly_procurement_quantities (
@@ -212,6 +212,7 @@ CREATE TABLE monthly_procurement_quantities (
   CONSTRAINT fk_monthly_procurement_quantities_procurement_request
     FOREIGN KEY (procurement_request_id)
     REFERENCES procurement_requests(id)
+    ON DELETE CASCADE
 );
 
 CREATE TYPE file_upload_usage AS ENUM (
@@ -246,7 +247,7 @@ CREATE TABLE pending_file_deletions (
 CREATE TABLE procurement_negotiation_requests (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   supplier_account_id BIGINT NOT NULL,
-  procurement_request_id BIGINT NOT NULL,
+  procurement_request_id BIGINT,
   product_id BIGINT,
   procurement_request_snapshot JSONB NOT NULL,
   product_snapshot JSONB NOT NULL,
@@ -260,7 +261,8 @@ CREATE TABLE procurement_negotiation_requests (
     REFERENCES business_user_accounts(id),
   CONSTRAINT fk_procurement_negotiation_requests_procurement_request
     FOREIGN KEY (procurement_request_id)
-    REFERENCES procurement_requests(id),
+    REFERENCES procurement_requests(id)
+    ON DELETE SET NULL,
   CONSTRAINT fk_procurement_negotiation_requests_product
     FOREIGN KEY (product_id)
     REFERENCES products(id)
