@@ -1,4 +1,4 @@
-package com.hanrolink.account.response;
+package com.hanrolink.business.response;
 
 import java.util.Objects;
 

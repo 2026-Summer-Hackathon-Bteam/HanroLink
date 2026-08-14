@@ -1,6 +1,18 @@
+CREATE TYPE business_role AS ENUM (
+  'SUPPLIER',
+  'BUYER'
+);
+
+CREATE TYPE business_review_status AS ENUM (
+  'PENDING',
+  'APPROVED'
+);
+
 CREATE TABLE businesses (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   public_id UUID UNIQUE NOT NULL,
+  role business_role NOT NULL,
+  review_status business_review_status DEFAULT 'PENDING' NOT NULL,
   name VARCHAR(255) NOT NULL,
   name_kana VARCHAR(255) NOT NULL,
   website_url VARCHAR(255),
@@ -16,23 +28,11 @@ CREATE TABLE businesses (
     CHECK (address_postal_code ~ '^[0-9]{7}$')
 );
 
-CREATE TYPE business_user_account_role AS ENUM (
-  'SUPPLIER',
-  'BUYER'
-);
-
-CREATE TYPE business_user_account_review_status AS ENUM (
-  'PENDING',
-  'APPROVED'
-);
-
 CREATE TABLE business_user_accounts (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   business_id BIGINT NOT NULL,
   public_id UUID UNIQUE NOT NULL,
   identity_provider_subject VARCHAR(255) UNIQUE NOT NULL,
-  role business_user_account_role NOT NULL,
-  review_status business_user_account_review_status DEFAULT 'PENDING' NOT NULL,
   last_name VARCHAR(255) NOT NULL,
   first_name VARCHAR(255) NOT NULL,
   last_name_kana VARCHAR(255) NOT NULL,

@@ -1,4 +1,4 @@
-package com.hanrolink.account.controller;
+package com.hanrolink.business.controller;
 
 import java.util.UUID;
 
@@ -9,38 +9,38 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hanrolink.account.api.AccountApi;
-import com.hanrolink.account.response.BuyerProfileGetResponse;
-import com.hanrolink.account.service.BuyerAccountService;
+import com.hanrolink.business.api.BusinessApi;
+import com.hanrolink.business.response.BuyerProfileGetResponse;
+import com.hanrolink.business.service.BuyerBusinessService;
 import com.hanrolink.security.authorization.policy.RequiresAdminOrApprovedBusinessUserAccount;
 
 @RestController
-public class BuyerAccountController {
+public class BuyerBusinessController {
 
-  private final BuyerAccountService buyerAccountService;
+  private final BuyerBusinessService buyerBusinessService;
 
-  public BuyerAccountController(
-    BuyerAccountService buyerAccountService
+  public BuyerBusinessController(
+    BuyerBusinessService buyerBusinessService
   ) {
-    this.buyerAccountService = buyerAccountService;
+    this.buyerBusinessService = buyerBusinessService;
   }
 
   /**
    * 指定されたバイヤーのプロフィール情報を取得する
    * @param jwt 認証済みユーザーのJWT
-   * @param businessUserAccountId 取得対象アカウントの公開識別子
+   * @param businessId 取得対象事業者の公開識別子
    * @return 取得対象のバイヤープロフィール
    */
   @RequiresAdminOrApprovedBusinessUserAccount
-  @GetMapping(AccountApi.V1.BUYER)
+  @GetMapping(BusinessApi.V1.BUYER)
   public ResponseEntity<BuyerProfileGetResponse> get(
     @AuthenticationPrincipal Jwt jwt,
-    @PathVariable UUID businessUserAccountId
+    @PathVariable UUID businessId
   ) {
     return ResponseEntity.ok(
-      buyerAccountService.get(
+      buyerBusinessService.get(
         jwt.getSubject(),
-        businessUserAccountId
+        businessId
       )
     );
   }

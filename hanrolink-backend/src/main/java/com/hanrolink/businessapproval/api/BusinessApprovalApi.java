@@ -7,7 +7,7 @@ public final class BusinessApprovalApi {
 
     private static final String BASE = ApiPath.API_V1 + "/admin/business-registrations";
     public static final String PENDING = BASE + "/pending";
-    public static final String BY_ID = BASE + "/{businessUserAccountId}";
+    public static final String BY_ID = BASE + "/{businessId}";
     public static final String APPROVE = BY_ID + "/approve";
 
     private V1() {}

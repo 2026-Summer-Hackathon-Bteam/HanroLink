@@ -5,15 +5,15 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.hanrolink.account.entity.BusinessUserAccount;
-import com.hanrolink.account.enums.AccountRole;
-import com.hanrolink.account.enums.BusinessUserAccountRegistrationApiStatus;
-import com.hanrolink.account.enums.BusinessUserAccountReviewStatus;
-import com.hanrolink.account.enums.BusinessUserAccountRole;
-import com.hanrolink.account.enums.JwtAccountRole;
 import com.hanrolink.account.exception.UnsupportedJwtAccountRoleException;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
+import com.hanrolink.account.repository.projection.AuthorizationContextProjection;
 import com.hanrolink.account.response.CurrentAccountGetResponse;
+import com.hanrolink.business.enums.BusinessRegistrationApiStatus;
+import com.hanrolink.business.enums.BusinessReviewStatus;
+import com.hanrolink.business.enums.BusinessRole;
+import com.hanrolink.security.authorization.enums.ApplicationRole;
+import com.hanrolink.security.authorization.enums.JwtAccountRole;
 
 @Service
 public class CurrentAccountService {
@@ -40,7 +40,7 @@ public class CurrentAccountService {
     // Adminユーザー向けレスポンスの返却
     if (authenticatedAccountRole == JwtAccountRole.ADMIN) {
       return new CurrentAccountGetResponse(
-        AccountRole.ADMIN,
+        ApplicationRole.ADMIN,
         null
       );
     }
@@ -51,45 +51,45 @@ public class CurrentAccountService {
     }
 
     // Admin以外は、DBの登録情報からロールと審査状態の取得
-    Optional<BusinessUserAccount> optionalBusinessUserAccount =
+    Optional<AuthorizationContextProjection> optionalAuthorizationContext =
       businessUserAccountRepository
-        .findByIdentityProviderSubject(identityProviderSubject);
+        .findAuthorizationContextByIdentityProviderSubject(identityProviderSubject);
 
-    if (optionalBusinessUserAccount.isEmpty()) {
+    if (optionalAuthorizationContext.isEmpty()) {
       return new CurrentAccountGetResponse(
         null,
-        BusinessUserAccountRegistrationApiStatus.NOT_SUBMITTED
+        BusinessRegistrationApiStatus.NOT_SUBMITTED
       );
     }
 
-    BusinessUserAccount businessUserAccount =
-      optionalBusinessUserAccount.orElseThrow();
+    AuthorizationContextProjection authorizationContext =
+      optionalAuthorizationContext.orElseThrow();
 
     return new CurrentAccountGetResponse(
-      accountRoleOf(businessUserAccount.getRole()),
+      applicationRoleOf(authorizationContext.businessRole()),
       registrationStatusOf(
-        businessUserAccount.getReviewStatus()
+        authorizationContext.businessReviewStatus()
       )
     );
   }
 
-  private AccountRole accountRoleOf(
-    BusinessUserAccountRole role
+  private ApplicationRole applicationRoleOf(
+    BusinessRole role
   ) {
     return switch (role) {
-      case SUPPLIER -> AccountRole.SUPPLIER;
-      case BUYER -> AccountRole.BUYER;
+      case SUPPLIER -> ApplicationRole.SUPPLIER;
+      case BUYER -> ApplicationRole.BUYER;
     };
   }
 
-  private BusinessUserAccountRegistrationApiStatus registrationStatusOf(
-    BusinessUserAccountReviewStatus reviewStatus
+  private BusinessRegistrationApiStatus registrationStatusOf(
+    BusinessReviewStatus reviewStatus
   ) {
     return switch (reviewStatus) {
       case PENDING ->
-        BusinessUserAccountRegistrationApiStatus.PENDING;
+        BusinessRegistrationApiStatus.PENDING;
       case APPROVED ->
-        BusinessUserAccountRegistrationApiStatus.APPROVED;
+        BusinessRegistrationApiStatus.APPROVED;
     };
   }
 }

@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record AdminBusinessApprovalListResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  UUID businessUserAccountId,
+  UUID businessId,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   String businessName,
@@ -18,8 +18,8 @@ public record AdminBusinessApprovalListResponse(
 ) {
   public AdminBusinessApprovalListResponse {
     Objects.requireNonNull(
-      businessUserAccountId,
-      "AdminBusinessApprovalListResponse.businessUserAccountId must not be null"
+      businessId,
+      "AdminBusinessApprovalListResponse.businessId must not be null"
     );
 
     Objects.requireNonNull(

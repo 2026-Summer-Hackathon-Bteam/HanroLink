@@ -18,12 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.hanrolink.account.enums.AccountRole;
-import com.hanrolink.account.enums.BusinessUserAccountRole;
-import com.hanrolink.account.enums.JwtAccountRole;
 import com.hanrolink.account.exception.UnsupportedJwtAccountRoleException;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
 import com.hanrolink.account.repository.projection.AuthenticatedBusinessUserAccountProjection;
+import com.hanrolink.business.enums.BusinessRole;
 import com.hanrolink.infrastructure.s3.S3DownloadUrlGenerator;
 import com.hanrolink.negotiationrequest.policy.NegotiationRequestPolicy;
 import com.hanrolink.negotiationrequest.policy.ProductNegotiationRequestPolicy;
@@ -48,6 +46,8 @@ import com.hanrolink.product.response.component.ProductStoryResponse;
 import com.hanrolink.product.response.component.ProductSupplierResponse;
 import com.hanrolink.product.response.component.StorageTypeResponse;
 import com.hanrolink.productcategory.response.component.ProductCategoryResponse;
+import com.hanrolink.security.authorization.enums.ApplicationRole;
+import com.hanrolink.security.authorization.enums.JwtAccountRole;
 
 @Profile("s3")
 @Service
@@ -154,7 +154,7 @@ public class ProductService {
     boolean canCreateNegotiationRequest = false;
     boolean hasMyActiveNegotiationRequest = false;
 
-    if (authenticatedAccount.role() == AccountRole.BUYER) {
+    if (authenticatedAccount.role() == ApplicationRole.BUYER) {
       Instant activeSince =
         Instant.now().minus(
           NegotiationRequestPolicy.ACTIVE_PERIOD_DAYS,
@@ -334,7 +334,7 @@ public class ProductService {
     if (authenticatedJwtAccountRole == JwtAccountRole.ADMIN) {
       return new ProductDetailViewer(
         null,
-        AccountRole.ADMIN
+        ApplicationRole.ADMIN
       );
     }
 
@@ -355,18 +355,18 @@ public class ProductService {
     );
   }
 
-  private AccountRole accountRoleOf(
-    BusinessUserAccountRole role
+  private ApplicationRole accountRoleOf(
+    BusinessRole role
   ) {
     return switch (role) {
-      case SUPPLIER -> AccountRole.SUPPLIER;
-      case BUYER -> AccountRole.BUYER;
+      case SUPPLIER -> ApplicationRole.SUPPLIER;
+      case BUYER -> ApplicationRole.BUYER;
     };
   }
 
   private record ProductDetailViewer(
     Long id,
-    AccountRole role
+    ApplicationRole role
   ) {}
 
   private List<LocalDate> toMonthStartDates(

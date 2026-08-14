@@ -5,9 +5,15 @@ import java.time.Instant;
 import java.util.UUID;
 
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import com.hanrolink.business.enums.BusinessReviewStatus;
+import com.hanrolink.business.enums.BusinessRole;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,6 +31,25 @@ public class Business {
 
   @Column(name = "public_id", updatable = false, nullable = false)
   private UUID publicId = UUID.randomUUID();
+
+  @Enumerated(EnumType.STRING)
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+  @Column(
+    columnDefinition = "business_role",
+    updatable = false,
+    nullable = false
+  )
+  private BusinessRole role;
+
+  @Enumerated(EnumType.STRING)
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+  @Column(
+    name = "review_status",
+    columnDefinition = "business_review_status",
+    nullable = false
+  )
+  private BusinessReviewStatus reviewStatus =
+    BusinessReviewStatus.PENDING;
 
   @Column(nullable = false)
   private String name;
@@ -65,6 +90,7 @@ public class Business {
   protected Business() {}
 
   public Business(
+    BusinessRole role,
     String name,
     String nameKana,
     String websiteUrl,
@@ -74,6 +100,7 @@ public class Business {
     String addressBuilding,
     String phoneNumber
   ) {
+    this.role = role;
     this.name = name;
     this.nameKana = nameKana;
     this.websiteUrl = websiteUrl;
@@ -82,6 +109,10 @@ public class Business {
     this.addressMunicipalityStreet = addressMunicipalityStreet;
     this.addressBuilding = addressBuilding;
     this.phoneNumber = phoneNumber;
+  }
+
+  public void approve() {
+    this.reviewStatus = BusinessReviewStatus.APPROVED;
   }
 
   @PrePersist
@@ -98,6 +129,18 @@ public class Business {
 
   public Long getId() {
     return id;
+  }
+
+  public UUID getPublicId() {
+    return publicId;
+  }
+
+  public BusinessRole getRole() {
+    return role;
+  }
+
+  public BusinessReviewStatus getReviewStatus() {
+    return reviewStatus;
   }
 
   public String getName() {
@@ -130,5 +173,9 @@ public class Business {
 
   public String getPhoneNumber() {
     return phoneNumber;
+  }
+
+  public Instant getCreatedAt() {
+    return createdAt;
   }
 }

@@ -1,8 +1,8 @@
 package com.hanrolink.account.repository.projection;
 
-import com.hanrolink.account.enums.BusinessUserAccountRole;
+import com.hanrolink.business.enums.BusinessRole;
 
 public record AuthenticatedBusinessUserAccountProjection(
   Long id,
-  BusinessUserAccountRole role
+  BusinessRole role
 ) {}

@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hanrolink.account.enums.JwtAccountRole;
 import com.hanrolink.product.api.ProductApi;
 import com.hanrolink.product.request.ProductSearchRequest;
 import com.hanrolink.product.response.ProductDetailResponse;
 import com.hanrolink.product.response.ProductSearchListResponse;
 import com.hanrolink.product.service.ProductService;
 import com.hanrolink.security.authorization.AuthenticatedAccountRoleResolver;
+import com.hanrolink.security.authorization.enums.JwtAccountRole;
 import com.hanrolink.security.authorization.policy.RequiresAdminOrApprovedBusinessUserAccount;
 
 import jakarta.validation.Valid;

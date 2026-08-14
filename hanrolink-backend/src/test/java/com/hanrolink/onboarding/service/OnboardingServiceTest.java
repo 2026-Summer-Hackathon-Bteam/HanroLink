@@ -18,9 +18,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.hanrolink.account.entity.BusinessUserAccount;
-import com.hanrolink.account.enums.BusinessUserAccountRole;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
 import com.hanrolink.business.entity.Business;
+import com.hanrolink.business.enums.BusinessRole;
 import com.hanrolink.business.repository.BusinessRepository;
 import com.hanrolink.onboarding.exception.OnboardingAlreadyExistsException;
 import com.hanrolink.onboarding.request.OnboardingCreateRequest;
@@ -57,6 +57,8 @@ class OnboardingServiceTest {
       RETURNS_DEEP_STUBS
     );
 
+    when(request.business().role())
+      .thenReturn(BusinessRole.BUYER);
     when(request.business().name())
       .thenReturn("テスト株式会社");
     when(request.business().nameKana())
@@ -74,8 +76,6 @@ class OnboardingServiceTest {
     when(request.business().phoneNumber())
       .thenReturn("0312345678");
 
-    when(request.businessUserAccount().role())
-      .thenReturn(BusinessUserAccountRole.BUYER);
     when(request.businessUserAccount().lastName())
       .thenReturn("山田");
     when(request.businessUserAccount().firstName())
