@@ -13,6 +13,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record ProcurementRequestDetailResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+  Long id,
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   String title,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
@@ -43,6 +46,11 @@ public record ProcurementRequestDetailResponse(
   Boolean hasMyActiveNegotiationRequest
 ) {
   public ProcurementRequestDetailResponse {
+    Objects.requireNonNull(
+      id,
+      "ProcurementRequestDetailResponse.id must not be null"
+    );
+
     Objects.requireNonNull(
       title,
       "ProcurementRequestDetailResponse.title must not be null"
