@@ -181,22 +181,22 @@ function Header(props: HeaderProps) {
         <div className="relative mr-4 md:mr-10">
           <nav
             id="header-navigation"
-            className={`absolute right-0 top-full mt-2 w-40 origin-top-right rounded-xl bg-border shadow-md transition-[translate,scale,opacity] duration-300 ease-out
+            className={`absolute right-0 top-full mt-2 w-42 origin-top-right rounded-xl bg-border shadow-md transition-[translate,scale,opacity] duration-300 ease-out
               ${
                 isMenuOpen
                   ? 'translate-x-0 translate-y-0 scale-100 opacity-100 pointer-events-auto'
                   : 'translate-x-2 -translate-y-2 scale-90 opacity-0 pointer-events-none'
               }
-              md:static md:mt-0 md:h-12 md:w-auto md:translate-x-0 md:translate-y-0
-              md:scale-100 md:rounded-full md:opacity-100 md:pointer-events-auto`}
+              lg:static lg:mt-0 lg:h-12 lg:w-auto lg:translate-x-0 lg:translate-y-0
+              lg:scale-100 lg:rounded-full lg:opacity-100 lg:pointer-events-auto`}
           >
-            <ul className="flex flex-col rounded-xl overflow-hidden md:rounded-full md:h-full md:flex-row">
+            <ul className="flex flex-col rounded-xl overflow-hidden lg:rounded-full lg:h-full lg:flex-row">
               {navMenuList.map((menu, index) => (
                 <li
                   key={menu.path}
                   className={
                     index > 0
-                      ? 'relative md:before:absolute md:before:left-0 md:before:top-1/2 md:before:h-6 md:before:-translate-y-1/2 md:before:border-l md:before:border-dotted md:before:border-bg/60'
+                      ? 'relative lg:before:absolute lg:before:left-0 lg:before:top-1/2 lg:before:h-6 lg:before:-translate-y-1/2 lg:before:border-l lg:before:border-dotted lg:before:border-bg/60'
                       : undefined
                   }
                 >
@@ -212,7 +212,7 @@ function Header(props: HeaderProps) {
                 <li
                   className={
                     navMenuList.length > 0
-                      ? 'relative md:before:absolute md:before:left-0 md:before:top-1/2 md:before:h-6 md:before:-translate-y-1/2 md:before:border-l md:before:border-dotted md:before:border-bg/60'
+                      ? 'relative lg:before:absolute lg:before:left-0 lg:before:top-1/2 lg:before:h-6 lg:before:-translate-y-1/2 lg:before:border-l lg:before:border-dotted lg:before:border-bg/60'
                       : undefined
                   }
                 >
@@ -231,7 +231,7 @@ function Header(props: HeaderProps) {
           {/* スマホ用ハンバーガーメニュー */}
           <button
             type="button"
-            className="flex h-11 w-11 items-center justify-center rounded-lg text-2xl p-1 border border-border md:hidden"
+            className="flex h-11 w-11 items-center justify-center rounded-lg text-2xl p-1 border border-border lg:hidden"
             aria-label={isMenuOpen ? 'メニューを閉じる' : 'メニューを開く'}
             aria-controls="header-navigation"
             aria-expanded={isMenuOpen}
