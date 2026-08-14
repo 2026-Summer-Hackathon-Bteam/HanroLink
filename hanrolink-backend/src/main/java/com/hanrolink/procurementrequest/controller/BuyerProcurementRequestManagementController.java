@@ -1,6 +1,7 @@
 package com.hanrolink.procurementrequest.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,7 +58,7 @@ public class BuyerProcurementRequestManagementController {
   )
   @PutMapping(ProcurementRequestApi.V1.BY_ID)
   public ResponseEntity<Void> update(
-    @PathVariable Long procurementRequestId,
+    @PathVariable UUID procurementRequestId,
     @Valid @RequestBody BuyerProcurementRequestUpdateRequest request
   ) {
 
@@ -72,7 +73,7 @@ public class BuyerProcurementRequestManagementController {
   )
   @DeleteMapping(ProcurementRequestApi.V1.BY_ID)
   public ResponseEntity<Void> delete(
-    @PathVariable Long procurementRequestId
+    @PathVariable UUID procurementRequestId
   ) {
 
     // TODO: Serviceで登録元Buyerの募集情報を削除し、204 No Contentを返す

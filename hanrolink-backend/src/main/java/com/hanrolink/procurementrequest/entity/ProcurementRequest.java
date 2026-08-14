@@ -1,6 +1,7 @@
 package com.hanrolink.procurementrequest.entity;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,6 +19,9 @@ public class ProcurementRequest {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Column(name = "public_id", updatable = false, nullable = false)
+  private UUID publicId = UUID.randomUUID();
 
   @Column(name = "buyer_business_id", nullable = false)
   private Long buyerBusinessId;

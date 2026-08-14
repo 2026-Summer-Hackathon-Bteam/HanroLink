@@ -171,6 +171,7 @@ CREATE TABLE product_stories (
 
 CREATE TABLE procurement_requests (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  public_id UUID UNIQUE NOT NULL,
   buyer_business_id BIGINT NOT NULL,
   product_category_id SMALLINT NOT NULL,
   title VARCHAR(255) NOT NULL,

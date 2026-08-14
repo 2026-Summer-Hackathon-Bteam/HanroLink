@@ -1,5 +1,7 @@
 package com.hanrolink.procurementrequest.controller;
 
+import java.util.UUID;
+
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +27,7 @@ public class ProcurementRequestReadController {
   // 管理者、サプライヤー、募集を登録したバイヤー利用可能
   @GetMapping(ProcurementRequestApi.V1.BY_ID)
   public ResponseEntity<ProcurementRequestDetailResponse> getDetail(
-    @PathVariable Long procurementRequestId
+    @PathVariable UUID procurementRequestId
   ) {
 
     // TODO: Serviceから募集情報詳細を取得し、ResponseEntity.ok(response)で返す

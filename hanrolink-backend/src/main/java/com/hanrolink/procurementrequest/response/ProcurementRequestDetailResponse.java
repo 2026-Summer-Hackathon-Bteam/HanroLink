@@ -2,6 +2,7 @@ package com.hanrolink.procurementrequest.response;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import com.hanrolink.procurementrequest.response.component.MonthlyProcurementQuantityResponse;
 import com.hanrolink.procurementrequest.response.component.ProcurementRequestBuyerResponse;
@@ -13,7 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record ProcurementRequestDetailResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  Long id,
+  UUID id,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   String title,
