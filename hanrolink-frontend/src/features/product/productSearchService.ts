@@ -1,7 +1,7 @@
 import type {
   ProductSearchResult,
   ProductSearchOptions,
-  ProductSearchConditions
+  ProductSearchConditions,
 } from './productSearchTypes'
 import {
   productSearchMock,
@@ -15,10 +15,15 @@ export function getProductSearchData(
 ): Promise<ProductSearchResult> {
   // 実API実装時にクエリパラメーターとして使用する
   void searchConditions
-  void page
-  void pageSize
-
-  return Promise.resolve(productSearchMock)
+  
+  return Promise.resolve({
+    ...productSearchMock,
+    pagination: {
+      ...productSearchMock.pagination,
+      page,
+      pageSize,
+    },
+  })
 }
 
 export function getProductSearchOptions(): Promise<ProductSearchOptions> {

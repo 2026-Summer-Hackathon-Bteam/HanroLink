@@ -104,12 +104,11 @@ export const productSearchMock = {
       ],
     },
   ],
-
-  pagination: {
+ pagination: {
     page: 1,
     pageSize: 6,
     totalCount: 8,
-    totalPages: 3,
+    totalPages: 2,
   },
 } satisfies ProductSearchResult
 
