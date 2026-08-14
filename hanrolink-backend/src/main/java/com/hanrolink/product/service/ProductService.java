@@ -301,6 +301,7 @@ public class ProductService {
             product.businessName(),
             product.productCategoryName(),
             product.mainIngredientRegionName(),
+            product.storageType().getDisplayName(),
             toLatestMonthlySupplyCapacityResponses(
               monthlySupplyCapacitiesByProductId
                 .getOrDefault(

@@ -23,6 +23,9 @@ public record ProductSearchResultResponse(
   String mainIngredientRegionName,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+  String storageTypeLabel,
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   List<MonthlySupplyCapacityResponse> monthlySupplyCapacities,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
@@ -52,6 +55,11 @@ public record ProductSearchResultResponse(
     Objects.requireNonNull(
       mainIngredientRegionName,
       "ProductSearchResultResponse.mainIngredientRegionName must not be null"
+    );
+
+    Objects.requireNonNull(
+      storageTypeLabel,
+      "ProductSearchResultResponse.storageTypeLabel must not be null"
     );
 
     Objects.requireNonNull(

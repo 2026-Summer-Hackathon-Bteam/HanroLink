@@ -104,6 +104,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       business.name,
       productCategory.name,
       region.name,
+      product.storageType,
       product.mainImageStorageKey
     )
     FROM Product product
