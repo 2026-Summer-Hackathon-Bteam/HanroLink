@@ -110,7 +110,6 @@ CREATE TABLE products (
   shipping_lead_time_days SMALLINT,
   sales_area_restriction VARCHAR(255),
   hidden_at TIMESTAMPTZ,
-  deleted_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
@@ -136,6 +135,7 @@ CREATE TABLE monthly_supply_capacities (
   CONSTRAINT fk_monthly_supply_capacities_product
     FOREIGN KEY (product_id)
     REFERENCES products(id)
+    ON DELETE CASCADE
 );
 
 CREATE TABLE product_story_section_templates (
@@ -161,7 +161,8 @@ CREATE TABLE product_stories (
 
   CONSTRAINT fk_product_stories_product
     FOREIGN KEY (product_id)
-    REFERENCES products(id),
+    REFERENCES products(id)
+    ON DELETE CASCADE,
   CONSTRAINT fk_product_stories_product_story_section_template
     FOREIGN KEY (product_story_section_template_id)
     REFERENCES product_story_section_templates(id)
@@ -213,6 +214,28 @@ CREATE TABLE monthly_procurement_quantities (
     REFERENCES procurement_requests(id)
 );
 
+CREATE TYPE file_upload_usage AS ENUM (
+  'PRODUCT_MAIN_IMAGE',
+  'PRODUCT_STORY_IMAGE',
+  'MESSAGE_ATTACHMENT'
+);
+
+CREATE TABLE pending_file_uploads (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  public_id UUID UNIQUE NOT NULL,
+  business_user_account_id BIGINT NOT NULL,
+  storage_key VARCHAR(255) UNIQUE NOT NULL,
+  usage file_upload_usage NOT NULL,
+  mime_type VARCHAR(100) NOT NULL,
+  file_size_bytes BIGINT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+  CONSTRAINT fk_pending_file_uploads_business_user_account
+    FOREIGN KEY (business_user_account_id)
+    REFERENCES business_user_accounts(id)
+);
+
 CREATE TABLE pending_file_deletions (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   storage_key VARCHAR(255) UNIQUE NOT NULL,
@@ -224,7 +247,7 @@ CREATE TABLE procurement_negotiation_requests (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   supplier_account_id BIGINT NOT NULL,
   procurement_request_id BIGINT NOT NULL,
-  product_id BIGINT NOT NULL,
+  product_id BIGINT,
   procurement_request_snapshot JSONB NOT NULL,
   product_snapshot JSONB NOT NULL,
   product_main_image_storage_key VARCHAR(255) UNIQUE NOT NULL,
@@ -241,12 +264,13 @@ CREATE TABLE procurement_negotiation_requests (
   CONSTRAINT fk_procurement_negotiation_requests_product
     FOREIGN KEY (product_id)
     REFERENCES products(id)
+    ON DELETE SET NULL
 );
 
 CREATE TABLE product_negotiation_requests (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   buyer_account_id BIGINT NOT NULL,
-  product_id BIGINT NOT NULL,
+  product_id BIGINT,
   product_snapshot JSONB NOT NULL,
   product_main_image_storage_key VARCHAR(255) UNIQUE NOT NULL,
   accepted_at TIMESTAMPTZ,
@@ -259,6 +283,7 @@ CREATE TABLE product_negotiation_requests (
   CONSTRAINT fk_product_negotiation_requests_product
     FOREIGN KEY (product_id)
     REFERENCES products(id)
+    ON DELETE SET NULL
 );
 
 CREATE TABLE channels (

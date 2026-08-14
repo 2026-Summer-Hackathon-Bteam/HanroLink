@@ -29,7 +29,7 @@ public class ProcurementNegotiationRequest {
   @Column(name = "procurement_request_id", nullable = false)
   private Long procurementRequestId;
 
-  @Column(name = "product_id", nullable = false)
+  @Column(name = "product_id")
   private Long productId;
 
   @JdbcTypeCode(SqlTypes.JSON)

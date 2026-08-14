@@ -19,7 +19,11 @@ public class ProductStory {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "product_id", nullable = false)
+  @Column(
+    name = "product_id",
+    updatable = false,
+    nullable = false
+  )
   private Long productId;
 
   @Column(name = "product_story_section_template_id", nullable = false)
@@ -42,6 +46,36 @@ public class ProductStory {
 
   protected ProductStory() {}
 
+  public ProductStory(
+    Long productId,
+    Short productStorySectionTemplateId,
+    Short position,
+    String body,
+    String imageStorageKey
+  ) {
+    this.productId = productId;
+    this.productStorySectionTemplateId = productStorySectionTemplateId;
+    this.position = position;
+    this.body = body;
+    this.imageStorageKey = imageStorageKey;
+  }
+
+  public void update(
+    Short productStorySectionTemplateId,
+    Short position,
+    String body
+  ) {
+    this.productStorySectionTemplateId = productStorySectionTemplateId;
+    this.position = position;
+    this.body = body;
+  }
+
+  public void updateImageStorageKey(
+    String imageStorageKey
+  ) {
+    this.imageStorageKey = imageStorageKey;
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();
@@ -52,5 +86,13 @@ public class ProductStory {
   @PreUpdate
   private void onUpdate() {
     this.updatedAt = Instant.now();
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public String getImageStorageKey() {
+    return imageStorageKey;
   }
 }

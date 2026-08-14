@@ -9,7 +9,7 @@ public record PublicProductListResponse(
   String name,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  String supplierName,
+  String supplierBusinessName,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   String mainImageUrl
@@ -21,8 +21,8 @@ public record PublicProductListResponse(
     );
 
     Objects.requireNonNull(
-      supplierName,
-      "PublicProductListResponse.supplierName must not be null"
+      supplierBusinessName,
+      "PublicProductListResponse.supplierBusinessName must not be null"
     );
 
     Objects.requireNonNull(

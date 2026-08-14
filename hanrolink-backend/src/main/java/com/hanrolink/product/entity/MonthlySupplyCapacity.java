@@ -2,6 +2,7 @@ package com.hanrolink.product.entity;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.YearMonth;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,9 +19,13 @@ public class MonthlySupplyCapacity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long Id;
+  private Long id;
 
-  @Column(name = "product_id", nullable = false)
+  @Column(
+    name = "product_id",
+    updatable = false,
+    nullable = false
+  )
   private Long productId;
 
   @Column(name = "target_month", nullable = false)
@@ -37,6 +42,22 @@ public class MonthlySupplyCapacity {
 
   protected MonthlySupplyCapacity() {}
 
+  public MonthlySupplyCapacity(
+    Long productId,
+    YearMonth targetMonth,
+    Integer availableQuantity
+  ) {
+    this.productId = productId;
+    this.targetMonth = targetMonth.atDay(1);
+    this.availableQuantity = availableQuantity;
+  }
+
+  public void updateAvailableQuantity(
+    Integer availableQuantity
+  ) {
+    this.availableQuantity = availableQuantity;
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();
@@ -47,5 +68,9 @@ public class MonthlySupplyCapacity {
   @PreUpdate
   private void onUpdate() {
     this.updatedAt = Instant.now();
+  }
+
+  public YearMonth getTargetMonth() {
+    return YearMonth.from(targetMonth);
   }
 }
