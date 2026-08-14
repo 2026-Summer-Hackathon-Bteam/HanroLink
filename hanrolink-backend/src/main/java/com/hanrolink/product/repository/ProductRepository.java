@@ -22,7 +22,7 @@ import com.hanrolink.product.repository.projection.SupplierProductListProjection
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-  Optional<Product> findByIdAndSupplierAccountId(Long id, Long supplierAccountId);
+  Optional<Product> findByIdAndSupplierBusinessId(Long id, Long supplierBusinessId);
 
   @Query("""
     SELECT new com.hanrolink.product.repository.projection.PublicProductListProjection(
@@ -31,10 +31,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       product.mainImageStorageKey
     )
     FROM Product product
-    JOIN BusinessUserAccount businessUserAccount
-      ON businessUserAccount.id = product.supplierAccountId
     JOIN Business business
-      ON business.id = businessUserAccount.businessId
+      ON business.id = product.supplierBusinessId
     WHERE product.hiddenAt IS NULL
     ORDER BY
       product.updatedAt DESC,
@@ -47,7 +45,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   @Query("""
     SELECT new com.hanrolink.product.repository.projection.ProductDetailProjection(
       product.id,
-      product.supplierAccountId,
+      product.supplierBusinessId,
       product.name,
       product.hiddenAt,
       product.productCategoryId,
@@ -74,10 +72,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       business.websiteUrl
     )
     FROM Product product
-    JOIN BusinessUserAccount businessUserAccount
-      ON businessUserAccount.id = product.supplierAccountId
     JOIN Business business
-      ON business.id = businessUserAccount.businessId
+      ON business.id = product.supplierBusinessId
     JOIN ProductCategory productCategory
       ON productCategory.id = product.productCategoryId
     JOIN Region region
@@ -86,16 +82,16 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       AND (
         product.hiddenAt IS NULL
         OR (
-          :authenticatedAccountId IS NOT NULL
-          AND product.supplierAccountId = :authenticatedAccountId
+          :viewerBusinessId IS NOT NULL
+          AND product.supplierBusinessId = :viewerBusinessId
         )
       )
     """)
   Optional<ProductDetailProjection> findDetailById(
     @Param("productId")
     Long productId,
-    @Param("authenticatedAccountId")
-    Long authenticatedAccountId
+    @Param("viewerBusinessId")
+    Long viewerBusinessId
   );
 
   @Query("""
@@ -108,10 +104,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       product.mainImageStorageKey
     )
     FROM Product product
-    JOIN BusinessUserAccount businessUserAccount
-      ON businessUserAccount.id = product.supplierAccountId
     JOIN Business business
-      ON business.id = businessUserAccount.businessId
+      ON business.id = product.supplierBusinessId
     JOIN ProductCategory productCategory
       ON productCategory.id = product.productCategoryId
     JOIN Region region
@@ -146,7 +140,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       product.updatedAt DESC,
       product.id DESC
     """)
-  Page<ProductSearchResultProjection> findSearchList(
+  Page<ProductSearchResultProjection> findSearchResults(
     @Param("availableSupplyMonths")
     List<LocalDate> availableSupplyMonths,
     @Param("mainIngredientRegionIds")
@@ -169,11 +163,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       product.updatedAt
     )
     FROM Product product
-    WHERE product.supplierAccountId = :supplierAccountId
+    WHERE product.supplierBusinessId = :supplierBusinessId
     ORDER BY product.updatedAt DESC
     """)
-  List<SupplierProductListProjection> findManagementListBySupplierAccountId(
-    @Param("supplierAccountId")
-    Long supplierAccountId
+  List<SupplierProductListProjection> findManagementListBySupplierBusinessId(
+    @Param("supplierBusinessId")
+    Long supplierBusinessId
   );
 }

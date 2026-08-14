@@ -29,7 +29,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 
 /**
- * 認証中のSupplierが自身の商品情報を管理するためのController。
+ * 認証中のSupplierが自社の商品情報を管理するためのController。
  * 他のSupplierが登録した商品情報は操作対象に含まない。
  */
 @Profile("s3")
@@ -68,7 +68,7 @@ public class SupplierProductManagementController {
   }
 
   /**
-   * 自身に紐づく商品一覧を取得する
+   * 自社に紐づく商品一覧を取得する
    * @param jwt 認証済みユーザーのJWT
    * @return 商品一覧
    */
@@ -109,7 +109,7 @@ public class SupplierProductManagementController {
   }
 
   /**
-   * 自身に紐づく商品の表示状態を更新する
+   * 自社に紐づく商品の表示状態を更新する
    * @param jwt 認証済みユーザーのJWT
    * @param productId 更新対象の商品ID
    * @param request 表示状態の更新情報
@@ -135,7 +135,7 @@ public class SupplierProductManagementController {
   }
 
   /**
-   * 自身に紐づく商品を削除する
+   * 自社に紐づく商品を削除する
    * @param jwt 認証済みユーザーのJWT
    * @param productId 削除対象の商品ID
    * @return 削除結果

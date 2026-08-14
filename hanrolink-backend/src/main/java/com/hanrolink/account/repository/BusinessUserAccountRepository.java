@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.hanrolink.account.entity.BusinessUserAccount;
-import com.hanrolink.account.repository.projection.AuthenticatedBusinessUserAccountProjection;
+import com.hanrolink.account.repository.projection.AuthenticatedBusinessContextProjection;
 import com.hanrolink.account.repository.projection.BusinessAccessProjection;
 import com.hanrolink.account.repository.projection.AuthorizationContextProjection;
 
@@ -28,6 +28,17 @@ public interface BusinessUserAccountRepository extends JpaRepository<BusinessUse
       = :identityProviderSubject
     """)
   Optional<Long> findIdByIdentityProviderSubject(
+    @Param("identityProviderSubject")
+    String identityProviderSubject
+  );
+
+  @Query("""
+    SELECT businessUserAccount.businessId
+    FROM BusinessUserAccount businessUserAccount
+    WHERE businessUserAccount.identityProviderSubject
+      = :identityProviderSubject
+    """)
+  Optional<Long> findBusinessIdByIdentityProviderSubject(
     @Param("identityProviderSubject")
     String identityProviderSubject
   );
@@ -65,8 +76,9 @@ public interface BusinessUserAccountRepository extends JpaRepository<BusinessUse
   );
 
   @Query("""
-    SELECT new com.hanrolink.account.repository.projection.AuthenticatedBusinessUserAccountProjection(
+    SELECT new com.hanrolink.account.repository.projection.AuthenticatedBusinessContextProjection(
       businessUserAccount.id,
+      business.id,
       business.role
     )
     FROM BusinessUserAccount businessUserAccount
@@ -75,7 +87,7 @@ public interface BusinessUserAccountRepository extends JpaRepository<BusinessUse
     WHERE businessUserAccount.identityProviderSubject
       = :identityProviderSubject
     """)
-  Optional<AuthenticatedBusinessUserAccountProjection>
+  Optional<AuthenticatedBusinessContextProjection>
     findAuthenticatedAccountByIdentityProviderSubject(
       @Param("identityProviderSubject")
       String identityProviderSubject

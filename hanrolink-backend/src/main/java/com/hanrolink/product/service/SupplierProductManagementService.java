@@ -91,14 +91,14 @@ public class SupplierProductManagementService {
     String identityProviderSubject,
     SupplierProductCreateRequest request
   ) {
-    Long supplierAccountId = businessUserAccountRepository
+    Long businessUserAccountId = businessUserAccountRepository
       .findIdByIdentityProviderSubject(identityProviderSubject)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     // 代表画像のアップロード情報の検証
     PendingFileUpload mainImageUpload = findUsablePendingFileUpload(
       request.mainImagePendingFileUploadId(),
-      supplierAccountId,
+      businessUserAccountId,
       FileUploadUsage.PRODUCT_MAIN_IMAGE
     );
 
@@ -109,7 +109,7 @@ public class SupplierProductManagementService {
     for (ProductStoryCreateRequest productStoryRequest : request.productStories()) {
       PendingFileUpload storyImageUpload = findUsablePendingFileUpload(
         productStoryRequest.pendingFileUploadId(),
-        supplierAccountId,
+        businessUserAccountId,
         FileUploadUsage.PRODUCT_STORY_IMAGE
       );
 
@@ -119,8 +119,12 @@ public class SupplierProductManagementService {
       );
     }
 
+    Long supplierBusinessId = businessUserAccountRepository
+      .findBusinessIdByIdentityProviderSubject(identityProviderSubject)
+      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
     Product product = new Product(
-      supplierAccountId,
+      supplierBusinessId,
       request.productCategoryId(),
       request.mainIngredientRegionId(),
       request.name(),
@@ -185,7 +189,7 @@ public class SupplierProductManagementService {
   }
 
   /**
-   * 自身に紐づく商品一覧を取得する
+   * 自社に紐づく商品一覧を取得する
    * @param identityProviderSubject 認証プロバイダーのユーザー識別子
    * @return 商品一覧
    */
@@ -193,12 +197,12 @@ public class SupplierProductManagementService {
   public List<SupplierProductListResponse> list(
     String identityProviderSubject
   ) {
-    Long supplierAccountId = businessUserAccountRepository
-      .findIdByIdentityProviderSubject(identityProviderSubject)
+    Long supplierBusinessId = businessUserAccountRepository
+      .findBusinessIdByIdentityProviderSubject(identityProviderSubject)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     return productRepository
-      .findManagementListBySupplierAccountId(supplierAccountId)
+      .findManagementListBySupplierBusinessId(supplierBusinessId)
       .stream()
       .map(product ->
         new SupplierProductListResponse(
@@ -213,7 +217,7 @@ public class SupplierProductManagementService {
   }
 
   /**
-   * 自身に紐づく商品情報を更新する
+   * 自社に紐づく商品情報を更新する
    * @param identityProviderSubject 認証プロバイダーのユーザー識別子
    * @param productId 更新対象の商品ID
    * @param request 商品の更新情報
@@ -224,13 +228,13 @@ public class SupplierProductManagementService {
     Long productId,
     SupplierProductUpdateRequest request
   ) {
-    // 認証済みユーザーが所有する更新対象商品の取得
-    Long supplierAccountId = businessUserAccountRepository
-      .findIdByIdentityProviderSubject(identityProviderSubject)
+    // 認証済みユーザーが所属する事業者の商品であることの確認
+    Long supplierBusinessId = businessUserAccountRepository
+      .findBusinessIdByIdentityProviderSubject(identityProviderSubject)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     Product product = productRepository
-      .findByIdAndSupplierAccountId(productId, supplierAccountId)
+      .findByIdAndSupplierBusinessId(productId, supplierBusinessId)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     // 商品に紐づく既存関連情報の取得
@@ -265,11 +269,15 @@ public class SupplierProductManagementService {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
+    Long businessUserAccountId = businessUserAccountRepository
+      .findIdByIdentityProviderSubject(identityProviderSubject)
+      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
     // 代表画像が指定された場合の利用可否確認と画像の差し替え
     if (request.mainImagePendingFileUploadId() != null) {
       PendingFileUpload mainImageUpload = findUsablePendingFileUpload(
         request.mainImagePendingFileUploadId(),
-        supplierAccountId,
+        businessUserAccountId,
         FileUploadUsage.PRODUCT_MAIN_IMAGE
       );
       String oldMainImageStorageKey = product.getMainImageStorageKey();
@@ -289,7 +297,7 @@ public class SupplierProductManagementService {
 
       PendingFileUpload storyImageUpload = findUsablePendingFileUpload(
         productStoryRequest.pendingFileUploadId(),
-        supplierAccountId,
+        businessUserAccountId,
         FileUploadUsage.PRODUCT_STORY_IMAGE
       );
 
@@ -412,7 +420,7 @@ public class SupplierProductManagementService {
   }
 
   /**
-   * 自身に紐づく商品の表示状態を更新する
+   * 自社に紐づく商品の表示状態を更新する
    * @param identityProviderSubject 認証プロバイダーのユーザー識別子
    * @param productId 更新対象の商品ID
    * @param request 表示状態の更新情報
@@ -423,19 +431,19 @@ public class SupplierProductManagementService {
     Long productId,
     SupplierProductUpdateVisibilityRequest request
   ) {
-    Long supplierAccountId = businessUserAccountRepository
-      .findIdByIdentityProviderSubject(identityProviderSubject)
+    Long supplierBusinessId = businessUserAccountRepository
+      .findBusinessIdByIdentityProviderSubject(identityProviderSubject)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     Product product = productRepository
-      .findByIdAndSupplierAccountId(productId, supplierAccountId)
+      .findByIdAndSupplierBusinessId(productId, supplierBusinessId)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     product.updateVisibility(request.hidden());
   }
 
   /**
-   * 自身に紐づく商品を削除する
+   * 自社に紐づく商品を削除する
    * @param identityProviderSubject 認証プロバイダーのユーザー識別子
    * @param productId 削除対象の商品ID
    */
@@ -444,12 +452,12 @@ public class SupplierProductManagementService {
     String identityProviderSubject,
     Long productId
   ) {
-    Long supplierAccountId = businessUserAccountRepository
-      .findIdByIdentityProviderSubject(identityProviderSubject)
+    Long supplierBusinessId = businessUserAccountRepository
+      .findBusinessIdByIdentityProviderSubject(identityProviderSubject)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     Product product = productRepository
-      .findByIdAndSupplierAccountId(productId, supplierAccountId)
+      .findByIdAndSupplierBusinessId(productId, supplierBusinessId)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     // 商品を削除する前に、関連画像を削除待ちとして登録

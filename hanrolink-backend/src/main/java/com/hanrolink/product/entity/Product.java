@@ -28,11 +28,11 @@ public class Product {
   private Long id;
 
   @Column(
-    name = "supplier_account_id",
+    name = "supplier_business_id",
     updatable = false,
     nullable = false
   )
-  private Long supplierAccountId;
+  private Long supplierBusinessId;
 
   @Column(name = "product_category_id", nullable = false)
   private Short productCategoryId;
@@ -106,7 +106,7 @@ public class Product {
   protected Product() {}
 
   public Product(
-    Long supplierAccountId,
+    Long supplierBusinessId,
     Short productCategoryId,
     Short mainIngredientRegionId,
     String name,
@@ -124,7 +124,7 @@ public class Product {
     Short shippingLeadTimeDays,
     String salesAreaRestriction
   ) {
-    this.supplierAccountId = supplierAccountId;
+    this.supplierBusinessId = supplierBusinessId;
     this.productCategoryId = productCategoryId;
     this.mainIngredientRegionId = mainIngredientRegionId;
     this.name = name;

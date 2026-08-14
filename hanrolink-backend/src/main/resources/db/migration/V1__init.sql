@@ -93,7 +93,7 @@ CREATE TYPE storage_type AS ENUM (
 
 CREATE TABLE products (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  supplier_account_id BIGINT NOT NULL,
+  supplier_business_id BIGINT NOT NULL,
   product_category_id SMALLINT NOT NULL,
   main_ingredient_region_id SMALLINT NOT NULL,
   name VARCHAR(255) NOT NULL,
@@ -114,9 +114,9 @@ CREATE TABLE products (
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
-  CONSTRAINT fk_products_supplier_account
-    FOREIGN KEY (supplier_account_id)
-    REFERENCES business_user_accounts(id),
+  CONSTRAINT fk_products_supplier_business
+    FOREIGN KEY (supplier_business_id)
+    REFERENCES businesses(id),
   CONSTRAINT fk_products_product_category
     FOREIGN KEY (product_category_id)
     REFERENCES product_categories(id),

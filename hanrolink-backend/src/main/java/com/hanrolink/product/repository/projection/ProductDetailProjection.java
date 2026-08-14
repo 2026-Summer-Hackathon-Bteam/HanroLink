@@ -7,7 +7,7 @@ import com.hanrolink.product.enums.StorageType;
 
 public record ProductDetailProjection(
   Long id,
-  Long supplierAccountId,
+  Long supplierBusinessId,
   String name,
   Instant hiddenAt,
   Short productCategoryId,

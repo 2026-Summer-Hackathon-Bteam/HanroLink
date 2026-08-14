@@ -20,7 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.hanrolink.account.exception.UnsupportedJwtAccountRoleException;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
-import com.hanrolink.account.repository.projection.AuthenticatedBusinessUserAccountProjection;
+import com.hanrolink.account.repository.projection.AuthenticatedBusinessContextProjection;
 import com.hanrolink.business.enums.BusinessRole;
 import com.hanrolink.infrastructure.s3.S3DownloadUrlGenerator;
 import com.hanrolink.negotiationrequest.policy.NegotiationRequestPolicy;
@@ -95,7 +95,7 @@ public class ProductService {
     Long productId
   ) {
     // 認証情報に基づく商品詳細の閲覧者情報の取得
-    ProductDetailViewer authenticatedAccount = resolveViewer(
+    ProductDetailViewer viewer = resolveViewer(
       authenticatedJwtAccountRole,
       identityProviderSubject
     );
@@ -104,7 +104,7 @@ public class ProductService {
     ProductDetailProjection product = productRepository
       .findDetailById(
         productId,
-        authenticatedAccount.id()
+        viewer.businessId()
       )
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
@@ -148,13 +148,13 @@ public class ProductService {
 
     // 閲覧者に応じた操作権限と商談申請状態の判定
     boolean canManage =
-      authenticatedAccount.id() != null
-        && authenticatedAccount.id().equals(product.supplierAccountId());
+      viewer.businessId() != null
+        && viewer.businessId().equals(product.supplierBusinessId());
 
     boolean canCreateNegotiationRequest = false;
     boolean hasMyActiveNegotiationRequest = false;
 
-    if (authenticatedAccount.role() == ApplicationRole.BUYER) {
+    if (viewer.role() == ApplicationRole.BUYER) {
       Instant activeSince =
         Instant.now().minus(
           NegotiationRequestPolicy.ACTIVE_PERIOD_DAYS,
@@ -163,7 +163,7 @@ public class ProductService {
 
       long activeNegotiationRequestCount = productNegotiationRequestRepository
         .countActiveByBuyerAccountId(
-          authenticatedAccount.id(),
+          viewer.businessUserAccountId(),
           activeSince
         );
 
@@ -174,7 +174,7 @@ public class ProductService {
         productNegotiationRequestRepository
           .existsActiveByProductIdAndBuyerAccountId(
             productId,
-            authenticatedAccount.id(),
+            viewer.businessUserAccountId(),
             activeSince
           );
     }
@@ -249,7 +249,7 @@ public class ProductService {
 
     // 条件に一致する商品情報の取得
     Page<ProductSearchResultProjection> productPage =
-      productRepository.findSearchList(
+      productRepository.findSearchResults(
         availableSupplyMonths,
         request.mainIngredientRegionIds(),
         request.productCategoryGroupIds(),
@@ -334,6 +334,7 @@ public class ProductService {
     if (authenticatedJwtAccountRole == JwtAccountRole.ADMIN) {
       return new ProductDetailViewer(
         null,
+        null,
         ApplicationRole.ADMIN
       );
     }
@@ -342,7 +343,7 @@ public class ProductService {
       throw new UnsupportedJwtAccountRoleException();
     }
 
-    AuthenticatedBusinessUserAccountProjection account =
+    AuthenticatedBusinessContextProjection account =
       businessUserAccountRepository
         .findAuthenticatedAccountByIdentityProviderSubject(
           identityProviderSubject
@@ -350,8 +351,9 @@ public class ProductService {
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     return new ProductDetailViewer(
-      account.id(),
-      accountRoleOf(account.role())
+      account.businessUserAccountId(),
+      account.businessId(),
+      accountRoleOf(account.businessRole())
     );
   }
 
@@ -365,7 +367,8 @@ public class ProductService {
   }
 
   private record ProductDetailViewer(
-    Long id,
+    Long businessUserAccountId,
+    Long businessId,
     ApplicationRole role
   ) {}
 
