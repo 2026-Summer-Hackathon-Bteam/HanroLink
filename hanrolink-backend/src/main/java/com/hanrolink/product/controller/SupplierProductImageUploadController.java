@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hanrolink.product.api.ProductApi;
@@ -14,7 +15,6 @@ import com.hanrolink.product.response.SupplierProductImageUploadCreateResponse;
 import com.hanrolink.product.service.SupplierProductImageUploadService;
 import com.hanrolink.security.authorization.policy.RequiresApprovedSupplier;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 
