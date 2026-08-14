@@ -1,4 +1,4 @@
-package com.hanrolink.businessuseraccount.repository;
+package com.hanrolink.account.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -11,8 +11,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
-
-import com.hanrolink.account.repository.BusinessUserAccountRepository;
 
 @DataJpaTest
 @Testcontainers
