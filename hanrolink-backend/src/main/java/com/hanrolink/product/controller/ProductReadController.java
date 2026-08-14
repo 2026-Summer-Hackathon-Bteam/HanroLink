@@ -27,13 +27,13 @@ import jakarta.validation.Valid;
  */
 @Profile("s3")
 @RestController
-public class ProductController {
+public class ProductReadController {
 
   private final ProductService productService;
 
   private final AuthenticatedAccountRoleResolver authenticatedAccountRoleResolver;
 
-  public ProductController(
+  public ProductReadController(
     ProductService productService,
     AuthenticatedAccountRoleResolver authenticatedAccountRoleResolver
   ) {
