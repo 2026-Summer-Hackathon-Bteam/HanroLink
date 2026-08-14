@@ -1,0 +1,426 @@
+import { useState, useEffect, type SubmitEvent, useRef } from 'react'
+import type {
+  ProductSearchResult,
+  ProductSearchConditions,
+  ProductSearchOptions,
+} from '../features/product/productSearchTypes'
+import {
+  getProductSearchData,
+  getProductSearchOptions,
+} from '../features/product/productSearchService'
+import { formatTargetMonth } from '../shared/utils/yearMonth'
+import { createTargetMonths } from '../shared/utils/yearMonth'
+
+const toggleSelectedValue = <T,>(currentValues: T[], selectedValue: T): T[] => {
+  return currentValues.includes(selectedValue)
+    ? currentValues.filter((value) => value !== selectedValue)
+    : [...currentValues, selectedValue]
+}
+
+const initialSearchConditions: ProductSearchConditions = {
+  targetMonths: [],
+  productCategoryIds: [],
+  storageTypes: [],
+  mainIngredientRegionIds: [],
+}
+
+function ProductSearchPage() {
+  const [searchConditions, setSearchConditions] =
+    useState<ProductSearchConditions>(initialSearchConditions)
+  const [searchResult, setSearchResult] = useState<ProductSearchResult | null>(
+    null,
+  )
+  const [searchOptions, setSearchOptions] =
+    useState<ProductSearchOptions | null>(null)
+  const [searchError, setSearchError] = useState('')
+  const [optionError, setOptionError] = useState('')
+  const [targetMonths] = useState(createTargetMonths)
+  const searchConditionsRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    let isCancelled = false
+
+    const loadProductSearchOptions = async () => {
+      try {
+        const result = await getProductSearchOptions()
+
+        if (!isCancelled) {
+          setSearchOptions(result)
+        }
+      } catch {
+        if (!isCancelled) {
+          setOptionError('検索条件の選択肢の取得に失敗しました')
+        }
+      }
+    }
+
+    void loadProductSearchOptions()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    let isCancelled = false
+
+    const loadProductSearchResult = async () => {
+      try {
+        const result = await getProductSearchData(initialSearchConditions)
+
+        if (!isCancelled) {
+          setSearchResult(result)
+        }
+      } catch {
+        if (!isCancelled) {
+          setSearchError('商品一覧の取得に失敗しました')
+        }
+      }
+    }
+
+    void loadProductSearchResult()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [])
+
+  const handleBackToSearchConditions = () => {
+    searchConditionsRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
+  }
+
+  const handleTargetMonthToggle = (targetMonth: string) => {
+    setSearchConditions((prev) => ({
+      ...prev,
+      targetMonths: toggleSelectedValue(prev.targetMonths, targetMonth),
+    }))
+  }
+
+  const handleProductCategoryToggle = (productCategory: number) => {
+    setSearchConditions((prev) => ({
+      ...prev,
+      productCategoryIds: toggleSelectedValue(
+        prev.productCategoryIds,
+        productCategory,
+      ),
+    }))
+  }
+
+  const handleStorageTypeToggle = (
+    storageType: ProductSearchConditions['storageTypes'][number],
+  ) => {
+    setSearchConditions((prev) => ({
+      ...prev,
+      storageTypes: toggleSelectedValue(prev.storageTypes, storageType),
+    }))
+  }
+
+  const handleMainIngredientRegionToggle = (mainIngredientRegion: number) => {
+    setSearchConditions((prev) => ({
+      ...prev,
+      mainIngredientRegionIds: toggleSelectedValue(
+        prev.mainIngredientRegionIds,
+        mainIngredientRegion,
+      ),
+    }))
+  }
+
+  const handleSearch = async (e: SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setSearchError('')
+
+    try {
+      const result = await getProductSearchData(searchConditions)
+      setSearchResult(result)
+    } catch {
+      setSearchError('検索結果の取得に失敗しました。')
+    }
+  }
+
+  if (optionError) {
+    return (
+      <p role="alert" className="py-10 text-center text-error">
+        {optionError}
+      </p>
+    )
+  }
+
+  if (searchError && !searchResult) {
+    return (
+      <p role="alert" className="py-10 text-center text-error">
+        {searchError}
+      </p>
+    )
+  }
+
+  if (!searchOptions || !searchResult) {
+    return <p className="py-10 text-center">読み込み中...</p>
+  }
+
+  return (
+    <div className="flex mx-auto max-w-300 px-4 text-center md:px-6 lg:px-8 lg:gap-8 lg:py-6">
+      <aside
+        className="w-full rounded-xl bg-textbg/40 p-4 shadow-md ring-1 ring-text/10 scroll-mt-5 lg:top-24 lg:self-start lg:w-72"
+        ref={searchConditionsRef}
+      >
+        <form onSubmit={handleSearch}>
+          <h2 className="mt-0! mb-4! py-2 bg-bg text-xl! rounded-full">
+            商品検索
+          </h2>
+          <div className="pb-4">
+            <h3 className="mb-4 border-b-2 border-border px-2 text-left font-bold text-border textaccent">
+              提供可能時期
+            </h3>
+            <div className="grid grid-cols-2 gap-x-2 gap-y-3">
+              {targetMonths.map((targetMonth) => {
+                const isSelected =
+                  searchConditions.targetMonths.includes(targetMonth)
+
+                return (
+                  <button
+                    key={targetMonth}
+                    type="button"
+                    aria-pressed={isSelected}
+                    onClick={() => handleTargetMonthToggle(targetMonth)}
+                    className={
+                      isSelected
+                        ? 'rounded-full border border-border bg-border px-2 py-1 text-bg'
+                        : 'rounded-full border border-border bg-bg px-2 py-1 hover:bg-textbg/40'
+                    }
+                  >
+                    {formatTargetMonth(targetMonth)}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+          <div className="pb-4">
+            <h3 className="mb-2 border-b-2 border-border px-2 text-left font-bold text-border textaccent">
+              商品カテゴリー
+            </h3>
+            {[...searchOptions.productCategoryGroups]
+              .sort((a, b) => a.sortOrder - b.sortOrder)
+              .map((group) => (
+                <details className="group rounded-lg text-left" key={group.id}>
+                  <summary className="cursor-pointer rounded-md px-2 py-2 font-medium hover:bg-textbg/40">
+                    {group.name}
+                  </summary>
+                  {[...searchOptions.productCategories]
+                    .filter(
+                      (category) =>
+                        group.id === category.productCategoryGroupId,
+                    )
+                    .sort((a, b) => a.sortOrder - b.sortOrder)
+                    .map((category) => (
+                      <div
+                        key={category.id}
+                        className="ml-3 border-l border-border/30 pl-2"
+                      >
+                        <label>
+                          <input
+                            type="checkbox"
+                            value={category.id}
+                            checked={searchConditions.productCategoryIds.includes(
+                              category.id,
+                            )}
+                            onChange={() =>
+                              handleProductCategoryToggle(category.id)
+                            }
+                          />
+                          <span>{category.name}</span>
+                        </label>
+                      </div>
+                    ))}
+                </details>
+              ))}
+          </div>
+          <div className="pb-4">
+            <h3 className="mb-2 border-b-2 border-border px-2 text-left font-bold text-border textaccent">
+              保存方法
+            </h3>
+
+            <div className="grid grid-cols-3 justify-items-start gap-3">
+              {searchOptions.storageTypes.map((type) => (
+                <label
+                  key={type.value}
+                  className="flex cursor-pointer items-center gap-1 rounded-md px-1 py-1.5 hover:bg-textbg/40"
+                >
+                  <input
+                    type="checkbox"
+                    className="accent-border"
+                    value={type.value}
+                    checked={searchConditions.storageTypes.includes(type.value)}
+                    onChange={() => handleStorageTypeToggle(type.value)}
+                  />
+                  <span>{type.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className="pb-4">
+            <h3 className="mb-2 border-b-2 border-border px-2 text-left font-bold text-border textaccent">
+              主原料産地
+            </h3>
+            <div className="grid grid-cols-3 justify-items-start gap-3">
+              {[...searchOptions.mainIngredientRegions]
+                .sort((a, b) => a.sortOrder - b.sortOrder)
+                .map((region) => (
+                  <label
+                    key={region.id}
+                    className="flex cursor-pointer items-center gap-1 rounded-md px-1 py-1.5 hover:bg-textbg/40"
+                  >
+                    <input
+                      type="checkbox"
+                      className="accent-border"
+                      value={region.id}
+                      checked={searchConditions.mainIngredientRegionIds.includes(
+                        region.id,
+                      )}
+                      onChange={() =>
+                        handleMainIngredientRegionToggle(region.id)
+                      }
+                    />
+                    <span>{region.name}</span>
+                  </label>
+                ))}
+            </div>
+          </div>
+          <div className="mt-5 grid gap-2">
+            <button
+              type="submit"
+              className="rounded-full bg-border py-2 font-bold text-bg"
+            >
+              この条件で検索
+            </button>
+
+            <button
+              type="button"
+              className="py-1 text-sm text-other underline underline-offset-2"
+              onClick={() => setSearchConditions(initialSearchConditions)}
+            >
+              条件をリセット
+            </button>
+          </div>
+        </form>
+      </aside>
+
+      <section className="min-w-0 flex-1">
+        <div>
+          <p className="px-2 text-left border-b-10 border-textbg mb-8">
+            <span className="text-4xl mr-1">
+              {searchResult.pagination.totalCount}
+            </span>
+            件の商品が見つかりました
+          </p>
+        </div>
+        <div>
+          {searchError && (
+            <p role="alert" className="mb-4 text-left text-error">
+              {searchError}
+            </p>
+          )}
+          <div className="flex flex-col gap-7">
+            {searchResult.products.map((product, index) => (
+              <div key={product.id}>
+                <article className="p-6 rounded-2xl shadow-[0_1px_2px_0.5px_rgb(0_0_0/0.30)]">
+                  <div className="flex pb-4 gap-4">
+                    <div className="aspect-4/3 w-full shrink-0 overflow-hidden md:w-[30%]">
+                      <img
+                        src={product.mainImageUrl}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <p className="text-left">{product.businessName}</p>
+                      <h3 className="text-2xl text-left mb-2">
+                        {product.name}
+                      </h3>
+                      <div className="flex gap-2">
+                        <span className="px-3 py-1 rounded-full bg-badgearea">
+                          {product.mainIngredientRegionName}
+                        </span>
+                        <span className="px-3 py-1 rounded-full bg-badgesto">
+                          product.storageType
+                        </span>
+                        <span className="px-3 py-1 rounded-full bg-badgecate">
+                          {product.productCategoryName}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="overflow-hidden border border-border">
+                    {/* スマホ・タブレット用の見出し */}
+                    <div className="grid grid-cols-[8rem_minmax(0,1fr)] border-b border-border bg-textbg lg:hidden">
+                      <div className="border-r border-border px-3 py-2 text-left">
+                        提供可能月
+                      </div>
+                      <div className="px-3 py-2 text-center">提供可能数量</div>
+                    </div>
+
+                    <div className="lg:grid lg:grid-cols-[9rem_repeat(6,minmax(0,1fr))]">
+                      {/* PC用の左側の項目名 */}
+                      <div className="hidden bg-textbg lg:grid lg:grid-rows-2">
+                        <div className="flex items-center border-b border-border px-3 py-2 text-left text-sm">
+                          提供可能月
+                        </div>
+                        <div className="flex items-center px-3 py-2 text-left text-sm">
+                          提供可能数量
+                        </div>
+                      </div>
+
+                      {product.monthlySupplyCapacities.map((capacity) => {
+                        return (
+                          <div
+                            key={capacity.targetMonth}
+                            className="
+                                              grid grid-cols-[8rem_minmax(0,1fr)]
+                                              border-b border-border last:border-b-0
+                                              lg:grid-cols-1 lg:grid-rows-2
+                                              lg:border-b-0 lg:border-l
+                                            "
+                          >
+                            <div
+                              className="
+                                                flex items-center whitespace-nowrap bg-textbg px-2 py-1 text-left text-sm
+                                                border-r border-border
+                                                lg:justify-center lg:bg-bg
+                                                lg:border-r-0 lg:border-b lg:text-center
+                                              "
+                            >
+                              {formatTargetMonth(capacity.targetMonth)}
+                            </div>
+
+                            <div className="flex justify-center items-center px-2 py-1 text-sm">
+                              {capacity.availableQuantity}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </article>
+                {(index + 1) % 5 === 0 &&
+                  index !== searchResult.products.length - 1 && (
+                    <div className="flex justify-end">
+                      <button
+                        type="button"
+                        onClick={handleBackToSearchConditions}
+                        className="mt-1 underline underline-offset-2 hover:no-underline"
+                      >
+                        検索条件に戻る
+                      </button>
+                    </div>
+                  )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
+  )
+}
+
+export default ProductSearchPage

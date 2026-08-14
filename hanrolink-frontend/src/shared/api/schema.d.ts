@@ -100,22 +100,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/onboarding": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["get"];
-        put?: never;
-        post: operations["create_4"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/me/supplier/product-negotiation-requests/{productNegotiationRequestId}/accept": {
         parameters: {
             query?: never;
@@ -157,7 +141,7 @@ export interface paths {
         };
         get: operations["list"];
         put?: never;
-        post: operations["create_5"];
+        post: operations["create_4"];
         delete?: never;
         options?: never;
         head?: never;
@@ -219,7 +203,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_1"];
+        get: operations["get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -235,7 +219,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_2"];
+        get: operations["get_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -251,7 +235,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_3"];
+        get: operations["get_2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -267,7 +251,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_4"];
+        get: operations["get_3"];
         put?: never;
         post?: never;
         delete?: never;
@@ -283,7 +267,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_5"];
+        get: operations["get_4"];
         put?: never;
         post?: never;
         delete?: never;
@@ -411,7 +395,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_6"];
+        get: operations["get_5"];
         put?: never;
         post?: never;
         delete?: never;
@@ -443,7 +427,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_7"];
+        get: operations["get_6"];
         put?: never;
         post?: never;
         delete?: never;
@@ -593,7 +577,7 @@ export interface components {
         };
         SupplierProductCreateResponse: {
             /** Format: int64 */
-            productId: number;
+            id: number;
         };
         BuyerProcurementRequestCreateRequest: {
             title: string;
@@ -610,38 +594,11 @@ export interface components {
         };
         BuyerProcurementRequestCreateResponse: {
             /** Format: int64 */
-            procurementRequestId: number;
+            id: number;
         };
         SupplierProcurementNegotiationRequestCreateRequest: {
             /** Format: int64 */
             productId: number;
-        };
-        OnboardingBusinessRequest: {
-            name: string;
-            nameKana: string;
-            websiteUrl?: string;
-            addressPostalCode: string;
-            addressPrefecture: string;
-            addressMunicipalityStreet: string;
-            addressBuilding?: string;
-            phoneNumber: string;
-        };
-        OnboardingBusinessUserAccountRequest: {
-            /** @enum {string} */
-            role: "SUPPLIER" | "BUYER";
-            lastName: string;
-            firstName: string;
-            lastNameKana: string;
-            firstNameKana: string;
-            phoneNumber: string;
-        };
-        OnboardingCreateRequest: {
-            business: components["schemas"]["OnboardingBusinessRequest"];
-            businessUserAccount: components["schemas"]["OnboardingBusinessUserAccountRequest"];
-        };
-        OnboardingCreateResponse: {
-            /** @enum {string} */
-            businessUserAccountRegistrationStatus?: "NOT_SUBMITTED" | "PENDING" | "APPROVED";
         };
         NegotiationRequestAcceptResponse: {
             channel: components["schemas"]["NegotiationRequestChannelResponse"];
@@ -692,7 +649,7 @@ export interface components {
             mainIngredientRegionName: string;
             monthlySupplyCapacities: components["schemas"]["MonthlySupplyCapacityResponse"][];
             mainImageUrl: string;
-            pagination?: components["schemas"]["PaginationResponse"];
+            pagination: components["schemas"]["PaginationResponse"];
         };
         ProductCategoryResponse: {
             /** Format: int32 */
@@ -760,7 +717,7 @@ export interface components {
             businessAddressPrefecture: string;
             businessAddressMunicipalityStreet: string;
             businessAddressBuilding?: string;
-            businessWebsiteUrl: string;
+            businessWebsiteUrl?: string;
         };
         StorageTypeResponse: {
             /** @enum {string} */
@@ -874,10 +831,7 @@ export interface components {
             productCategories: components["schemas"]["ProductCategoryOptionResponse"][];
             storageTypes: components["schemas"]["StorageTypeOptionResponse"][];
         };
-        OnboardingGetResponse: {
-            email: string;
-        };
-        CurrentAccountResponse: {
+        CurrentAccountGetResponse: {
             /** @enum {string|null} */
             role: "ADMIN" | "SUPPLIER" | "BUYER" | null;
             /** @enum {string|null} */
@@ -895,7 +849,7 @@ export interface components {
         };
         SupplierProductNegotiationRequestListResponse: {
             /** Format: int64 */
-            productNegotiationRequestId: number;
+            id: number;
             product: components["schemas"]["ProductSnapshotSummaryResponse"];
             buyer: components["schemas"]["SupplierProductNegotiationRequestBuyerResponse"];
             /** Format: date-time */
@@ -908,7 +862,7 @@ export interface components {
         };
         SupplierProcurementNegotiationRequestListResponse: {
             /** Format: int64 */
-            procurementNegotiationRequestId: number;
+            id: number;
             procurementRequest: components["schemas"]["ProcurementRequestSnapshotSummaryResponse"];
             product: components["schemas"]["ProductSnapshotSummaryResponse"];
             /** Format: date-time */
@@ -939,7 +893,7 @@ export interface components {
         };
         BuyerProductNegotiationRequestListResponse: {
             /** Format: int64 */
-            productNegotiationRequestId: number;
+            id: number;
             product: components["schemas"]["ProductSnapshotSummaryResponse"];
             /** Format: date-time */
             expiresAt: string;
@@ -952,7 +906,7 @@ export interface components {
         };
         BuyerProcurementNegotiationRequestListResponse: {
             /** Format: int64 */
-            procurementNegotiationRequestId: number;
+            id: number;
             procurementRequest: components["schemas"]["ProcurementRequestSnapshotSummaryResponse"];
             product: components["schemas"]["BuyerProcurementNegotiationProductSnapshotSummaryResponse"];
             /** Format: date-time */
@@ -1019,7 +973,7 @@ export interface components {
             addressBuilding?: string;
             phoneNumber: string;
         };
-        AdminBusinessApprovalPendingListResponse: {
+        AdminBusinessApprovalListResponse: {
             /** Format: uuid */
             businessUserAccountId: string;
             businessName: string;
@@ -1314,50 +1268,6 @@ export interface operations {
             };
         };
     };
-    get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["OnboardingGetResponse"];
-                };
-            };
-        };
-    };
-    create_4: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["OnboardingCreateRequest"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["OnboardingCreateResponse"];
-                };
-            };
-        };
-    };
     accept: {
         parameters: {
             query?: never;
@@ -1424,7 +1334,7 @@ export interface operations {
             };
         };
     };
-    create_5: {
+    create_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -1512,7 +1422,7 @@ export interface operations {
             };
         };
     };
-    get_1: {
+    get: {
         parameters: {
             query?: never;
             header?: never;
@@ -1532,7 +1442,7 @@ export interface operations {
             };
         };
     };
-    get_2: {
+    get_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -1552,7 +1462,7 @@ export interface operations {
             };
         };
     };
-    get_3: {
+    get_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -1572,7 +1482,7 @@ export interface operations {
             };
         };
     };
-    get_4: {
+    get_3: {
         parameters: {
             query?: never;
             header?: never;
@@ -1592,7 +1502,7 @@ export interface operations {
             };
         };
     };
-    get_5: {
+    get_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -1607,7 +1517,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CurrentAccountResponse"];
+                    "*/*": components["schemas"]["CurrentAccountGetResponse"];
                 };
             };
         };
@@ -1752,7 +1662,7 @@ export interface operations {
             };
         };
     };
-    get_6: {
+    get_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -1794,7 +1704,7 @@ export interface operations {
             };
         };
     };
-    get_7: {
+    get_6: {
         parameters: {
             query?: never;
             header?: never;
@@ -1853,7 +1763,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["AdminBusinessApprovalPendingListResponse"][];
+                    "*/*": components["schemas"]["AdminBusinessApprovalListResponse"][];
                 };
             };
         };
