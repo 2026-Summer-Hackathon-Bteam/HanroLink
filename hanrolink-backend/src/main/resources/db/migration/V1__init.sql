@@ -171,7 +171,7 @@ CREATE TABLE product_stories (
 
 CREATE TABLE procurement_requests (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  buyer_account_id BIGINT NOT NULL,
+  buyer_business_id BIGINT NOT NULL,
   product_category_id SMALLINT NOT NULL,
   title VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
@@ -181,9 +181,9 @@ CREATE TABLE procurement_requests (
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
-  CONSTRAINT fk_procurement_requests_buyer_account
-    FOREIGN KEY (buyer_account_id)
-    REFERENCES business_user_accounts(id),
+  CONSTRAINT fk_procurement_requests_buyer_business
+    FOREIGN KEY (buyer_business_id)
+    REFERENCES businesses(id),
   CONSTRAINT fk_procurement_requests_product_category
     FOREIGN KEY (product_category_id)
     REFERENCES product_categories(id)

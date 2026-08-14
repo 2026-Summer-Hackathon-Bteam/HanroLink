@@ -19,8 +19,8 @@ public class ProcurementRequest {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "buyer_account_id", nullable = false)
-  private Long buyerAccountId;
+  @Column(name = "buyer_business_id", nullable = false)
+  private Long buyerBusinessId;
 
   @Column(name = "product_category_id", nullable = false)
   private Short productCategoryId;
