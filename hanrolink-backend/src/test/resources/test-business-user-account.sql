@@ -1,6 +1,5 @@
 INSERT INTO business_user_accounts (
   business_id,
-  public_id,
   identity_provider_subject,
   last_name,
   first_name,
@@ -18,7 +17,6 @@ VALUES
       FROM businesses
       WHERE name = 'テスト株式会社'
     ),
-    '00000000-0000-0000-0000-000000000001',
     '00000000-0000-0000-0000-000000000001',
     '鈴木',
     '太郎',
