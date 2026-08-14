@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hanrolink.product.api.ProductApi;
 import com.hanrolink.product.request.ProductSearchRequest;
 import com.hanrolink.product.response.ProductDetailResponse;
-import com.hanrolink.product.response.ProductSearchListResponse;
+import com.hanrolink.product.response.ProductSearchResponse;
 import com.hanrolink.product.service.ProductService;
 import com.hanrolink.security.authorization.AuthenticatedAccountRoleResolver;
 import com.hanrolink.security.authorization.enums.JwtAccountRole;
@@ -72,7 +72,7 @@ public class ProductReadController {
    */
   @RequiresAdminOrApprovedBusiness
   @GetMapping(ProductApi.V1.BASE)
-  public ResponseEntity<ProductSearchListResponse> search(
+  public ResponseEntity<ProductSearchResponse> search(
     @Valid
     @ParameterObject
     @ModelAttribute

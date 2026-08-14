@@ -5,7 +5,7 @@ import java.util.Objects;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record ProductSearchListItemResponse(
+public record ProductSearchResultResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   Long id,
 
@@ -27,40 +27,40 @@ public record ProductSearchListItemResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   String mainImageUrl
 ) {
-  public ProductSearchListItemResponse {
+  public ProductSearchResultResponse {
     Objects.requireNonNull(
       id,
-      "ProductSearchListItemResponse.id must not be null"
+      "ProductSearchResultResponse.id must not be null"
     );
 
     Objects.requireNonNull(
       name,
-      "ProductSearchListItemResponse.name must not be null"
+      "ProductSearchResultResponse.name must not be null"
     );
 
     Objects.requireNonNull(
       businessName,
-      "ProductSearchListItemResponse.businessName must not be null"
+      "ProductSearchResultResponse.businessName must not be null"
     );
 
     Objects.requireNonNull(
       productCategoryName,
-      "ProductSearchListItemResponse.productCategoryName must not be null"
+      "ProductSearchResultResponse.productCategoryName must not be null"
     );
 
     Objects.requireNonNull(
       mainIngredientRegionName,
-      "ProductSearchListItemResponse.mainIngredientRegionName must not be null"
+      "ProductSearchResultResponse.mainIngredientRegionName must not be null"
     );
 
     Objects.requireNonNull(
       monthlySupplyCapacities,
-      "ProductSearchListItemResponse.monthlySupplyCapacities must not be null"
+      "ProductSearchResultResponse.monthlySupplyCapacities must not be null"
     );
 
     Objects.requireNonNull(
       mainImageUrl,
-      "ProductSearchListItemResponse.mainImageUrl must not be null"
+      "ProductSearchResultResponse.mainImageUrl must not be null"
     );
   }
 }

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 import com.hanrolink.product.entity.Product;
 import com.hanrolink.product.enums.StorageType;
 import com.hanrolink.product.repository.projection.ProductDetailProjection;
-import com.hanrolink.product.repository.projection.ProductSearchListItemProjection;
+import com.hanrolink.product.repository.projection.ProductSearchResultProjection;
 import com.hanrolink.product.repository.projection.PublicProductListProjection;
 import com.hanrolink.product.repository.projection.SupplierProductListProjection;
 
@@ -99,7 +99,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   );
 
   @Query("""
-    SELECT new com.hanrolink.product.repository.projection.ProductSearchListItemProjection(
+    SELECT new com.hanrolink.product.repository.projection.ProductSearchResultProjection(
       product.id,
       product.name,
       business.name,
@@ -146,7 +146,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       product.updatedAt DESC,
       product.id DESC
     """)
-  Page<ProductSearchListItemProjection> findSearchList(
+  Page<ProductSearchResultProjection> findSearchList(
     @Param("availableSupplyMonths")
     List<LocalDate> availableSupplyMonths,
     @Param("mainIngredientRegionIds")

@@ -1,6 +1,6 @@
 package com.hanrolink.product.repository.projection;
 
-public record ProductSearchListItemProjection(
+public record ProductSearchResultProjection(
   Long id,
   String name,
   String businessName,

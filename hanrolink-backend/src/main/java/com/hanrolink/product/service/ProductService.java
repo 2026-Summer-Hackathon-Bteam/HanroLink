@@ -32,16 +32,16 @@ import com.hanrolink.product.repository.MonthlySupplyCapacityRepository;
 import com.hanrolink.product.repository.ProductRepository;
 import com.hanrolink.product.repository.ProductStoryRepository;
 import com.hanrolink.product.repository.projection.ProductDetailProjection;
-import com.hanrolink.product.repository.projection.ProductSearchListItemProjection;
+import com.hanrolink.product.repository.projection.ProductSearchResultProjection;
 import com.hanrolink.product.repository.projection.ProductSearchMonthlySupplyCapacityProjection;
 import com.hanrolink.product.request.ProductSearchRequest;
 import com.hanrolink.product.response.ProductDetailResponse;
-import com.hanrolink.product.response.ProductSearchListResponse;
+import com.hanrolink.product.response.ProductSearchResponse;
 import com.hanrolink.product.response.component.MonthlySupplyCapacityResponse;
 import com.hanrolink.product.response.component.ProductExpirationTypeResponse;
 import com.hanrolink.product.response.component.ProductMainIngredientRegionResponse;
 import com.hanrolink.product.response.component.ProductPermissionsResponse;
-import com.hanrolink.product.response.component.ProductSearchListItemResponse;
+import com.hanrolink.product.response.component.ProductSearchResultResponse;
 import com.hanrolink.product.response.component.ProductStoryResponse;
 import com.hanrolink.product.response.component.ProductSupplierResponse;
 import com.hanrolink.product.response.component.StorageTypeResponse;
@@ -233,7 +233,7 @@ public class ProductService {
    * @return 商品一覧
    */
   @Transactional(readOnly = true)
-  public ProductSearchListResponse search(
+  public ProductSearchResponse search(
     ProductSearchRequest request
   ) {
     // 検索条件の生成
@@ -248,7 +248,7 @@ public class ProductService {
     );
 
     // 条件に一致する商品情報の取得
-    Page<ProductSearchListItemProjection> productPage =
+    Page<ProductSearchResultProjection> productPage =
       productRepository.findSearchList(
         availableSupplyMonths,
         request.mainIngredientRegionIds(),
@@ -289,12 +289,12 @@ public class ProductService {
           );
 
     // 商品ごとの検索結果レスポンスの生成
-    List<ProductSearchListItemResponse> products =
+    List<ProductSearchResultResponse> products =
       productPage
         .getContent()
         .stream()
         .map(product ->
-          new ProductSearchListItemResponse(
+          new ProductSearchResultResponse(
             product.id(),
             product.name(),
             product.businessName(),
@@ -321,7 +321,7 @@ public class ProductService {
         productPage.getTotalPages()
       );
 
-    return new ProductSearchListResponse(
+    return new ProductSearchResponse(
       products,
       pagination
     );
