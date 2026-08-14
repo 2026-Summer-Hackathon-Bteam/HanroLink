@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 
 /**
- * 認証中のBuyerが自身の募集情報を管理するためのController。
+ * 認証中のBuyerが自社の募集情報を管理するためのController。
  * 他のBuyerが登録した募集情報は操作対象に含まない。
  */
 @RestController
