@@ -2,6 +2,7 @@ package com.hanrolink.business.entity;
 
 import java.sql.Types;
 import java.time.Instant;
+import java.util.UUID;
 
 import org.hibernate.annotations.JdbcTypeCode;
 
@@ -21,6 +22,9 @@ public class Business {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Column(name = "public_id", updatable = false, nullable = false)
+  private UUID publicId = UUID.randomUUID();
 
   @Column(nullable = false)
   private String name;
