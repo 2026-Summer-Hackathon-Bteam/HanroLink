@@ -86,7 +86,7 @@ public class SupplierProductManagementController {
   /**
    * 商品情報を更新することを受け付ける
    * @param jwt 認証済みユーザーのJWT
-   * @param productId 更新対象の商品ID
+   * @param productId 更新対象の商品の公開識別子
    * @param request 商品の更新情報
    * @return 更新結果
    */
@@ -112,7 +112,7 @@ public class SupplierProductManagementController {
   /**
    * 自社に紐づく商品の表示状態を更新する
    * @param jwt 認証済みユーザーのJWT
-   * @param productId 更新対象の商品ID
+   * @param productId 更新対象の商品の公開識別子
    * @param request 表示状態の更新情報
    * @return 更新結果
    */
@@ -138,7 +138,7 @@ public class SupplierProductManagementController {
   /**
    * 自社に紐づく商品を削除する
    * @param jwt 認証済みユーザーのJWT
-   * @param productId 削除対象の商品ID
+   * @param productId 削除対象の商品の公開識別子
    * @return 削除結果
    */
   @RequiresApprovedSupplier

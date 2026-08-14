@@ -86,7 +86,7 @@ public class ProductService {
    * 商品詳細情報を取得する
    * @param authenticatedJwtAccountRole JWTから取得したアカウントロール
    * @param identityProviderSubject 認証プロバイダーのユーザー識別子
-   * @param productPublicId 取得対象の商品ID
+   * @param productPublicId 取得対象の商品の公開識別子
    * @return 商品詳細情報
    */
   @Transactional(readOnly = true)

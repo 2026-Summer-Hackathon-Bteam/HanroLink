@@ -219,7 +219,7 @@ public class SupplierProductManagementService {
   /**
    * 自社に紐づく商品情報を更新する
    * @param identityProviderSubject 認証プロバイダーのユーザー識別子
-   * @param productPublicId 更新対象の商品ID
+   * @param productPublicId 更新対象の商品の公開識別子
    * @param request 商品の更新情報
    */
   @Transactional
@@ -422,7 +422,7 @@ public class SupplierProductManagementService {
   /**
    * 自社に紐づく商品の表示状態を更新する
    * @param identityProviderSubject 認証プロバイダーのユーザー識別子
-   * @param productPublicId 更新対象の商品ID
+   * @param productPublicId 更新対象の商品の公開識別子
    * @param request 表示状態の更新情報
    */
   @Transactional
@@ -445,7 +445,7 @@ public class SupplierProductManagementService {
   /**
    * 自社に紐づく商品を削除する
    * @param identityProviderSubject 認証プロバイダーのユーザー識別子
-   * @param productPublicId 削除対象の商品ID
+   * @param productPublicId 削除対象の商品の公開識別子
    */
   @Transactional
   public void delete(
