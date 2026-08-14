@@ -2,6 +2,7 @@ package com.hanrolink.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.hanrolink.product.api.ProductApi;
 import com.hanrolink.security.authorization.AccountGrantedAuthoritiesConverter;
 
 @Configuration
@@ -30,7 +32,7 @@ public class SecurityConfig {
       // Jwtが有効化した場合、下記の設定は変更すること
       // 全リクエストを許可
       .authorizeHttpRequests(auth -> auth
-        .requestMatchers("/public/**").permitAll()
+        .requestMatchers(HttpMethod.GET, ProductApi.V1.BASE_PUBLIC).permitAll()
         .anyRequest().permitAll()
       );
 

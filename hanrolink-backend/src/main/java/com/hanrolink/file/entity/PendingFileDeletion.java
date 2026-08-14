@@ -1,4 +1,4 @@
-package com.hanrolink.filedeletion.entity;
+package com.hanrolink.file.entity;
 
 import java.time.Instant;
 
@@ -29,6 +29,12 @@ public class PendingFileDeletion {
   private Instant updatedAt;
 
   protected PendingFileDeletion() {}
+
+  public PendingFileDeletion(
+    String storageKey
+  ) {
+    this.storageKey = storageKey;
+  }
 
   @PrePersist
   private void onCreate() {

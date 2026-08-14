@@ -1,6 +1,6 @@
 package com.hanrolink.product.request.component;
 
-import org.springframework.web.multipart.MultipartFile;
+import java.util.UUID;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -27,5 +27,5 @@ public record ProductStoryUpdateRequest(
   @Size(max = 255)
   String body,
 
-  MultipartFile imageFile
+  UUID pendingFileUploadId
 ) {}

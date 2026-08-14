@@ -9,10 +9,7 @@ public record ProductCategoryGroupOptionResponse(
   Short id,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  String name,
-
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  Short sortOrder
+  String name
 ) {
   public ProductCategoryGroupOptionResponse {
     Objects.requireNonNull(
@@ -23,11 +20,6 @@ public record ProductCategoryGroupOptionResponse(
     Objects.requireNonNull(
       name,
       "ProductCategoryGroupOptionResponse.name must not be null"
-    );
-
-    Objects.requireNonNull(
-      sortOrder,
-      "ProductCategoryGroupOptionResponse.sortOrder must not be null"
     );
   }
 }
