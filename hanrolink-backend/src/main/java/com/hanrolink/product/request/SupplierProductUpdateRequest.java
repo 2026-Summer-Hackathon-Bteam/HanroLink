@@ -3,6 +3,7 @@ package com.hanrolink.product.request;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
@@ -136,5 +137,29 @@ public record SupplierProductUpdateRequest(
       )
       .distinct()
       .count() == ProductStoryPolicy.REQUIRED_COUNT;
+  }
+
+  @AssertTrue(message = "同じ画像を複数指定することはできません")
+  public boolean hasUniquePendingFileUploadIds() {
+    if (productStories == null
+      || productStories.size() != ProductStoryPolicy.REQUIRED_COUNT
+      || productStories.stream().anyMatch(Objects::isNull)
+    ) {
+      return true;
+    }
+
+    List<UUID> pendingFileUploadIds =
+      productStories
+        .stream()
+        .map(productStory ->
+          productStory.pendingFileUploadId()
+        )
+        .filter(Objects::nonNull)
+        .toList();
+
+    return pendingFileUploadIds
+      .stream()
+      .distinct()
+      .count() == pendingFileUploadIds.size();
   }
 }
