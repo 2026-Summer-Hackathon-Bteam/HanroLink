@@ -1,7 +1,6 @@
 package com.hanrolink.account.entity;
 
 import java.time.Instant;
-import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,9 +21,6 @@ public class BusinessUserAccount {
 
   @Column(name = "business_id", nullable = false)
   private Long businessId;
-
-  @Column(name = "public_id", updatable = false, nullable = false)
-  private UUID publicId = UUID.randomUUID();
 
   @Column(
     name = "identity_provider_subject",
@@ -93,10 +89,6 @@ public class BusinessUserAccount {
 
   public Long getBusinessId() {
     return businessId;
-  }
-
-  public UUID getPublicId() {
-    return publicId;
   }
 
   public String getLastName() {

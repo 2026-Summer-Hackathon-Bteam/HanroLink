@@ -31,7 +31,6 @@ CREATE TABLE businesses (
 CREATE TABLE business_user_accounts (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   business_id BIGINT NOT NULL,
-  public_id UUID UNIQUE NOT NULL,
   identity_provider_subject VARCHAR(255) UNIQUE NOT NULL,
   last_name VARCHAR(255) NOT NULL,
   first_name VARCHAR(255) NOT NULL,
