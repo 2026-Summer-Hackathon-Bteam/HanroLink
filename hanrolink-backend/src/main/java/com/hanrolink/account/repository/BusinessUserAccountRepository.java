@@ -16,8 +16,6 @@ import com.hanrolink.account.repository.projection.AuthorizationContextProjectio
 @Repository
 public interface BusinessUserAccountRepository extends JpaRepository<BusinessUserAccount, Long> {
 
-  Optional<BusinessUserAccount> findByIdentityProviderSubject(String identityProviderSubject);
-
   boolean existsByIdentityProviderSubject(String identityProviderSubject);
 
   Optional<BusinessUserAccount> findByBusinessId(Long businessId);
