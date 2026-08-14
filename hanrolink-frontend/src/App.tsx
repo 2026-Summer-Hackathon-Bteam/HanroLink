@@ -22,6 +22,7 @@ import ProductEditPage from './pages/ProductEditPage'
 import ProcurementRequestDetailPage from './pages/ProcurementRequestDetailPage'
 import ProcurementRequestEditPage from './pages/ProcurementRequestEditPage'
 import ProductSearchPage from './pages/ProductSearchPage'
+import ProcurementRequestSearchPage from './pages/ProcurementRequestSearchPage'
 
 function App() {
   return (
@@ -62,6 +63,10 @@ function App() {
             <Route
               path="/products/:productId/edit"
               element={<ProductEditPage />}
+            />
+            <Route
+              path="/procurement-requests"
+              element={<ProcurementRequestSearchPage />}
             />
             <Route
               path="/procurement-requests/new"
