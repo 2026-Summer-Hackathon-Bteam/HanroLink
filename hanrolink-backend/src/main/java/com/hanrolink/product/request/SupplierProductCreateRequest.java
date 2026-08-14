@@ -126,7 +126,7 @@ public record SupplierProductCreateRequest(
       || productStories.size() != ProductStoryPolicy.REQUIRED_COUNT
       || productStories.stream().anyMatch(
         item -> item == null || item.position() == null
-      ) 
+      )
     ) {
       return true;
     }
@@ -135,6 +135,26 @@ public record SupplierProductCreateRequest(
       .stream()
       .map(productStory ->
         productStory.position()
+      )
+      .distinct()
+      .count() == ProductStoryPolicy.REQUIRED_COUNT;
+  }
+
+  @AssertTrue(message = "同じ画像を複数指定することはできません")
+  public boolean hasUniquePendingFileUploadIds() {
+    if (productStories == null
+      || productStories.size() != ProductStoryPolicy.REQUIRED_COUNT
+      || productStories.stream().anyMatch(
+        item -> item == null || item.pendingFileUploadId() == null
+      )
+    ) {
+      return true;
+    }
+
+    return productStories
+      .stream()
+      .map(productStory ->
+        productStory.pendingFileUploadId()
       )
       .distinct()
       .count() == ProductStoryPolicy.REQUIRED_COUNT;
