@@ -264,8 +264,8 @@ public class ProductService {
       productPage
         .getContent()
         .stream()
-        .map(productSearchList ->
-          productSearchList.id()
+        .map(product ->
+          product.id()
         )
         .toList();
 
