@@ -17,7 +17,7 @@ import com.hanrolink.product.response.ProductSearchListResponse;
 import com.hanrolink.product.service.ProductService;
 import com.hanrolink.security.authorization.AuthenticatedAccountRoleResolver;
 import com.hanrolink.security.authorization.enums.JwtAccountRole;
-import com.hanrolink.security.authorization.policy.RequiresAdminOrApprovedBusinessUserAccount;
+import com.hanrolink.security.authorization.policy.RequiresAdminOrApprovedBusiness;
 
 import jakarta.validation.Valid;
 
@@ -47,7 +47,7 @@ public class ProductController {
    * @param productId 取得対象の商品ID
    * @return 商品詳細情報
    */
-  @RequiresAdminOrApprovedBusinessUserAccount
+  @RequiresAdminOrApprovedBusiness
   @GetMapping(ProductApi.V1.BY_ID)
   public ResponseEntity<ProductDetailResponse> getDetail(
     @AuthenticationPrincipal Jwt jwt,
@@ -70,7 +70,7 @@ public class ProductController {
    * @param request 商品の検索条件
    * @return 商品の検索結果
    */
-  @RequiresAdminOrApprovedBusinessUserAccount
+  @RequiresAdminOrApprovedBusiness
   @GetMapping(ProductApi.V1.BASE)
   public ResponseEntity<ProductSearchListResponse> search(
     @Valid

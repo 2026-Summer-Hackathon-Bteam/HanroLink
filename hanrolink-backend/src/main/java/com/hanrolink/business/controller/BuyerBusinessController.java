@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hanrolink.business.api.BusinessApi;
 import com.hanrolink.business.response.BuyerProfileGetResponse;
 import com.hanrolink.business.service.BuyerBusinessService;
-import com.hanrolink.security.authorization.policy.RequiresAdminOrApprovedBusinessUserAccount;
+import com.hanrolink.security.authorization.policy.RequiresAdminOrApprovedBusiness;
 
 @RestController
 public class BuyerBusinessController {
@@ -31,7 +31,7 @@ public class BuyerBusinessController {
    * @param businessId 取得対象事業者の公開識別子
    * @return 取得対象のバイヤープロフィール
    */
-  @RequiresAdminOrApprovedBusinessUserAccount
+  @RequiresAdminOrApprovedBusiness
   @GetMapping(BusinessApi.V1.BUYER)
   public ResponseEntity<BuyerProfileGetResponse> get(
     @AuthenticationPrincipal Jwt jwt,
