@@ -1,7 +1,5 @@
 package com.hanrolink.procurementrequest.controller;
 
-import java.util.List;
-
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hanrolink.procurementrequest.api.ProcurementRequestApi;
 import com.hanrolink.procurementrequest.request.ProcurementRequestSearchRequest;
 import com.hanrolink.procurementrequest.response.ProcurementRequestDetailResponse;
-import com.hanrolink.procurementrequest.response.ProcurementRequestListResponse;
+import com.hanrolink.procurementrequest.response.ProcurementRequestSearchResponse;
 
 import jakarta.validation.Valid;
 
@@ -36,7 +34,7 @@ public class ProcurementRequestReadController {
 
   // 管理者、サプライヤー利用可能
   @GetMapping(ProcurementRequestApi.V1.BASE)
-  public ResponseEntity<List<ProcurementRequestListResponse>> search(
+  public ResponseEntity<ProcurementRequestSearchResponse> search(
     @Valid
     @ParameterObject
     @ModelAttribute
