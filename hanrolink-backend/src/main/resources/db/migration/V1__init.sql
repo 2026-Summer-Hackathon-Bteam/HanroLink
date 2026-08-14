@@ -161,11 +161,11 @@ CREATE TABLE product_stories (
 
   CONSTRAINT fk_product_stories_product
     FOREIGN KEY (product_id)
-    REFERENCES products(id),
+    REFERENCES products(id)
+    ON DELETE CASCADE,
   CONSTRAINT fk_product_stories_product_story_section_template
     FOREIGN KEY (product_story_section_template_id)
     REFERENCES product_story_section_templates(id)
-    ON DELETE CASCADE
 );
 
 CREATE TABLE procurement_requests (
