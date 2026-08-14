@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +23,7 @@ import com.hanrolink.product.repository.projection.SupplierProductListProjection
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-  Optional<Product> findByIdAndSupplierBusinessId(Long id, Long supplierBusinessId);
+  Optional<Product> findByPublicIdAndSupplierBusinessId(UUID publicId, Long supplierBusinessId);
 
   @Query("""
     SELECT new com.hanrolink.product.repository.projection.PublicProductListProjection(
@@ -45,6 +46,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   @Query("""
     SELECT new com.hanrolink.product.repository.projection.ProductDetailProjection(
       product.id,
+      product.publicId,
       product.supplierBusinessId,
       product.name,
       product.hiddenAt,
@@ -78,7 +80,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       ON productCategory.id = product.productCategoryId
     JOIN Region region
       ON region.id = product.mainIngredientRegionId
-    WHERE product.id = :productId
+    WHERE product.publicId = :productPublicId
       AND (
         product.hiddenAt IS NULL
         OR (
@@ -87,9 +89,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         )
       )
     """)
-  Optional<ProductDetailProjection> findDetailById(
-    @Param("productId")
-    Long productId,
+  Optional<ProductDetailProjection> findDetailByPublicId(
+    @Param("productPublicId")
+    UUID productPublicId,
     @Param("viewerBusinessId")
     Long viewerBusinessId
   );
@@ -97,6 +99,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   @Query("""
     SELECT new com.hanrolink.product.repository.projection.ProductSearchResultProjection(
       product.id,
+      product.publicId,
       product.name,
       business.name,
       productCategory.name,
@@ -156,7 +159,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
   @Query("""
     SELECT new com.hanrolink.product.repository.projection.SupplierProductListProjection(
-      product.id,
+      product.publicId,
       product.name,
       product.mainImageStorageKey,
       product.hiddenAt,

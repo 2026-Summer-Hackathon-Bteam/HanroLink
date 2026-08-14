@@ -7,6 +7,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Profile;
@@ -32,8 +33,8 @@ import com.hanrolink.product.repository.MonthlySupplyCapacityRepository;
 import com.hanrolink.product.repository.ProductRepository;
 import com.hanrolink.product.repository.ProductStoryRepository;
 import com.hanrolink.product.repository.projection.ProductDetailProjection;
-import com.hanrolink.product.repository.projection.ProductSearchResultProjection;
 import com.hanrolink.product.repository.projection.ProductSearchMonthlySupplyCapacityProjection;
+import com.hanrolink.product.repository.projection.ProductSearchResultProjection;
 import com.hanrolink.product.request.ProductSearchRequest;
 import com.hanrolink.product.response.ProductDetailResponse;
 import com.hanrolink.product.response.ProductSearchResponse;
@@ -85,14 +86,14 @@ public class ProductService {
    * 商品詳細情報を取得する
    * @param authenticatedJwtAccountRole JWTから取得したアカウントロール
    * @param identityProviderSubject 認証プロバイダーのユーザー識別子
-   * @param productId 取得対象の商品ID
+   * @param productPublicId 取得対象の商品ID
    * @return 商品詳細情報
    */
   @Transactional(readOnly = true)
   public ProductDetailResponse getDetail(
     JwtAccountRole authenticatedJwtAccountRole,
     String identityProviderSubject,
-    Long productId
+    UUID productPublicId
   ) {
     // 認証情報に基づく商品詳細の閲覧者情報の取得
     ProductDetailViewer viewer = resolveViewer(
@@ -102,8 +103,8 @@ public class ProductService {
 
     // 商品詳細の表示に必要な基本情報と関連情報の取得
     ProductDetailProjection product = productRepository
-      .findDetailById(
-        productId,
+      .findDetailByPublicId(
+        productPublicId,
         viewer.businessId()
       )
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -111,7 +112,7 @@ public class ProductService {
     List<MonthlySupplyCapacityResponse> monthlySupplyCapacities =
       monthlySupplyCapacityRepository
         .findLatestListByProductId(
-          productId,
+          product.id(),
           Pageable.ofSize(MonthlySupplyCapacityPolicy.TARGET_MONTH_COUNT)
         )
         .stream()
@@ -132,7 +133,7 @@ public class ProductService {
         .toList();
 
     List<ProductStoryResponse> productStories = productStoryRepository
-      .findListByProductId(productId)
+      .findListByProductId(product.id())
       .stream()
       .map(productStory ->
         new ProductStoryResponse(
@@ -173,14 +174,14 @@ public class ProductService {
       hasMyActiveNegotiationRequest =
         productNegotiationRequestRepository
           .existsActiveByProductIdAndBuyerAccountId(
-            productId,
+            product.id(),
             viewer.businessUserAccountId(),
             activeSince
           );
     }
 
     return new ProductDetailResponse(
-      product.id(),
+      product.publicId(),
       product.name(),
       product.hiddenAt() != null,
       new ProductCategoryResponse(
@@ -295,7 +296,7 @@ public class ProductService {
         .stream()
         .map(product ->
           new ProductSearchResultResponse(
-            product.id(),
+            product.publicId(),
             product.name(),
             product.businessName(),
             product.productCategoryName(),

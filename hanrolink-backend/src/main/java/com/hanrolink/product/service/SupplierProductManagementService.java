@@ -184,7 +184,7 @@ public class SupplierProductManagementService {
     );
 
     return new SupplierProductCreateResponse(
-      savedProduct.getId()
+      savedProduct.getPublicId()
     );
   }
 
@@ -206,7 +206,7 @@ public class SupplierProductManagementService {
       .stream()
       .map(product ->
         new SupplierProductListResponse(
-          product.id(),
+          product.publicId(),
           product.name(),
           s3DownloadUrlGenerator.generate(product.mainImageStorageKey()),
           product.hiddenAt() != null,
@@ -219,13 +219,13 @@ public class SupplierProductManagementService {
   /**
    * 自社に紐づく商品情報を更新する
    * @param identityProviderSubject 認証プロバイダーのユーザー識別子
-   * @param productId 更新対象の商品ID
+   * @param productPublicId 更新対象の商品ID
    * @param request 商品の更新情報
    */
   @Transactional
   public void update(
     String identityProviderSubject,
-    Long productId,
+    UUID productPublicId,
     SupplierProductUpdateRequest request
   ) {
     // 認証済みユーザーが所属する事業者の商品であることの確認
@@ -234,14 +234,14 @@ public class SupplierProductManagementService {
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     Product product = productRepository
-      .findByIdAndSupplierBusinessId(productId, supplierBusinessId)
+      .findByPublicIdAndSupplierBusinessId(productPublicId, supplierBusinessId)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     // 商品に紐づく既存関連情報の取得
     List<MonthlySupplyCapacity> monthlySupplyCapacities =
-      monthlySupplyCapacityRepository.findAllByProductId(productId);
+      monthlySupplyCapacityRepository.findAllByProductId(product.getId());
     List<ProductStory> productStories =
-      productStoryRepository.findAllByProductId(productId);
+      productStoryRepository.findAllByProductId(product.getId());
 
     // リクエストの商品ストーリーIDと登録済みIDの完全一致確認
     Set<Long> registeredProductStoryIds =
@@ -352,7 +352,7 @@ public class SupplierProductManagementService {
       if (existingMonthlySupplyCapacity == null) {
         newMonthlySupplyCapacities.add(
           new MonthlySupplyCapacity(
-            productId,
+            product.getId(),
             targetMonth,
             monthlySupplyCapacityRequest.availableQuantity()
           )
@@ -422,13 +422,13 @@ public class SupplierProductManagementService {
   /**
    * 自社に紐づく商品の表示状態を更新する
    * @param identityProviderSubject 認証プロバイダーのユーザー識別子
-   * @param productId 更新対象の商品ID
+   * @param productPublicId 更新対象の商品ID
    * @param request 表示状態の更新情報
    */
   @Transactional
   public void updateVisibility(
     String identityProviderSubject,
-    Long productId,
+    UUID productPublicId,
     SupplierProductUpdateVisibilityRequest request
   ) {
     Long supplierBusinessId = businessUserAccountRepository
@@ -436,7 +436,7 @@ public class SupplierProductManagementService {
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     Product product = productRepository
-      .findByIdAndSupplierBusinessId(productId, supplierBusinessId)
+      .findByPublicIdAndSupplierBusinessId(productPublicId, supplierBusinessId)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     product.updateVisibility(request.hidden());
@@ -445,24 +445,24 @@ public class SupplierProductManagementService {
   /**
    * 自社に紐づく商品を削除する
    * @param identityProviderSubject 認証プロバイダーのユーザー識別子
-   * @param productId 削除対象の商品ID
+   * @param productPublicId 削除対象の商品ID
    */
   @Transactional
   public void delete(
     String identityProviderSubject,
-    Long productId
+    UUID productPublicId
   ) {
     Long supplierBusinessId = businessUserAccountRepository
       .findBusinessIdByIdentityProviderSubject(identityProviderSubject)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     Product product = productRepository
-      .findByIdAndSupplierBusinessId(productId, supplierBusinessId)
+      .findByPublicIdAndSupplierBusinessId(productPublicId, supplierBusinessId)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     // 商品を削除する前に、関連画像を削除待ちとして登録
     List<String> imageStorageKeys = productStoryRepository
-      .findImageStorageKeysByProductId(productId);
+      .findImageStorageKeysByProductId(product.getId());
 
     for (String imageStorageKey : imageStorageKeys) {
       pendingFileDeletionService.create(imageStorageKey);

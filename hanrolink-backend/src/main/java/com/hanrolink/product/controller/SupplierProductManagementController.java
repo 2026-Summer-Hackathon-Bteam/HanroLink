@@ -1,6 +1,7 @@
 package com.hanrolink.product.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
@@ -97,7 +98,7 @@ public class SupplierProductManagementController {
   @PutMapping(ProductApi.V1.BY_ID)
   public ResponseEntity<Void> update(
     @AuthenticationPrincipal Jwt jwt,
-    @PathVariable Long productId,
+    @PathVariable UUID productId,
     @Valid @RequestBody SupplierProductUpdateRequest request
   ) {
     supplierProductManagementService.update(
@@ -123,7 +124,7 @@ public class SupplierProductManagementController {
   @PatchMapping(ProductApi.V1.VISIBILITY)
   public ResponseEntity<Void> updateVisibility(
     @AuthenticationPrincipal Jwt jwt,
-    @PathVariable Long productId,
+    @PathVariable UUID productId,
     @Valid @RequestBody SupplierProductUpdateVisibilityRequest request
   ) {
     supplierProductManagementService.updateVisibility(
@@ -148,7 +149,7 @@ public class SupplierProductManagementController {
   @DeleteMapping(ProductApi.V1.BY_ID)
   public ResponseEntity<Void> delete(
     @AuthenticationPrincipal Jwt jwt,
-    @PathVariable Long productId
+    @PathVariable UUID productId
   ) {
     supplierProductManagementService.delete(jwt.getSubject(), productId);
     return ResponseEntity.noContent().build();

@@ -1,5 +1,7 @@
 package com.hanrolink.product.controller;
 
+import java.util.UUID;
+
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +53,7 @@ public class ProductReadController {
   @GetMapping(ProductApi.V1.BY_ID)
   public ResponseEntity<ProductDetailResponse> getDetail(
     @AuthenticationPrincipal Jwt jwt,
-    @PathVariable Long productId
+    @PathVariable UUID productId
   ) {
     JwtAccountRole authenticatedJwtAccountRole =
       authenticatedAccountRoleResolver.resolve(jwt);

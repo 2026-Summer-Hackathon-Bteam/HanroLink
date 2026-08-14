@@ -1,6 +1,7 @@
 package com.hanrolink.product.entity;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -26,6 +27,9 @@ public class Product {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Column(name = "public_id", updatable = false, nullable = false)
+  private UUID publicId = UUID.randomUUID();
 
   @Column(
     name = "supplier_business_id",
@@ -210,6 +214,10 @@ public class Product {
 
   public Long getId() {
     return id;
+  }
+
+  public UUID getPublicId() {
+    return publicId;
   }
 
   public String getMainImageStorageKey() {

@@ -2,6 +2,7 @@ package com.hanrolink.product.response;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import com.hanrolink.product.response.component.MonthlySupplyCapacityResponse;
 import com.hanrolink.product.response.component.ProductExpirationTypeResponse;
@@ -16,7 +17,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record ProductDetailResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  Long id,
+  UUID id,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   String name,

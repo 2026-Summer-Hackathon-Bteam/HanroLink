@@ -92,6 +92,7 @@ CREATE TYPE storage_type AS ENUM (
 
 CREATE TABLE products (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  public_id UUID UNIQUE NOT NULL,
   supplier_business_id BIGINT NOT NULL,
   product_category_id SMALLINT NOT NULL,
   main_ingredient_region_id SMALLINT NOT NULL,
