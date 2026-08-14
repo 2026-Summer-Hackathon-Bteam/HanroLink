@@ -34,20 +34,20 @@ public class BuyerBusinessService {
   /**
    * 指定されたバイヤーのプロフィール情報を取得する
    * @param identityProviderSubject 認証プロバイダーのユーザー識別子
-   * @param targetBusinessId 取得対象事業者の公開識別子
+   * @param businessPublicId 取得対象事業者の公開識別子
    * @return 取得対象のバイヤープロフィール
    */
   @Transactional(readOnly = true)
   public BuyerProfileGetResponse get(
     String identityProviderSubject,
-    UUID targetBusinessId
+    UUID businessPublicId
   ) {
-    checkBuyerAccess(identityProviderSubject, targetBusinessId);
+    checkBuyerAccess(identityProviderSubject, businessPublicId);
 
     Business targetBusiness =
       businessRepository
         .findApprovedByPublicIdAndRole(
-          targetBusinessId,
+          businessPublicId,
           BusinessRole.BUYER
         )
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -63,7 +63,7 @@ public class BuyerBusinessService {
 
   private void checkBuyerAccess(
     String identityProviderSubject,
-    UUID targetBusinessId
+    UUID businessPublicId
   ) {
     Optional<BusinessAccessProjection> optionalCurrentBusinessAccess =
       businessUserAccountRepository
@@ -84,7 +84,7 @@ public class BuyerBusinessService {
     // Buyer本人なら取得可能
     if (
       currentBusinessAccess.businessPublicId()
-        .equals(targetBusinessId)
+        .equals(businessPublicId)
     ) {
       return;
     }

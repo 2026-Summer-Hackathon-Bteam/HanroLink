@@ -47,15 +47,15 @@ public class AdminBusinessApprovalService {
 
   /**
    * 審査対象の詳細情報を取得する
-   * @param businessId 事業者の公開識別子
+   * @param businessPublicId 事業者の公開識別子
    * @return 審査対象の詳細情報
    */
   @Transactional(readOnly = true)
   public AdminBusinessApprovalDetailResponse getDetail(
-    UUID businessId
+    UUID businessPublicId
   ) {
     Business business =
-      businessRepository.findByPublicId(businessId)
+      businessRepository.findByPublicId(businessPublicId)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     BusinessUserAccount businessUserAccount =
@@ -96,14 +96,14 @@ public class AdminBusinessApprovalService {
 
   /**
    * 審査対象の事業者を承認する
-   * @param businessId 事業者の公開識別子
+   * @param businessPublicId 事業者の公開識別子
    */
   @Transactional
   public void approve(
-    UUID businessId
+    UUID businessPublicId
   ) {
     Business business =
-      businessRepository.findByPublicId(businessId)
+      businessRepository.findByPublicId(businessPublicId)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     business.approve();
