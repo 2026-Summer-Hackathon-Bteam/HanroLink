@@ -309,7 +309,7 @@ function ProductSearchPage() {
         </h3>
         <div className="grid grid-cols-3 justify-items-start gap-3">
           {[...searchOptions.mainIngredientRegions]
-            .sort((a, b) => a.sortOrder - b.sortOrder)
+            .sort((a, b) => a.id - b.id)
             .map((region) => (
               <label
                 key={region.id}
