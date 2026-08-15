@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +20,8 @@ import com.hanrolink.procurementrequest.request.BuyerProcurementRequestCreateReq
 import com.hanrolink.procurementrequest.request.BuyerProcurementRequestUpdateRequest;
 import com.hanrolink.procurementrequest.response.BuyerProcurementRequestCreateResponse;
 import com.hanrolink.procurementrequest.response.BuyerProcurementRequestListResponse;
+import com.hanrolink.procurementrequest.service.BuyerProcurementRequestManagementService;
+import com.hanrolink.security.authorization.policy.RequiresApprovedBuyer;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
@@ -29,18 +33,36 @@ import jakarta.validation.Valid;
 @RestController
 public class BuyerProcurementRequestManagementController {
 
-  // バイヤーのみ利用可能
+  private final BuyerProcurementRequestManagementService buyerProcurementRequestManagementService;
+
+  public BuyerProcurementRequestManagementController(
+    BuyerProcurementRequestManagementService buyerProcurementRequestManagementService
+  ) {
+    this.buyerProcurementRequestManagementService = buyerProcurementRequestManagementService;
+  }
+
+  /**
+   * 募集情報を新規作成を受け付ける
+   * @param jwt 認証済みユーザーのJWT
+   * @param request 募集の入力情報
+   * @return 募集の作成結果
+   */
+  @RequiresApprovedBuyer
   @ApiResponse(
     responseCode = "201",
     description = "Created"
   )
   @PostMapping(ProcurementRequestApi.V1.BASE)
   public ResponseEntity<BuyerProcurementRequestCreateResponse> create(
+    @AuthenticationPrincipal Jwt jwt,
     @Valid @RequestBody BuyerProcurementRequestCreateRequest request
   ) {
-
-    // TODO: Service接続後、new BuyerProcurementRequestCreateResponse(procurementRequestId)をbodyに入れて201 Createdで返す
-    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    return ResponseEntity.status(HttpStatus.CREATED).body(
+      buyerProcurementRequestManagementService.create(
+        jwt.getSubject(),
+        request
+      )
+    );
   }
 
   // 認証中のBuyerアカウントが登録した募集のみ取得可能

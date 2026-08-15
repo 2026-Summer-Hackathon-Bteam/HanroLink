@@ -52,6 +52,24 @@ public class ProcurementRequest {
 
   protected ProcurementRequest() {}
 
+  public ProcurementRequest(
+    Long buyerBusinessId,
+    Short productCategoryId,
+    String title,
+    String description,
+    String requiredTradeTerms,
+    Integer desiredUnitPrice,
+    Short deliveryShelfLifeDays
+  ) {
+    this.buyerBusinessId = buyerBusinessId;
+    this.productCategoryId = productCategoryId;
+    this.title = title;
+    this.description = description;
+    this.requiredTradeTerms = requiredTradeTerms;
+    this.desiredUnitPrice = desiredUnitPrice;
+    this.deliveryShelfLifeDays = deliveryShelfLifeDays;
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();
@@ -62,5 +80,13 @@ public class ProcurementRequest {
   @PreUpdate
   private void onUpdate() {
     this.updatedAt = Instant.now();
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public UUID getPublicId() {
+    return publicId;
   }
 }
