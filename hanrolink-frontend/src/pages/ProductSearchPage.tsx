@@ -15,6 +15,7 @@ import SearchPagination from '../components/SearchPagination'
 import ProductCategoryFilter from '../components/ProductCategoryFilter'
 import StorageTypeFilter from '../components/StorageTypeFilter'
 import SearchFilterPanel from '../components/SearchFilterPanel'
+import MobileSearchFilterDialog from '../components/MobileSearchFilterDialog'
 
 const toggleSelectedValue = <T,>(currentValues: T[], selectedValue: T): T[] => {
   return currentValues.includes(selectedValue)
@@ -320,34 +321,6 @@ function ProductSearchPage() {
   return (
     <>
       <div className="mx-auto flex max-w-300 flex-col px-4 text-center md:px-6 lg:flex-row lg:gap-8 lg:px-8 lg:py-6">
-        {/* <aside
-          className="hidden w-full rounded-xl bg-textbg/40 p-4 shadow-md ring-1 ring-text/10 scroll-mt-5 lg:block lg:self-start lg:w-72"
-          ref={searchConditionsRef}
-        >
-          <form onSubmit={handleSearch}>
-            <h2 className="mt-0! mb-4! py-2 bg-bg text-xl! rounded-full">
-              商品検索
-            </h2>
-            {renderSearchConditionFields()}
-            <div className="mt-5 grid gap-2">
-              <button
-                type="submit"
-                className="rounded-full bg-border py-2 font-bold text-bg disabled:cursor-not-allowed disabled:opacity-50"
-                disabled={isSearching}
-              >
-                {isSearching ? '検索中...' : 'この条件で検索'}
-              </button>
-
-              <button
-                type="button"
-                className="py-1 text-sm text-other underline underline-offset-2"
-                onClick={() => setSearchConditions(initialSearchConditions)}
-              >
-                条件をリセット
-              </button>
-            </div>
-          </form>
-        </aside> */}
         <SearchFilterPanel
           title="商品検索"
           panelRef={searchConditionsRef}
@@ -518,63 +491,17 @@ function ProductSearchPage() {
       >
         検索条件を変更
       </button>
-      <dialog
-        ref={searchConditionsDialogRef}
-        aria-labelledby="mobile-search-conditions-title"
-        className="
-          fixed inset-x-0 top-auto bottom-0
-          m-0 h-[90dvh] max-h-[90dvh] w-full max-w-none
-          rounded-t-2xl bg-bg p-0
-         backdrop:bg-black/40
-          lg:hidden
-        "
-        onCancel={(e) => {
-          e.preventDefault()
-          handleCloseSearchConditions()
-        }}
+
+      <MobileSearchFilterDialog
+        title='商品'
+        dialogRef={searchConditionsDialogRef}
+        isSearching={isSearching}
+        onSubmit={handleSearch}
+        onReset={() => setSearchConditions(initialSearchConditions)}
+        onClose={handleCloseSearchConditions}
       >
-        <form onSubmit={handleSearch} className="flex h-full flex-col">
-          <div className="flex shrink-0 items-center justify-between border-b border-border px-4 py-3">
-            <h2 id="mobile-search-conditions-title" className="m-0! text-xl!">
-              検索条件
-            </h2>
-
-            <button
-              type="button"
-              aria-label="検索条件を閉じる"
-              onClick={handleCloseSearchConditions}
-              className="flex size-10 items-center justify-center rounded-full text-2xl hover:bg-textbg"
-            >
-              ×
-            </button>
-          </div>
-
-          <div className="min-h-0 flex-1 overflow-y-auto p-4">
-            {renderSearchConditionFields()}
-          </div>
-
-          <div className="shrink-0 border-t border-border bg-bg p-4">
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                disabled={isSearching}
-                onClick={() => setSearchConditions(initialSearchConditions)}
-                className="rounded-full border border-border py-2 disabled:opacity-50"
-              >
-                条件をリセット
-              </button>
-
-              <button
-                type="submit"
-                disabled={isSearching}
-                className="rounded-full bg-border py-2 font-bold text-bg disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {isSearching ? '検索中...' : 'この条件で検索'}
-              </button>
-            </div>
-          </div>
-        </form>
-      </dialog>
+        {renderSearchConditionFields()}
+      </MobileSearchFilterDialog>
 
       {isSearching && (
         <p role="status" aria-live="polite" className="mt-4 text-center">
