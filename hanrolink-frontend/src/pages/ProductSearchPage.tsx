@@ -13,6 +13,7 @@ import { createTargetMonths } from '../shared/utils/yearMonth'
 import { Link } from 'react-router-dom'
 import SearchPagination from '../components/SearchPagination'
 import ProductCategoryFilter from '../components/ProductCategoryFilter'
+import StorageTypeFilter from '../components/StorageTypeFilter'
 
 const toggleSelectedValue = <T,>(currentValues: T[], selectedValue: T): T[] => {
   return currentValues.includes(selectedValue)
@@ -280,29 +281,11 @@ function ProductSearchPage() {
         onToggle={handleProductCategoryToggle}
       />
 
-      <div className="pb-4">
-        <h3 className="mb-2 border-b-2 border-border px-2 text-left font-bold text-border textaccent">
-          保存方法
-        </h3>
+      <StorageTypeFilter
+       storageTypes={searchOptions.storageTypes}
+       selectedStorageTypes={searchConditions.storageTypes}
+       onToggle={handleStorageTypeToggle}/>
 
-        <div className="grid grid-cols-3 justify-items-start gap-3">
-          {searchOptions.storageTypes.map((type) => (
-            <label
-              key={type.value}
-              className="flex cursor-pointer items-center gap-1 rounded-md px-1 py-1.5 hover:bg-textbg/40"
-            >
-              <input
-                type="checkbox"
-                className="accent-border"
-                value={type.value}
-                checked={searchConditions.storageTypes.includes(type.value)}
-                onChange={() => handleStorageTypeToggle(type.value)}
-              />
-              <span>{type.label}</span>
-            </label>
-          ))}
-        </div>
-      </div>
       <div className="pb-4">
         <h3 className="mb-2 border-b-2 border-border px-2 text-left font-bold text-border textaccent">
           主原料産地
