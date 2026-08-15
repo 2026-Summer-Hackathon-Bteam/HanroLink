@@ -483,7 +483,7 @@ function ProductSearchPage() {
         type="button"
         onClick={handleOpenSearchConditions}
         className="
-        fixed right-4 bottom-[calc(env(safe-area-inset-bottom)+1rem)]
+        fixed right-4 bottom-[calc(env(safe-area-inset-bottom)+2.5rem)]
         z-40 rounded-full bg-border px-5 py-3
         font-bold text-bg shadow-lg
         lg:hidden
