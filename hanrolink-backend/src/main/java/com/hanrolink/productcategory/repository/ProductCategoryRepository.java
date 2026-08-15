@@ -7,13 +7,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.hanrolink.productcategory.entity.ProductCategory;
-import com.hanrolink.productcategory.response.component.ProductCategoryOptionResponse;
+import com.hanrolink.productcategory.repository.projection.ProductCategoryOptionProjection;
 
 @Repository
 public interface ProductCategoryRepository extends JpaRepository<ProductCategory, Short> {
 
   @Query("""
-    SELECT new com.hanrolink.productcategory.response.component.ProductCategoryOptionResponse(
+    SELECT new com.hanrolink.productcategory.repository.projection.ProductCategoryOptionProjection(
       productCategory.id,
       productCategory.productCategoryGroupId,
       productCategory.name
@@ -24,5 +24,5 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
       productCategory.sortOrder ASC,
       productCategory.id ASC
     """)
-  List<ProductCategoryOptionResponse> findAllOptions();
+  List<ProductCategoryOptionProjection> findAllOptions();
 }

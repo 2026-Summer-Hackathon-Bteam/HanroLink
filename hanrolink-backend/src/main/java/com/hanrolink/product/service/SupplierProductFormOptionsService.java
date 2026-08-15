@@ -11,10 +11,14 @@ import com.hanrolink.product.enums.StorageType;
 import com.hanrolink.product.repository.ProductStorySectionTemplateRepository;
 import com.hanrolink.product.response.SupplierProductFormOptionsResponse;
 import com.hanrolink.product.response.component.ProductExpirationTypeOptionResponse;
+import com.hanrolink.product.response.component.ProductStorySectionTemplateOptionResponse;
 import com.hanrolink.product.response.component.StorageTypeOptionResponse;
 import com.hanrolink.productcategory.repository.ProductCategoryGroupRepository;
 import com.hanrolink.productcategory.repository.ProductCategoryRepository;
+import com.hanrolink.productcategory.response.component.ProductCategoryGroupOptionResponse;
+import com.hanrolink.productcategory.response.component.ProductCategoryOptionResponse;
 import com.hanrolink.region.repository.RegionRepository;
+import com.hanrolink.region.response.component.RegionOptionResponse;
 
 @Service
 public class SupplierProductFormOptionsService {
@@ -45,6 +49,43 @@ public class SupplierProductFormOptionsService {
    */
   @Transactional(readOnly = true)
   public SupplierProductFormOptionsResponse get() {
+    List<ProductCategoryGroupOptionResponse> productCategoryGroups =
+      productCategoryGroupRepository
+        .findAllOptions()
+        .stream()
+        .map(productCategoryGroup ->
+          new ProductCategoryGroupOptionResponse(
+            productCategoryGroup.id(),
+            productCategoryGroup.name()
+          )
+        )
+        .toList();
+
+    List<ProductCategoryOptionResponse> productCategories =
+      productCategoryRepository
+        .findAllOptions()
+        .stream()
+        .map(productCategory ->
+          new ProductCategoryOptionResponse(
+            productCategory.id(),
+            productCategory.productCategoryGroupId(),
+            productCategory.name()
+          )
+        )
+        .toList();
+
+    List<RegionOptionResponse> mainIngredientRegions =
+      regionRepository
+        .findAllOptions()
+        .stream()
+        .map(region ->
+          new RegionOptionResponse(
+            region.id(),
+            region.name()
+          )
+        )
+        .toList();
+
     List<ProductExpirationTypeOptionResponse> productExpirationTypes =
       Arrays.stream(ProductExpirationType.values())
         .map(productExpirationType ->
@@ -65,13 +106,28 @@ public class SupplierProductFormOptionsService {
         )
         .toList();
 
+    List<ProductStorySectionTemplateOptionResponse> productStorySectionTemplates =
+      productStorySectionTemplateRepository
+        .findAllOptions()
+        .stream()
+        .map(productStorySectionTemplate ->
+          new ProductStorySectionTemplateOptionResponse(
+            productStorySectionTemplate.id(),
+            productStorySectionTemplate.title(),
+            productStorySectionTemplate.imageHint(),
+            productStorySectionTemplate.bodyHelpText(),
+            productStorySectionTemplate.bodyExample()
+          )
+        )
+        .toList();
+
     return new SupplierProductFormOptionsResponse(
-      productCategoryGroupRepository.findAllOptions(),
-      productCategoryRepository.findAllOptions(),
-      regionRepository.findAllOptions(),
+      productCategoryGroups,
+      productCategories,
+      mainIngredientRegions,
       productExpirationTypes,
       storageTypes,
-      productStorySectionTemplateRepository.findAllOptions()
+      productStorySectionTemplates
     );
   }
 }

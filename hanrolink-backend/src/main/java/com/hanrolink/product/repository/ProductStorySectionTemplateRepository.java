@@ -7,13 +7,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.hanrolink.product.entity.ProductStorySectionTemplate;
-import com.hanrolink.product.response.component.ProductStorySectionTemplateOptionResponse;
+import com.hanrolink.product.repository.projection.ProductStorySectionTemplateOptionProjection;
 
 @Repository
 public interface ProductStorySectionTemplateRepository extends JpaRepository<ProductStorySectionTemplate, Short> {
 
   @Query("""
-    SELECT new com.hanrolink.product.response.component.ProductStorySectionTemplateOptionResponse(
+    SELECT new com.hanrolink.product.repository.projection.ProductStorySectionTemplateOptionProjection(
       productStorySectionTemplate.id,
       productStorySectionTemplate.title,
       productStorySectionTemplate.imageHint,
@@ -25,5 +25,5 @@ public interface ProductStorySectionTemplateRepository extends JpaRepository<Pro
       productStorySectionTemplate.sortOrder ASC,
       productStorySectionTemplate.id ASC
     """)
-  List<ProductStorySectionTemplateOptionResponse> findAllOptions();
+  List<ProductStorySectionTemplateOptionProjection> findAllOptions();
 }
