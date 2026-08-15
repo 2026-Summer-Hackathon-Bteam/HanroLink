@@ -120,10 +120,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         OR product.mainIngredientRegionId IN :mainIngredientRegionIds
       )
       AND (
-        :#{#productCategoryGroupIds == null || #productCategoryGroupIds.isEmpty()} = true
-        OR productCategory.productCategoryGroupId IN :productCategoryGroupIds
-      )
-      AND (
         :#{#productCategoryIds == null || #productCategoryIds.isEmpty()} = true
         OR product.productCategoryId IN :productCategoryIds
       )
@@ -149,8 +145,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<LocalDate> availableSupplyMonths,
     @Param("mainIngredientRegionIds")
     List<Short> mainIngredientRegionIds,
-    @Param("productCategoryGroupIds")
-    List<Short> productCategoryGroupIds,
     @Param("productCategoryIds")
     List<Short> productCategoryIds,
     @Param("storageTypes")

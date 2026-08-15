@@ -25,8 +25,6 @@ public record ProductSearchRequest(
 
   List<@Positive Short> mainIngredientRegionIds,
 
-  List<@Positive Short> productCategoryGroupIds,
-
   List<@Positive Short> productCategoryIds,
 
   Set<StorageType> storageTypes,

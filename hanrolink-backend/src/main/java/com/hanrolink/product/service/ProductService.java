@@ -253,7 +253,6 @@ public class ProductService {
       productRepository.findSearchResults(
         availableSupplyMonths,
         request.mainIngredientRegionIds(),
-        request.productCategoryGroupIds(),
         request.productCategoryIds(),
         request.storageTypes(),
         pageable
