@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom'
 import SearchPagination from '../components/SearchPagination'
 import ProductCategoryFilter from '../components/ProductCategoryFilter'
 import StorageTypeFilter from '../components/StorageTypeFilter'
+import SearchFilterPanel from '../components/SearchFilterPanel'
 
 const toggleSelectedValue = <T,>(currentValues: T[], selectedValue: T): T[] => {
   return currentValues.includes(selectedValue)
@@ -270,34 +271,15 @@ function ProcurementRequestSearchPage() {
   return (
     <>
       <div className="mx-auto flex max-w-300 flex-col px-4 text-center md:px-6 lg:flex-row lg:gap-8 lg:px-8 lg:py-6">
-        <aside
-          className="hidden w-full rounded-xl bg-textbg/40 p-4 shadow-md ring-1 ring-text/10 scroll-mt-5 lg:block lg:self-start lg:w-72"
-          ref={searchConditionsRef}
+        <SearchFilterPanel
+          title="募集情報検索"
+          panelRef={searchConditionsRef}
+          isSearching={isSearching}
+          onSubmit={handleSearch}
+          onReset={() => setSearchConditions(initialSearchConditions)}
         >
-          <form onSubmit={handleSearch}>
-            <h2 className="mt-0! mb-4! py-2 bg-bg text-xl! rounded-full">
-              募集情報検索
-            </h2>
-            {renderSearchConditionFields()}
-            <div className="mt-5 grid gap-2">
-              <button
-                type="submit"
-                className="rounded-full bg-border py-2 font-bold text-bg disabled:cursor-not-allowed disabled:opacity-50"
-                disabled={isSearching}
-              >
-                {isSearching ? '検索中...' : 'この条件で検索'}
-              </button>
-
-              <button
-                type="button"
-                className="py-1 text-sm text-other underline underline-offset-2"
-                onClick={() => setSearchConditions(initialSearchConditions)}
-              >
-                条件をリセット
-              </button>
-            </div>
-          </form>
-        </aside>
+          {renderSearchConditionFields()}
+        </SearchFilterPanel>
 
         <section className="min-w-0 flex-1 pb-20 lg:pb-0">
           <div>

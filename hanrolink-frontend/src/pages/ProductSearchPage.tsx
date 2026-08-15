@@ -14,6 +14,7 @@ import { Link } from 'react-router-dom'
 import SearchPagination from '../components/SearchPagination'
 import ProductCategoryFilter from '../components/ProductCategoryFilter'
 import StorageTypeFilter from '../components/StorageTypeFilter'
+import SearchFilterPanel from '../components/SearchFilterPanel'
 
 const toggleSelectedValue = <T,>(currentValues: T[], selectedValue: T): T[] => {
   return currentValues.includes(selectedValue)
@@ -282,9 +283,10 @@ function ProductSearchPage() {
       />
 
       <StorageTypeFilter
-       storageTypes={searchOptions.storageTypes}
-       selectedStorageTypes={searchConditions.storageTypes}
-       onToggle={handleStorageTypeToggle}/>
+        storageTypes={searchOptions.storageTypes}
+        selectedStorageTypes={searchConditions.storageTypes}
+        onToggle={handleStorageTypeToggle}
+      />
 
       <div className="pb-4">
         <h3 className="mb-2 border-b-2 border-border px-2 text-left font-bold text-border textaccent">
@@ -318,7 +320,7 @@ function ProductSearchPage() {
   return (
     <>
       <div className="mx-auto flex max-w-300 flex-col px-4 text-center md:px-6 lg:flex-row lg:gap-8 lg:px-8 lg:py-6">
-        <aside
+        {/* <aside
           className="hidden w-full rounded-xl bg-textbg/40 p-4 shadow-md ring-1 ring-text/10 scroll-mt-5 lg:block lg:self-start lg:w-72"
           ref={searchConditionsRef}
         >
@@ -345,7 +347,16 @@ function ProductSearchPage() {
               </button>
             </div>
           </form>
-        </aside>
+        </aside> */}
+        <SearchFilterPanel
+          title="商品検索"
+          panelRef={searchConditionsRef}
+          isSearching={isSearching}
+          onSubmit={handleSearch}
+          onReset={() => setSearchConditions(initialSearchConditions)}
+        >
+          {renderSearchConditionFields()}
+        </SearchFilterPanel>
 
         <section className="min-w-0 flex-1 pb-20 lg:pb-0">
           <div>
