@@ -10,6 +10,7 @@ import {
 } from '../features/procurementRequest/procurementRequestSearchService'
 import { formatTargetMonth } from '../shared/utils/yearMonth'
 import { Link } from 'react-router-dom'
+import SearchPagination from '../components/SearchPagination'
 
 const toggleSelectedValue = <T,>(currentValues: T[], selectedValue: T): T[] => {
   return currentValues.includes(selectedValue)
@@ -231,7 +232,7 @@ function ProcurementRequestSearchPage() {
           タイトル・説明文
         </h3>
         <div className="pb-4">
-          <label className='block'>
+          <label className="block">
             <span className="sr-only">タイトル・説明文</span>
             <input
               type="text"
@@ -480,62 +481,14 @@ function ProcurementRequestSearchPage() {
           </div>
         </section>
       </div>
-      {searchResult.procurementRequests.length > 0 &&
-        searchResult.pagination.totalPages > 1 && (
-          <nav
-            aria-label="募集情報検索結果のページ"
-            className="mt-8 flex items-center justify-center gap-2"
-          >
-            <button
-              type="button"
-              disabled={searchResult.pagination.page === 1 || isSearching}
-              onClick={() =>
-                void handlePageChange(searchResult.pagination.page - 1)
-              }
-              className="rounded-full border border-border px-3 py-2 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              前へ
-            </button>
-
-            {Array.from(
-              { length: searchResult.pagination.totalPages },
-              (_, index) => index + 1,
-            ).map((page) => {
-              const isCurrentPage = page === searchResult.pagination.page
-
-              return (
-                <button
-                  key={page}
-                  type="button"
-                  aria-current={isCurrentPage ? 'page' : undefined}
-                  onClick={() => void handlePageChange(page)}
-                  className={
-                    isCurrentPage
-                      ? 'size-10 rounded-full bg-border font-bold text-bg'
-                      : 'size-10 rounded-full border border-border hover:bg-textbg'
-                  }
-                  disabled={isSearching || isCurrentPage}
-                >
-                  {page}
-                </button>
-              )
-            })}
-
-            <button
-              type="button"
-              disabled={
-                searchResult.pagination.page ===
-                  searchResult.pagination.totalPages || isSearching
-              }
-              onClick={() =>
-                void handlePageChange(searchResult.pagination.page + 1)
-              }
-              className="rounded-full border border-border px-3 py-2 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              次へ
-            </button>
-          </nav>
-        )}
+      {searchResult.procurementRequests.length > 0 && (
+        <SearchPagination
+          currentPage={searchResult.pagination.page}
+          totalPages={searchResult.pagination.totalPages}
+          isLoading={isSearching}
+          onPageChange={handlePageChange}
+        />
+      )}
       <button
         type="button"
         onClick={handleOpenSearchConditions}
