@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import com.hanrolink.business.entity.Business;
 import com.hanrolink.business.enums.BusinessReviewStatus;
 import com.hanrolink.business.enums.BusinessRole;
-import com.hanrolink.businessapproval.response.AdminBusinessApprovalListResponse;
+import com.hanrolink.business.repository.projection.AdminBusinessApprovalListProjection;
 
 @Repository
 public interface BusinessRepository extends JpaRepository<Business, Long> {
@@ -34,7 +34,7 @@ public interface BusinessRepository extends JpaRepository<Business, Long> {
   );
 
   @Query("""
-    SELECT new com.hanrolink.businessapproval.response.AdminBusinessApprovalListResponse(
+    SELECT new com.hanrolink.business.repository.projection.AdminBusinessApprovalListProjection(
       business.publicId,
       business.name,
       business.createdAt
@@ -43,7 +43,7 @@ public interface BusinessRepository extends JpaRepository<Business, Long> {
     WHERE business.reviewStatus = :reviewStatus
     ORDER BY business.createdAt ASC
     """)
-  List<AdminBusinessApprovalListResponse>
+  List<AdminBusinessApprovalListProjection>
     findApprovalListByReviewStatus(
       @Param("reviewStatus")
       BusinessReviewStatus reviewStatus

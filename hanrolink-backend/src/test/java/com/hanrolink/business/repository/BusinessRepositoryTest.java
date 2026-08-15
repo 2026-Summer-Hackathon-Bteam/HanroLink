@@ -17,7 +17,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import com.hanrolink.business.enums.BusinessReviewStatus;
-import com.hanrolink.businessapproval.response.AdminBusinessApprovalListResponse;
+import com.hanrolink.business.repository.projection.AdminBusinessApprovalListProjection;
 
 @DataJpaTest
 @Testcontainers
@@ -40,7 +40,7 @@ class BusinessRepositoryTest {
 
   @Test
   void findApprovalListByReviewStatus_shouldReturnPendingBusinesses() {
-    List<AdminBusinessApprovalListResponse> responses =
+    List<AdminBusinessApprovalListProjection> responses =
       businessRepository
         .findApprovalListByReviewStatus(
           BusinessReviewStatus.PENDING
@@ -48,7 +48,7 @@ class BusinessRepositoryTest {
 
     assertEquals(1, responses.size());
 
-    AdminBusinessApprovalListResponse response =
+    AdminBusinessApprovalListProjection response =
       responses.getFirst();
 
     assertEquals(
@@ -60,5 +60,5 @@ class BusinessRepositoryTest {
       response.businessName()
     );
     assertNotNull(response.createdAt());
-  }  
+  }
 }

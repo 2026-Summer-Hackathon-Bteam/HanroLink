@@ -40,9 +40,16 @@ public class AdminBusinessApprovalService {
   @Transactional(readOnly = true)
   public List<AdminBusinessApprovalListResponse> listPending() {
     return businessRepository
-      .findApprovalListByReviewStatus(
-        BusinessReviewStatus.PENDING
-      );
+      .findApprovalListByReviewStatus(BusinessReviewStatus.PENDING)
+      .stream()
+      .map(businessApproval ->
+        new AdminBusinessApprovalListResponse(
+          businessApproval.businessId(),
+          businessApproval.businessName(),
+          businessApproval.createdAt()
+        )
+      )
+      .toList();
   }
 
   /**
