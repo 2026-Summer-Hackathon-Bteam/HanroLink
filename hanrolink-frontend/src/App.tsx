@@ -21,6 +21,8 @@ import ProductDetailPage from './pages/ProductDetailPage'
 import ProductEditPage from './pages/ProductEditPage'
 import ProcurementRequestDetailPage from './pages/ProcurementRequestDetailPage'
 import ProcurementRequestEditPage from './pages/ProcurementRequestEditPage'
+import ProductSearchPage from './pages/ProductSearchPage'
+import ProcurementRequestSearchPage from './pages/ProcurementRequestSearchPage'
 
 function App() {
   return (
@@ -48,15 +50,12 @@ function App() {
               path="admin/approvals/:businessUserAccountId"
               element={<AdminBusinessApprovalDetailPage />}
             />
-            <Route path="products/new" element={<ProductCreatePage />} />
             <Route
               path="buyer/:businessUserAccountId"
               element={<BuyerProfilePage />}
             />
-            <Route
-              path="/procurement-requests/new"
-              element={<ProcurementRequestCreatePage />}
-            />
+            <Route path="/products" element={<ProductSearchPage />} />
+            <Route path="products/new" element={<ProductCreatePage />} />
             <Route
               path="/products/:productId"
               element={<ProductDetailPage />}
@@ -64,6 +63,14 @@ function App() {
             <Route
               path="/products/:productId/edit"
               element={<ProductEditPage />}
+            />
+            <Route
+              path="/procurement-requests"
+              element={<ProcurementRequestSearchPage />}
+            />
+            <Route
+              path="/procurement-requests/new"
+              element={<ProcurementRequestCreatePage />}
             />
             <Route
               path="/procurement-requests/:procurementRequestId"
