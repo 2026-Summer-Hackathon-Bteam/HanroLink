@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
-import com.hanrolink.account.repository.projection.BusinessAccessProjection;
+import com.hanrolink.account.repository.projection.BusinessProfileAccessProjection;
 import com.hanrolink.business.entity.Business;
 import com.hanrolink.business.enums.BusinessRole;
 import com.hanrolink.business.repository.BusinessRepository;
@@ -65,25 +65,25 @@ public class BuyerBusinessService {
     String identityProviderSubject,
     UUID businessPublicId
   ) {
-    Optional<BusinessAccessProjection> optionalCurrentBusinessAccess =
+    Optional<BusinessProfileAccessProjection> optionalViewerAccess =
       businessUserAccountRepository
-        .findBusinessAccessByIdentityProviderSubject(identityProviderSubject);
+        .findBusinessProfileAccessByIdentityProviderSubject(identityProviderSubject);
 
     // DBにアカウントがない場合はAdmin
-    if (optionalCurrentBusinessAccess.isEmpty()) {
+    if (optionalViewerAccess.isEmpty()) {
       return;
     }
 
-    BusinessAccessProjection currentBusinessAccess =
-      optionalCurrentBusinessAccess.orElseThrow();
+    BusinessProfileAccessProjection viewerAccess =
+      optionalViewerAccess.orElseThrow();
 
-    if (currentBusinessAccess.businessRole() == BusinessRole.SUPPLIER) {
+    if (viewerAccess.businessRole() == BusinessRole.SUPPLIER) {
       return;
     }
 
     // Buyer本人なら取得可能
     if (
-      currentBusinessAccess.businessPublicId()
+      viewerAccess.businessPublicId()
         .equals(businessPublicId)
     ) {
       return;

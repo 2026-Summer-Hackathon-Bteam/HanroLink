@@ -8,10 +8,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.hanrolink.account.entity.BusinessUserAccount;
-import com.hanrolink.account.repository.projection.AuthenticatedBusinessContextProjection;
+import com.hanrolink.account.repository.projection.BusinessUserAccountAccessScopeProjection;
 import com.hanrolink.account.repository.projection.FileUploadContextProjection;
-import com.hanrolink.account.repository.projection.BusinessAccessProjection;
-import com.hanrolink.account.repository.projection.AuthorizationContextProjection;
+import com.hanrolink.account.repository.projection.BusinessProfileAccessProjection;
+import com.hanrolink.account.repository.projection.BusinessUserAccountAuthorizationProjection;
 
 @Repository
 public interface BusinessUserAccountRepository extends JpaRepository<BusinessUserAccount, Long> {
@@ -43,7 +43,7 @@ public interface BusinessUserAccountRepository extends JpaRepository<BusinessUse
   );
 
   @Query("""
-    SELECT new com.hanrolink.account.repository.projection.AuthorizationContextProjection(
+    SELECT new com.hanrolink.account.repository.projection.BusinessUserAccountAuthorizationProjection(
       business.role,
       business.reviewStatus
     )
@@ -53,13 +53,13 @@ public interface BusinessUserAccountRepository extends JpaRepository<BusinessUse
     WHERE businessUserAccount.identityProviderSubject
       = :identityProviderSubject
     """)
-  Optional<AuthorizationContextProjection> findAuthorizationContextByIdentityProviderSubject(
+  Optional<BusinessUserAccountAuthorizationProjection> findAuthorizationByIdentityProviderSubject(
     @Param("identityProviderSubject")
     String identityProviderSubject
   );
 
   @Query("""
-    SELECT new com.hanrolink.account.repository.projection.BusinessAccessProjection(
+    SELECT new com.hanrolink.account.repository.projection.BusinessProfileAccessProjection(
       business.publicId,
       business.role
     )
@@ -69,13 +69,13 @@ public interface BusinessUserAccountRepository extends JpaRepository<BusinessUse
     WHERE businessUserAccount.identityProviderSubject
       = :identityProviderSubject
     """)
-  Optional<BusinessAccessProjection> findBusinessAccessByIdentityProviderSubject(
+  Optional<BusinessProfileAccessProjection> findBusinessProfileAccessByIdentityProviderSubject(
     @Param("identityProviderSubject")
     String identityProviderSubject
   );
 
   @Query("""
-    SELECT new com.hanrolink.account.repository.projection.AuthenticatedBusinessContextProjection(
+    SELECT new com.hanrolink.account.repository.projection.BusinessUserAccountAccessScopeProjection(
       businessUserAccount.id,
       business.id,
       business.role
@@ -86,8 +86,8 @@ public interface BusinessUserAccountRepository extends JpaRepository<BusinessUse
     WHERE businessUserAccount.identityProviderSubject
       = :identityProviderSubject
     """)
-  Optional<AuthenticatedBusinessContextProjection>
-    findAuthenticatedAccountByIdentityProviderSubject(
+  Optional<BusinessUserAccountAccessScopeProjection>
+    findAccessScopeByIdentityProviderSubject(
       @Param("identityProviderSubject")
       String identityProviderSubject
     );

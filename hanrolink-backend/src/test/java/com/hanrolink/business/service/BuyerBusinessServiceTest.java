@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
-import com.hanrolink.account.repository.projection.BusinessAccessProjection;
+import com.hanrolink.account.repository.projection.BusinessProfileAccessProjection;
 import com.hanrolink.business.enums.BusinessRole;
 import com.hanrolink.business.repository.BusinessRepository;
 
@@ -47,15 +47,15 @@ class BuyerBusinessServiceTest {
         "00000000-0000-0000-0000-000000000002"
       );
 
-    BusinessAccessProjection currentBusinessAccess =
-      new BusinessAccessProjection(
+    BusinessProfileAccessProjection currentBusinessAccess =
+      new BusinessProfileAccessProjection(
         currentBusinessId,
         BusinessRole.BUYER
       );
 
     when(
       businessUserAccountRepository
-        .findBusinessAccessByIdentityProviderSubject(IDENTITY_PROVIDER_SUBJECT)
+        .findBusinessProfileAccessByIdentityProviderSubject(IDENTITY_PROVIDER_SUBJECT)
     ).thenReturn(Optional.of(currentBusinessAccess));
 
     assertThrows(

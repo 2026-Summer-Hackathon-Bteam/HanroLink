@@ -21,7 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.hanrolink.account.exception.UnsupportedJwtAccountRoleException;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
-import com.hanrolink.account.repository.projection.AuthenticatedBusinessContextProjection;
+import com.hanrolink.account.repository.projection.BusinessUserAccountAccessScopeProjection;
 import com.hanrolink.business.enums.BusinessRole;
 import com.hanrolink.infrastructure.s3.S3DownloadUrlGenerator;
 import com.hanrolink.negotiationrequest.policy.NegotiationRequestPolicy;
@@ -345,17 +345,17 @@ public class ProductService {
       throw new UnsupportedJwtAccountRoleException();
     }
 
-    AuthenticatedBusinessContextProjection account =
+    BusinessUserAccountAccessScopeProjection viewerAccessScope =
       businessUserAccountRepository
-        .findAuthenticatedAccountByIdentityProviderSubject(
+        .findAccessScopeByIdentityProviderSubject(
           identityProviderSubject
         )
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     return new ProductDetailViewer(
-      account.businessUserAccountId(),
-      account.businessId(),
-      accountRoleOf(account.businessRole())
+      viewerAccessScope.businessUserAccountId(),
+      viewerAccessScope.businessId(),
+      accountRoleOf(viewerAccessScope.businessRole())
     );
   }
 

@@ -14,7 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
-import com.hanrolink.account.repository.projection.AuthorizationContextProjection;
+import com.hanrolink.account.repository.projection.BusinessUserAccountAuthorizationProjection;
 import com.hanrolink.account.response.CurrentAccountGetResponse;
 import com.hanrolink.business.enums.BusinessRegistrationApiStatus;
 import com.hanrolink.business.enums.BusinessReviewStatus;
@@ -36,16 +36,16 @@ class CurrentAccountServiceTest {
 
   @Test
   void get_shouldReturnApprovedBuyer_whenBusinessUserAccountExists() {
-    AuthorizationContextProjection authorizationContext =
-      new AuthorizationContextProjection(
+    BusinessUserAccountAuthorizationProjection businessUserAccountAuthorization =
+      new BusinessUserAccountAuthorizationProjection(
         BusinessRole.BUYER,
         BusinessReviewStatus.APPROVED
       );
 
     when(
       businessUserAccountRepository
-        .findAuthorizationContextByIdentityProviderSubject(IDENTITY_PROVIDER_SUBJECT)
-    ).thenReturn(Optional.of(authorizationContext));
+        .findAuthorizationByIdentityProviderSubject(IDENTITY_PROVIDER_SUBJECT)
+    ).thenReturn(Optional.of(businessUserAccountAuthorization));
 
     CurrentAccountGetResponse response =
       currentAccountService.get(
@@ -62,14 +62,14 @@ class CurrentAccountServiceTest {
     );
 
     verify(businessUserAccountRepository)
-      .findAuthorizationContextByIdentityProviderSubject(IDENTITY_PROVIDER_SUBJECT);
+      .findAuthorizationByIdentityProviderSubject(IDENTITY_PROVIDER_SUBJECT);
   }
 
   @Test
   void get_shouldReturnNotSubmitted_whenBusinessUserAccountDoesNotExist() {
     when(
       businessUserAccountRepository
-        .findAuthorizationContextByIdentityProviderSubject(IDENTITY_PROVIDER_SUBJECT)
+        .findAuthorizationByIdentityProviderSubject(IDENTITY_PROVIDER_SUBJECT)
     ).thenReturn(Optional.empty());
 
     CurrentAccountGetResponse response =

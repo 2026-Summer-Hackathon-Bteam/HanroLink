@@ -11,7 +11,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
-import com.hanrolink.account.repository.projection.AuthorizationContextProjection;
+import com.hanrolink.account.repository.projection.BusinessUserAccountAuthorizationProjection;
 import com.hanrolink.security.authorization.enums.JwtAccountRole;
 
 @Component
@@ -41,8 +41,8 @@ public class AccountGrantedAuthoritiesConverter
     }
 
     return businessUserAccountRepository
-      .findAuthorizationContextByIdentityProviderSubject(jwt.getSubject())
-      .map(this::convertAuthorizationContext)
+      .findAuthorizationByIdentityProviderSubject(jwt.getSubject())
+      .map(this::toGrantedAuthorities)
       .orElseGet(() -> List.of(
         new SimpleGrantedAuthority(
           UNREGISTERED_AUTHORITY
@@ -50,23 +50,23 @@ public class AccountGrantedAuthoritiesConverter
       ));
   }
 
-  private Collection<GrantedAuthority> convertAuthorizationContext(
-    AuthorizationContextProjection authorizationContext
+  private Collection<GrantedAuthority> toGrantedAuthorities(
+    BusinessUserAccountAuthorizationProjection authorization
   ) {
     List<GrantedAuthority> authorities = new ArrayList<>();
 
-    if (authorizationContext.businessRole() != null) {
+    if (authorization.businessRole() != null) {
       authorities.add(
         new SimpleGrantedAuthority(
-          ROLE_PREFIX + authorizationContext.businessRole().name()
+          ROLE_PREFIX + authorization.businessRole().name()
         )
       );
     }
 
-    if (authorizationContext.businessReviewStatus() != null) {
+    if (authorization.businessReviewStatus() != null) {
       authorities.add(
         new SimpleGrantedAuthority(
-          REVIEW_PREFIX + authorizationContext.businessReviewStatus().name()
+          REVIEW_PREFIX + authorization.businessReviewStatus().name()
         )
       );
     }

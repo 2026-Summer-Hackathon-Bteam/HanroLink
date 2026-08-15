@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.hanrolink.account.exception.UnsupportedJwtAccountRoleException;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
-import com.hanrolink.account.repository.projection.AuthorizationContextProjection;
+import com.hanrolink.account.repository.projection.BusinessUserAccountAuthorizationProjection;
 import com.hanrolink.account.response.CurrentAccountGetResponse;
 import com.hanrolink.business.enums.BusinessRegistrationApiStatus;
 import com.hanrolink.business.enums.BusinessReviewStatus;
@@ -51,24 +51,24 @@ public class CurrentAccountService {
     }
 
     // Admin以外は、DBの登録情報からロールと審査状態の取得
-    Optional<AuthorizationContextProjection> optionalAuthorizationContext =
+    Optional<BusinessUserAccountAuthorizationProjection> optionalBusinessUserAccountAuthorization =
       businessUserAccountRepository
-        .findAuthorizationContextByIdentityProviderSubject(identityProviderSubject);
+        .findAuthorizationByIdentityProviderSubject(identityProviderSubject);
 
-    if (optionalAuthorizationContext.isEmpty()) {
+    if (optionalBusinessUserAccountAuthorization.isEmpty()) {
       return new CurrentAccountGetResponse(
         null,
         BusinessRegistrationApiStatus.NOT_SUBMITTED
       );
     }
 
-    AuthorizationContextProjection authorizationContext =
-      optionalAuthorizationContext.orElseThrow();
+    BusinessUserAccountAuthorizationProjection businessUserAccountAuthorization =
+      optionalBusinessUserAccountAuthorization.orElseThrow();
 
     return new CurrentAccountGetResponse(
-      applicationRoleOf(authorizationContext.businessRole()),
+      applicationRoleOf(businessUserAccountAuthorization.businessRole()),
       registrationStatusOf(
-        authorizationContext.businessReviewStatus()
+        businessUserAccountAuthorization.businessReviewStatus()
       )
     );
   }
