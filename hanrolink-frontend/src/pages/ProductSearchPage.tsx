@@ -12,6 +12,7 @@ import { formatTargetMonth } from '../shared/utils/yearMonth'
 import { createTargetMonths } from '../shared/utils/yearMonth'
 import { Link } from 'react-router-dom'
 import SearchPagination from '../components/SearchPagination'
+import ProductCategoryFilter from '../components/ProductCategoryFilter'
 
 const toggleSelectedValue = <T,>(currentValues: T[], selectedValue: T): T[] => {
   return currentValues.includes(selectedValue)
@@ -271,45 +272,14 @@ function ProductSearchPage() {
           })}
         </div>
       </div>
-      <div className="pb-4">
-        <h3 className="mb-2 border-b-2 border-border px-2 text-left font-bold text-border textaccent">
-          商品カテゴリー
-        </h3>
-        {[...searchOptions.productCategoryGroups]
-          .sort((a, b) => a.sortOrder - b.sortOrder)
-          .map((group) => (
-            <details className="group rounded-lg text-left" key={group.id}>
-              <summary className="cursor-pointer rounded-md px-2 py-2 font-medium hover:bg-textbg/40">
-                {group.name}
-              </summary>
-              {[...searchOptions.productCategories]
-                .filter(
-                  (category) => group.id === category.productCategoryGroupId,
-                )
-                .sort((a, b) => a.sortOrder - b.sortOrder)
-                .map((category) => (
-                  <div
-                    key={category.id}
-                    className="ml-3 border-l border-border/30 pl-2"
-                  >
-                    <label>
-                      <input
-                        type="checkbox"
-                        value={category.id}
-                        checked={searchConditions.productCategoryIds.includes(
-                          category.id,
-                        )}
-                        onChange={() =>
-                          handleProductCategoryToggle(category.id)
-                        }
-                      />
-                      <span>{category.name}</span>
-                    </label>
-                  </div>
-                ))}
-            </details>
-          ))}
-      </div>
+
+      <ProductCategoryFilter
+        categoryGroups={searchOptions.productCategoryGroups}
+        categories={searchOptions.productCategories}
+        selectedCategoryIds={searchConditions.productCategoryIds}
+        onToggle={handleProductCategoryToggle}
+      />
+
       <div className="pb-4">
         <h3 className="mb-2 border-b-2 border-border px-2 text-left font-bold text-border textaccent">
           保存方法
