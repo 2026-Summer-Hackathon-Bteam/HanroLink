@@ -1,6 +1,7 @@
 package com.hanrolink.procurementrequest.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 
 /**
- * 認証中のBuyerが自身の募集情報を管理するためのController。
+ * 認証中のBuyerが自社の募集情報を管理するためのController。
  * 他のBuyerが登録した募集情報は操作対象に含まない。
  */
 @RestController
@@ -57,7 +58,7 @@ public class BuyerProcurementRequestManagementController {
   )
   @PutMapping(ProcurementRequestApi.V1.BY_ID)
   public ResponseEntity<Void> update(
-    @PathVariable Long procurementRequestId,
+    @PathVariable UUID procurementRequestId,
     @Valid @RequestBody BuyerProcurementRequestUpdateRequest request
   ) {
 
@@ -72,7 +73,7 @@ public class BuyerProcurementRequestManagementController {
   )
   @DeleteMapping(ProcurementRequestApi.V1.BY_ID)
   public ResponseEntity<Void> delete(
-    @PathVariable Long procurementRequestId
+    @PathVariable UUID procurementRequestId
   ) {
 
     // TODO: Serviceで登録元Buyerの募集情報を削除し、204 No Contentを返す

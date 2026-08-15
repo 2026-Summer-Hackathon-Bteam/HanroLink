@@ -1,18 +1,9 @@
 package com.hanrolink.account.entity;
 
 import java.time.Instant;
-import java.util.UUID;
-
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
-import com.hanrolink.account.enums.BusinessUserAccountReviewStatus;
-import com.hanrolink.account.enums.BusinessUserAccountRole;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,34 +22,12 @@ public class BusinessUserAccount {
   @Column(name = "business_id", nullable = false)
   private Long businessId;
 
-  @Column(name = "public_id", updatable = false, nullable = false)
-  private UUID publicId = UUID.randomUUID();
-
   @Column(
     name = "identity_provider_subject",
     updatable = false,
     nullable = false
   )
   private String identityProviderSubject;
-
-  @Enumerated(EnumType.STRING)
-  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-  @Column(
-    columnDefinition = "business_user_account_role",
-    updatable = false,
-    nullable = false
-  )
-  private BusinessUserAccountRole role;
-
-  @Enumerated(EnumType.STRING)
-  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-  @Column(
-    name = "review_status",
-    columnDefinition = "business_user_account_review_status",
-    nullable = false
-  )
-  private BusinessUserAccountReviewStatus reviewStatus =
-    BusinessUserAccountReviewStatus.PENDING;
 
   @Column(name = "last_name", nullable = false)
   private String lastName;
@@ -89,7 +58,6 @@ public class BusinessUserAccount {
   public BusinessUserAccount(
     Long businessId,
     String identityProviderSubject,
-    BusinessUserAccountRole role,
     String lastName,
     String firstName,
     String lastNameKana,
@@ -99,17 +67,12 @@ public class BusinessUserAccount {
   ) {
     this.businessId = businessId;
     this.identityProviderSubject = identityProviderSubject;
-    this.role = role;
     this.lastName = lastName;
     this.firstName = firstName;
     this.lastNameKana = lastNameKana;
     this.firstNameKana = firstNameKana;
     this.phoneNumber = phoneNumber;
     this.email = email;
-  }
-
-  public void approve() {
-    this.reviewStatus = BusinessUserAccountReviewStatus.APPROVED;
   }
 
   @PrePersist
@@ -126,18 +89,6 @@ public class BusinessUserAccount {
 
   public Long getBusinessId() {
     return businessId;
-  }
-
-  public UUID getPublicId() {
-    return publicId;
-  }
-
-  public BusinessUserAccountRole getRole() {
-    return role;
-  }
-
-  public BusinessUserAccountReviewStatus getReviewStatus() {
-    return reviewStatus;
   }
 
   public String getLastName() {
@@ -162,9 +113,5 @@ public class BusinessUserAccount {
 
   public String getEmail() {
     return email;
-  }
-
-  public Instant getCreatedAt() {
-    return createdAt;
   }
 }

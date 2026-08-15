@@ -1,4 +1,7 @@
 INSERT INTO businesses (
+  public_id,
+  role,
+  review_status,
   name,
   name_kana,
   website_url,
@@ -12,6 +15,9 @@ INSERT INTO businesses (
 )
 VALUES
   (
+    '00000000-0000-0000-0000-000000000001',
+    'BUYER',
+    'PENDING',
     'テスト株式会社',
     'テストカブシキガイシャ',
     'https://example.com',

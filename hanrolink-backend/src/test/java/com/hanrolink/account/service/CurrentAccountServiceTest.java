@@ -1,7 +1,6 @@
 package com.hanrolink.account.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -14,14 +13,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.hanrolink.account.entity.BusinessUserAccount;
-import com.hanrolink.account.enums.AccountRole;
-import com.hanrolink.account.enums.BusinessUserAccountRegistrationApiStatus;
-import com.hanrolink.account.enums.BusinessUserAccountReviewStatus;
-import com.hanrolink.account.enums.BusinessUserAccountRole;
-import com.hanrolink.account.enums.JwtAccountRole;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
+import com.hanrolink.account.repository.projection.BusinessUserAccountAuthorizationProjection;
 import com.hanrolink.account.response.CurrentAccountGetResponse;
+import com.hanrolink.business.enums.BusinessRegistrationApiStatus;
+import com.hanrolink.business.enums.BusinessReviewStatus;
+import com.hanrolink.business.enums.BusinessRole;
+import com.hanrolink.security.authorization.enums.ApplicationRole;
+import com.hanrolink.security.authorization.enums.JwtAccountRole;
 
 @ExtendWith(MockitoExtension.class)
 class CurrentAccountServiceTest {
@@ -37,18 +36,16 @@ class CurrentAccountServiceTest {
 
   @Test
   void get_shouldReturnApprovedBuyer_whenBusinessUserAccountExists() {
-    BusinessUserAccount businessUserAccount = mock(BusinessUserAccount.class);
-
-    when(businessUserAccount.getRole())
-      .thenReturn(BusinessUserAccountRole.BUYER);
-
-    when(businessUserAccount.getReviewStatus())
-      .thenReturn(BusinessUserAccountReviewStatus.APPROVED);
+    BusinessUserAccountAuthorizationProjection businessUserAccountAuthorization =
+      new BusinessUserAccountAuthorizationProjection(
+        BusinessRole.BUYER,
+        BusinessReviewStatus.APPROVED
+      );
 
     when(
       businessUserAccountRepository
-        .findByIdentityProviderSubject(IDENTITY_PROVIDER_SUBJECT)
-    ).thenReturn(Optional.of(businessUserAccount));
+        .findAuthorizationByIdentityProviderSubject(IDENTITY_PROVIDER_SUBJECT)
+    ).thenReturn(Optional.of(businessUserAccountAuthorization));
 
     CurrentAccountGetResponse response =
       currentAccountService.get(
@@ -58,21 +55,21 @@ class CurrentAccountServiceTest {
 
     assertEquals(
       new CurrentAccountGetResponse(
-        AccountRole.BUYER,
-        BusinessUserAccountRegistrationApiStatus.APPROVED
+        ApplicationRole.BUYER,
+        BusinessRegistrationApiStatus.APPROVED
       ),
       response
     );
 
     verify(businessUserAccountRepository)
-      .findByIdentityProviderSubject(IDENTITY_PROVIDER_SUBJECT);
+      .findAuthorizationByIdentityProviderSubject(IDENTITY_PROVIDER_SUBJECT);
   }
 
   @Test
   void get_shouldReturnNotSubmitted_whenBusinessUserAccountDoesNotExist() {
     when(
       businessUserAccountRepository
-        .findByIdentityProviderSubject(IDENTITY_PROVIDER_SUBJECT)
+        .findAuthorizationByIdentityProviderSubject(IDENTITY_PROVIDER_SUBJECT)
     ).thenReturn(Optional.empty());
 
     CurrentAccountGetResponse response =
@@ -84,7 +81,7 @@ class CurrentAccountServiceTest {
     assertEquals(
       new CurrentAccountGetResponse(
         null,
-        BusinessUserAccountRegistrationApiStatus.NOT_SUBMITTED
+        BusinessRegistrationApiStatus.NOT_SUBMITTED
       ),
       response
     );
@@ -100,7 +97,7 @@ class CurrentAccountServiceTest {
 
     assertEquals(
       new CurrentAccountGetResponse(
-        AccountRole.ADMIN,
+        ApplicationRole.ADMIN,
         null
       ),
       response

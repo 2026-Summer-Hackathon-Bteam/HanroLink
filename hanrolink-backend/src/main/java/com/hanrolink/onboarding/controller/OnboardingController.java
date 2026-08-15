@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hanrolink.account.enums.BusinessUserAccountRegistrationApiStatus;
+import com.hanrolink.business.enums.BusinessRegistrationApiStatus;
 import com.hanrolink.onboarding.api.OnboardingApi;
 import com.hanrolink.onboarding.request.OnboardingCreateRequest;
 import com.hanrolink.onboarding.response.OnboardingGetResponse;
@@ -76,7 +76,7 @@ public class OnboardingController {
       .status(HttpStatus.CREATED)
       .body(
         new OnboardingCreateResponse(
-          BusinessUserAccountRegistrationApiStatus.PENDING
+          BusinessRegistrationApiStatus.PENDING
         )
       );
   }

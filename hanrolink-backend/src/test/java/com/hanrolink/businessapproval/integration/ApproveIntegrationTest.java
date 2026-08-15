@@ -41,12 +41,12 @@ class ApproveIntegrationTest {
 
   @Test
   void approve_shouldSucceed_whenValidRequest() throws Exception {
-    UUID businessUserAccountId =
+    UUID businessId =
       UUID.fromString(
         "00000000-0000-0000-0000-000000000001"
       );
 
-    mockMvc.perform(patch(BusinessApprovalApi.V1.APPROVE, businessUserAccountId)
+    mockMvc.perform(patch(BusinessApprovalApi.V1.APPROVE, businessId)
       .with(
         jwt()
           .jwt(jwt ->

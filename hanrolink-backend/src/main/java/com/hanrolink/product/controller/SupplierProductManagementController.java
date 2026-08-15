@@ -1,6 +1,7 @@
 package com.hanrolink.product.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 
 /**
- * 認証中のSupplierが自身の商品情報を管理するためのController。
+ * 認証中のSupplierが自社の商品情報を管理するためのController。
  * 他のSupplierが登録した商品情報は操作対象に含まない。
  */
 @Profile("s3")
@@ -68,7 +69,7 @@ public class SupplierProductManagementController {
   }
 
   /**
-   * 自身に紐づく商品一覧を取得する
+   * 自社に紐づく商品一覧を取得する
    * @param jwt 認証済みユーザーのJWT
    * @return 商品一覧
    */
@@ -85,7 +86,7 @@ public class SupplierProductManagementController {
   /**
    * 商品情報を更新することを受け付ける
    * @param jwt 認証済みユーザーのJWT
-   * @param productId 更新対象の商品ID
+   * @param productId 更新対象の商品の公開識別子
    * @param request 商品の更新情報
    * @return 更新結果
    */
@@ -97,7 +98,7 @@ public class SupplierProductManagementController {
   @PutMapping(ProductApi.V1.BY_ID)
   public ResponseEntity<Void> update(
     @AuthenticationPrincipal Jwt jwt,
-    @PathVariable Long productId,
+    @PathVariable UUID productId,
     @Valid @RequestBody SupplierProductUpdateRequest request
   ) {
     supplierProductManagementService.update(
@@ -109,9 +110,9 @@ public class SupplierProductManagementController {
   }
 
   /**
-   * 自身に紐づく商品の表示状態を更新する
+   * 自社に紐づく商品の表示状態を更新する
    * @param jwt 認証済みユーザーのJWT
-   * @param productId 更新対象の商品ID
+   * @param productId 更新対象の商品の公開識別子
    * @param request 表示状態の更新情報
    * @return 更新結果
    */
@@ -123,7 +124,7 @@ public class SupplierProductManagementController {
   @PatchMapping(ProductApi.V1.VISIBILITY)
   public ResponseEntity<Void> updateVisibility(
     @AuthenticationPrincipal Jwt jwt,
-    @PathVariable Long productId,
+    @PathVariable UUID productId,
     @Valid @RequestBody SupplierProductUpdateVisibilityRequest request
   ) {
     supplierProductManagementService.updateVisibility(
@@ -135,9 +136,9 @@ public class SupplierProductManagementController {
   }
 
   /**
-   * 自身に紐づく商品を削除する
+   * 自社に紐づく商品を削除する
    * @param jwt 認証済みユーザーのJWT
-   * @param productId 削除対象の商品ID
+   * @param productId 削除対象の商品の公開識別子
    * @return 削除結果
    */
   @RequiresApprovedSupplier
@@ -148,7 +149,7 @@ public class SupplierProductManagementController {
   @DeleteMapping(ProductApi.V1.BY_ID)
   public ResponseEntity<Void> delete(
     @AuthenticationPrincipal Jwt jwt,
-    @PathVariable Long productId
+    @PathVariable UUID productId
   ) {
     supplierProductManagementService.delete(jwt.getSubject(), productId);
     return ResponseEntity.noContent().build();

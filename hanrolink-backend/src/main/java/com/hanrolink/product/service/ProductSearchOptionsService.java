@@ -11,7 +11,10 @@ import com.hanrolink.product.response.ProductSearchOptionsResponse;
 import com.hanrolink.product.response.component.StorageTypeOptionResponse;
 import com.hanrolink.productcategory.repository.ProductCategoryGroupRepository;
 import com.hanrolink.productcategory.repository.ProductCategoryRepository;
+import com.hanrolink.productcategory.response.component.ProductCategoryGroupOptionResponse;
+import com.hanrolink.productcategory.response.component.ProductCategoryOptionResponse;
 import com.hanrolink.region.repository.RegionRepository;
+import com.hanrolink.region.response.component.RegionOptionResponse;
 
 @Service
 public class ProductSearchOptionsService {
@@ -38,6 +41,43 @@ public class ProductSearchOptionsService {
    */
   @Transactional(readOnly = true)
   public ProductSearchOptionsResponse get() {
+    List<ProductCategoryGroupOptionResponse> productCategoryGroups =
+      productCategoryGroupRepository
+        .findAllOptions()
+        .stream()
+        .map(productCategoryGroup ->
+          new ProductCategoryGroupOptionResponse(
+            productCategoryGroup.id(),
+            productCategoryGroup.name()
+          )
+        )
+        .toList();
+
+    List<ProductCategoryOptionResponse> productCategories =
+      productCategoryRepository
+        .findAllOptions()
+        .stream()
+        .map(productCategory ->
+          new ProductCategoryOptionResponse(
+            productCategory.id(),
+            productCategory.productCategoryGroupId(),
+            productCategory.name()
+          )
+        )
+        .toList();
+
+    List<RegionOptionResponse> mainIngredientRegions =
+      regionRepository
+        .findAllOptions()
+        .stream()
+        .map(region ->
+          new RegionOptionResponse(
+            region.id(),
+            region.name()
+          )
+        )
+        .toList();
+
     List<StorageTypeOptionResponse> storageTypes =
       Arrays.stream(StorageType.values())
         .map(storageType ->
@@ -49,9 +89,9 @@ public class ProductSearchOptionsService {
         .toList();
 
     return new ProductSearchOptionsResponse(
-      productCategoryGroupRepository.findAllOptions(),
-      productCategoryRepository.findAllOptions(),
-      regionRepository.findAllOptions(),
+      productCategoryGroups,
+      productCategories,
+      mainIngredientRegions,
       storageTypes
     );
   }

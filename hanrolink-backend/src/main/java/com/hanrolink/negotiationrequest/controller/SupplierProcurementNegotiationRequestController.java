@@ -1,6 +1,7 @@
 package com.hanrolink.negotiationrequest.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class SupplierProcurementNegotiationRequestController {
   )
   @PostMapping(SupplierNegotiationRequestApi.V1.CREATE)
   public ResponseEntity<Void> create(
-    @PathVariable Long procurementRequestId,
+    @PathVariable UUID procurementRequestId,
     @Valid @RequestBody SupplierProcurementNegotiationRequestCreateRequest request
   ) {
 

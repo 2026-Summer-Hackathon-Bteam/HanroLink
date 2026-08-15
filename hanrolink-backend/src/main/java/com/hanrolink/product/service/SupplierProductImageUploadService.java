@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
+import com.hanrolink.account.repository.projection.FileUploadContextProjection;
 import com.hanrolink.file.entity.PendingFileUpload;
 import com.hanrolink.file.enums.FileUploadUsage;
 import com.hanrolink.file.repository.PendingFileUploadRepository;
@@ -50,12 +51,14 @@ public class SupplierProductImageUploadService {
     String identityProviderSubject,
     SupplierProductImageUploadCreateRequest request
   ) {
-    Long supplierAccountId =
-      businessUserAccountRepository
-        .findIdByIdentityProviderSubject(identityProviderSubject)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    FileUploadContextProjection fileUploadContext = businessUserAccountRepository
+      .findFileUploadContextByIdentityProviderSubject(identityProviderSubject)
+      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-    String imageStorageKey = createStorageKey(request.usage());
+    String imageStorageKey = createStorageKey(
+      request.usage(),
+      fileUploadContext.businessPublicId()
+    );
 
     String uploadUrl = s3UploadUrlGenerator.generate(
       imageStorageKey,
@@ -64,7 +67,7 @@ public class SupplierProductImageUploadService {
 
     PendingFileUpload pendingFileUpload =
       new PendingFileUpload(
-        supplierAccountId,
+        fileUploadContext.businessUserAccountId(),
         imageStorageKey,
         fileUploadUsageOf(request.usage()),
         PRODUCT_IMAGE_MIME_TYPE,
@@ -80,13 +83,14 @@ public class SupplierProductImageUploadService {
   }
 
   private String createStorageKey(
-    ProductImageUsage usage
+    ProductImageUsage usage,
+    UUID businessPublicId
   ) {
     return switch (usage) {
       case MAIN_IMAGE ->
-        "products/main-images/" + UUID.randomUUID() + ".webp";
+        "products/" + businessPublicId + "/main-images/" + UUID.randomUUID() + ".webp";
       case STORY_IMAGE ->
-        "products/story-images/" + UUID.randomUUID() + ".webp";
+        "products/" + businessPublicId + "/story-images/" + UUID.randomUUID() + ".webp";
     };
   }
 

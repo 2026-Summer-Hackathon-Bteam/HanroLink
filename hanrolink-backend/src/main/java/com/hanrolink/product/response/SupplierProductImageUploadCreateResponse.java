@@ -19,7 +19,7 @@ public record SupplierProductImageUploadCreateResponse(
     );
 
     Objects.requireNonNull(
-      uploadUrl,
+      pendingFileUploadId,
       "SupplierProductImageUploadCreateResponse.pendingFileUploadId must not be null"
     );
   }

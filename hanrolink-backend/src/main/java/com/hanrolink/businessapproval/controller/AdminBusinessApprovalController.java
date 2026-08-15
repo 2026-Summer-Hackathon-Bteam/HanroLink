@@ -29,8 +29,8 @@ public class AdminBusinessApprovalController {
   }
 
   /**
-   * 審査待ちの事業者ユーザーアカウント一覧を取得する
-   * @return 審査待ちの事業者ユーザーアカウント一覧
+   * 審査待ちの事業者一覧を取得する
+   * @return 審査待ちの事業者一覧
    */
   @RequiresAdmin
   @GetMapping(BusinessApprovalApi.V1.PENDING)
@@ -42,22 +42,22 @@ public class AdminBusinessApprovalController {
 
   /**
    * 審査対象の詳細情報を取得する
-   * @param businessUserAccountId 事業者ユーザーアカウントの公開識別子
+   * @param businessId 事業者の公開識別子
    * @return 審査対象の詳細情報
    */
   @RequiresAdmin
   @GetMapping(BusinessApprovalApi.V1.BY_ID)
   public ResponseEntity<AdminBusinessApprovalDetailResponse> getDetail(
-    @PathVariable UUID businessUserAccountId
+    @PathVariable UUID businessId
   ) {
     return ResponseEntity.ok(
-      adminBusinessApprovalService.getDetail(businessUserAccountId)
+      adminBusinessApprovalService.getDetail(businessId)
     );
   }
 
   /**
-   * 審査対象の事業者ユーザーアカウントを承認する
-   * @param businessUserAccountId 事業者ユーザーアカウントの公開識別子
+   * 審査対象の事業者を承認する
+   * @param businessId 事業者の公開識別子
    * @return 承認結果
    */
   @RequiresAdmin
@@ -67,9 +67,9 @@ public class AdminBusinessApprovalController {
   )
   @PatchMapping(BusinessApprovalApi.V1.APPROVE)
   public ResponseEntity<Void> approve(
-    @PathVariable UUID businessUserAccountId
+    @PathVariable UUID businessId
   ) {
-    adminBusinessApprovalService.approve(businessUserAccountId);
+    adminBusinessApprovalService.approve(businessId);
     return ResponseEntity.noContent().build();
   }
 }

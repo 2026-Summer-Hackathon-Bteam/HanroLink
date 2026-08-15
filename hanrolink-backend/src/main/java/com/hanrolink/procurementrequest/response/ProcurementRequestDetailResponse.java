@@ -2,6 +2,7 @@ package com.hanrolink.procurementrequest.response;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import com.hanrolink.procurementrequest.response.component.MonthlyProcurementQuantityResponse;
 import com.hanrolink.procurementrequest.response.component.ProcurementRequestBuyerResponse;
@@ -12,6 +13,9 @@ import com.hanrolink.productcategory.response.component.ProductCategoryResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record ProcurementRequestDetailResponse(
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+  UUID id,
+
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   String title,
 
@@ -43,6 +47,11 @@ public record ProcurementRequestDetailResponse(
   Boolean hasMyActiveNegotiationRequest
 ) {
   public ProcurementRequestDetailResponse {
+    Objects.requireNonNull(
+      id,
+      "ProcurementRequestDetailResponse.id must not be null"
+    );
+
     Objects.requireNonNull(
       title,
       "ProcurementRequestDetailResponse.title must not be null"

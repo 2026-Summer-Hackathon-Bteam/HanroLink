@@ -2,12 +2,13 @@ package com.hanrolink.product.response;
 
 import java.time.Instant;
 import java.util.Objects;
+import java.util.UUID;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record SupplierProductListResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  Long id,
+  UUID id,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   String name,
