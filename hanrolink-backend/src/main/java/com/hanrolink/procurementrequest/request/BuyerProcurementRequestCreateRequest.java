@@ -3,6 +3,7 @@ package com.hanrolink.procurementrequest.request;
 import java.util.List;
 import java.util.Set;
 
+import com.hanrolink.procurementrequest.policy.MonthlyProcurementQuantityPolicy;
 import com.hanrolink.procurementrequest.request.component.MonthlyProcurementQuantityRequest;
 import com.hanrolink.product.enums.StorageType;
 
@@ -37,6 +38,10 @@ public record BuyerProcurementRequestCreateRequest(
   Set<@NotNull StorageType> storageTypes,
 
   @NotNull
-  @Size(min = 6, max = 6, message = "6か月分指定してください")
+  @Size(
+    min = MonthlyProcurementQuantityPolicy.TARGET_MONTH_COUNT,
+    max = MonthlyProcurementQuantityPolicy.TARGET_MONTH_COUNT,
+    message = "{min}か月分指定してください"
+  )
   List<@NotNull @Valid MonthlyProcurementQuantityRequest> monthlyProcurementQuantities
 ) {}
