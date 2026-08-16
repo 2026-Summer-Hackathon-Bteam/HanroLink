@@ -4,6 +4,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.hanrolink.file.entity.PendingFileUpload;
@@ -11,8 +13,18 @@ import com.hanrolink.file.entity.PendingFileUpload;
 @Repository
 public interface PendingFileUploadRepository extends JpaRepository<PendingFileUpload, Long> {
 
-  Optional<PendingFileUpload> findByPublicIdAndBusinessUserAccountId(
-    UUID publicId,
-    Long businessUserAccountId
+  @Query("""
+    SELECT pendingFileUpload
+    FROM PendingFileUpload pendingFileUpload
+    JOIN BusinessUserAccount businessUserAccount
+      ON businessUserAccount.id = pendingFileUpload.businessUserAccountId
+    WHERE pendingFileUpload.publicId = :pendingFileUploadPublicId
+      AND businessUserAccount.identityProviderSubject = :identityProviderSubject
+    """)
+  Optional<PendingFileUpload> findByPublicIdAndIdentityProviderSubject(
+    @Param("pendingFileUploadPublicId")
+    UUID pendingFileUploadPublicId,
+    @Param("identityProviderSubject")
+    String identityProviderSubject
   );
 }

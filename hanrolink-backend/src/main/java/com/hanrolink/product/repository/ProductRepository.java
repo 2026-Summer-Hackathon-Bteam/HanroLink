@@ -23,7 +23,20 @@ import com.hanrolink.product.repository.projection.SupplierProductListProjection
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-  Optional<Product> findByPublicIdAndSupplierBusinessId(UUID publicId, Long supplierBusinessId);
+  @Query("""
+    SELECT product
+    FROM Product product
+    JOIN BusinessUserAccount businessUserAccount
+      ON businessUserAccount.businessId = product.supplierBusinessId
+    WHERE product.publicId = :productPublicId
+      AND businessUserAccount.identityProviderSubject = :identityProviderSubject
+    """)
+  Optional<Product> findByPublicIdAndIdentityProviderSubject(
+    @Param("productPublicId")
+    UUID productPublicId,
+    @Param("identityProviderSubject")
+    String identityProviderSubject
+  );
 
   @Query("""
     SELECT new com.hanrolink.product.repository.projection.PublicProductListProjection(
@@ -120,10 +133,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         OR product.mainIngredientRegionId IN :mainIngredientRegionIds
       )
       AND (
-        :#{#productCategoryGroupIds == null || #productCategoryGroupIds.isEmpty()} = true
-        OR productCategory.productCategoryGroupId IN :productCategoryGroupIds
-      )
-      AND (
         :#{#productCategoryIds == null || #productCategoryIds.isEmpty()} = true
         OR product.productCategoryId IN :productCategoryIds
       )
@@ -149,8 +158,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<LocalDate> availableSupplyMonths,
     @Param("mainIngredientRegionIds")
     List<Short> mainIngredientRegionIds,
-    @Param("productCategoryGroupIds")
-    List<Short> productCategoryGroupIds,
     @Param("productCategoryIds")
     List<Short> productCategoryIds,
     @Param("storageTypes")
@@ -167,11 +174,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       product.updatedAt
     )
     FROM Product product
-    WHERE product.supplierBusinessId = :supplierBusinessId
+    JOIN BusinessUserAccount businessUserAccount
+      ON businessUserAccount.businessId = product.supplierBusinessId
+    WHERE businessUserAccount.identityProviderSubject = :identityProviderSubject
     ORDER BY product.updatedAt DESC
     """)
-  List<SupplierProductListProjection> findManagementListBySupplierBusinessId(
-    @Param("supplierBusinessId")
-    Long supplierBusinessId
+  List<SupplierProductListProjection> findManagementListByIdentityProviderSubject(
+    @Param("identityProviderSubject")
+    String identityProviderSubject
   );
 }

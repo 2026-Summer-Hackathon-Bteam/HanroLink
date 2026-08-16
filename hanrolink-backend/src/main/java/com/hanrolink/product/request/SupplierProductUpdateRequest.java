@@ -96,7 +96,8 @@ public record SupplierProductUpdateRequest(
     if (monthlySupplyCapacities == null
       || monthlySupplyCapacities.size() != MonthlySupplyCapacityPolicy.TARGET_MONTH_COUNT
       || monthlySupplyCapacities.stream().anyMatch(
-        item -> item == null || item.targetMonth() == null
+        monthlySupplyCapacity -> monthlySupplyCapacity == null
+        || monthlySupplyCapacity.targetMonth() == null
       )
     ) {
       return true;
@@ -105,17 +106,18 @@ public record SupplierProductUpdateRequest(
     List<YearMonth> supplyMonths =
       monthlySupplyCapacities
         .stream()
-        .map(item -> item.targetMonth())
+        .map(monthlySupplyCapacity -> monthlySupplyCapacity.targetMonth())
         .sorted()
         .toList();
+
     YearMonth currentMonth = YearMonth.now(ZoneId.of("Asia/Tokyo"));
 
     return IntStream
       .range(0, MonthlySupplyCapacityPolicy.TARGET_MONTH_COUNT)
-      .allMatch(monthOffset ->
+      .allMatch(monthsAfterCurrentMonth ->
         supplyMonths
-          .get(monthOffset)
-          .equals(currentMonth.plusMonths(monthOffset))
+          .get(monthsAfterCurrentMonth)
+          .equals(currentMonth.plusMonths(monthsAfterCurrentMonth))
       );
   }
 
@@ -124,8 +126,9 @@ public record SupplierProductUpdateRequest(
     if (productStories == null
       || productStories.size() != ProductStoryPolicy.REQUIRED_COUNT
       || productStories.stream().anyMatch(
-        item -> item == null || item.position() == null
-      ) 
+        productStory -> productStory == null
+        || productStory.position() == null
+      )
     ) {
       return true;
     }
