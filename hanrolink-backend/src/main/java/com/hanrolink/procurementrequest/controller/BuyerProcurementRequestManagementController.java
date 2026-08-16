@@ -42,7 +42,7 @@ public class BuyerProcurementRequestManagementController {
   }
 
   /**
-   * 募集情報を新規作成を受け付ける
+   * 募集情報の新規作成を受け付ける
    * @param jwt 認証済みユーザーのJWT
    * @param request 募集の入力情報
    * @return 募集の作成結果
