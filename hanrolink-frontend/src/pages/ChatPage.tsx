@@ -184,15 +184,16 @@ function ChatPage() {
                   {message.messageFiles && message.messageFiles.length > 0 && (
                     <ul className="mt-2 space-y-1 border-t border-border/20 pt-2">
                       {message.messageFiles.map((file, index) => (
-                        <li key={`${file.url}-${index}`}>
+                        <li key={`${file.url}-${index}`} className='flex'>
+                          <span className='shrink-0'>添付：</span>
                           <a
                             href={file.url}
                             target="_blank"
                             rel="noreferrer"
-                            className="block max-w-full truncate text-other underline underline-offset-2 hover:no-underline"
+                            className="min-w-0 flex-1 block max-w-full truncate text-other underline underline-offset-2 hover:no-underline"
                             title={file.displayFilename ?? '添付ファイル'}
                           >
-                            📎 {file.displayFilename ?? '添付ファイル'}
+                            {file.displayFilename ?? '添付ファイル'}
                           </a>
                         </li>
                       ))}
@@ -201,7 +202,6 @@ function ChatPage() {
                 </div>
 
                 <time dateTime={message.createdAt} className="shrink-0 text-xs">
-                  {/* 日時を整形して表示 */}
                   {formatChatDateTime(message.createdAt)}
                 </time>
               </div>
@@ -250,7 +250,7 @@ function ChatPage() {
                   onChange={handleFileChange}
                 />
               </label>
-
+              {/* 添付したファイルの表示 */}
               {selectedFiles.length > 0 && (
                 <div className="flex min-w-0 px-2 flex-1 flex-wrap items-center gap-2">
                   {selectedFiles.map((file) => (
