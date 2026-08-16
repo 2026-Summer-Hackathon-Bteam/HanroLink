@@ -270,7 +270,7 @@ public class SupplierProductManagementService {
       pendingFileUploadRepository.delete(mainImageUpload);
     }
 
-    // 指定された商品ストーリー画像の利用可否確認
+    // 後続の差し替えに使用する商品ストーリー画像の利用可否確認
     Map<Long, PendingFileUpload> storyImageUploadsByProductStoryId = new HashMap<>();
 
     for (ProductStoryUpdateRequest productStoryRequest : request.productStories()) {
@@ -361,7 +361,7 @@ public class SupplierProductManagementService {
     monthlySupplyCapacityRepository.deleteAll(unusedMonthlySupplyCapacities);
     monthlySupplyCapacityRepository.saveAll(newMonthlySupplyCapacities);
 
-    // 商品ストーリーの内容と画像のIDごとの更新
+    // 商品ストーリーの内容更新と指定された画像の差し替え
     Map<Long, ProductStory> existingProductStoriesById =
       productStories
         .stream()
