@@ -91,25 +91,20 @@ public class SupplierProductManagementService {
     String identityProviderSubject,
     SupplierProductCreateRequest request
   ) {
-    Long businessUserAccountId = businessUserAccountRepository
-      .findIdByIdentityProviderSubject(identityProviderSubject)
-      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-    // 代表画像のアップロード情報の検証
+    // 画像のアップロード情報の検証
     PendingFileUpload mainImageUpload = findUsablePendingFileUpload(
       request.mainImagePendingFileUploadId(),
-      businessUserAccountId,
+      identityProviderSubject,
       FileUploadUsage.PRODUCT_MAIN_IMAGE
     );
 
-    // 商品ストーリー画像のアップロード情報の検証
     Map<UUID, PendingFileUpload> storyImageUploadsByPendingFileUploadId =
       new HashMap<>();
 
     for (ProductStoryCreateRequest productStoryRequest : request.productStories()) {
       PendingFileUpload storyImageUpload = findUsablePendingFileUpload(
         productStoryRequest.pendingFileUploadId(),
-        businessUserAccountId,
+        identityProviderSubject,
         FileUploadUsage.PRODUCT_STORY_IMAGE
       );
 
@@ -119,6 +114,7 @@ public class SupplierProductManagementService {
       );
     }
 
+    // 商品と関連情報の保存
     Long supplierBusinessId = businessUserAccountRepository
       .findBusinessIdByIdentityProviderSubject(identityProviderSubject)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -197,12 +193,8 @@ public class SupplierProductManagementService {
   public List<SupplierProductListResponse> list(
     String identityProviderSubject
   ) {
-    Long supplierBusinessId = businessUserAccountRepository
-      .findBusinessIdByIdentityProviderSubject(identityProviderSubject)
-      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
     return productRepository
-      .findManagementListBySupplierBusinessId(supplierBusinessId)
+      .findManagementListByIdentityProviderSubject(identityProviderSubject)
       .stream()
       .map(product ->
         new SupplierProductListResponse(
@@ -228,16 +220,11 @@ public class SupplierProductManagementService {
     UUID productPublicId,
     SupplierProductUpdateRequest request
   ) {
-    // 認証済みユーザーが所属する事業者の商品であることの確認
-    Long supplierBusinessId = businessUserAccountRepository
-      .findBusinessIdByIdentityProviderSubject(identityProviderSubject)
-      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
+    // 商品と関連情報の取得
     Product product = productRepository
-      .findByPublicIdAndSupplierBusinessId(productPublicId, supplierBusinessId)
+      .findByPublicIdAndIdentityProviderSubject(productPublicId, identityProviderSubject)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-    // 商品に紐づく既存関連情報の取得
     List<MonthlySupplyCapacity> monthlySupplyCapacities =
       monthlySupplyCapacityRepository.findAllByProductId(product.getId());
     List<ProductStory> productStories =
@@ -269,15 +256,11 @@ public class SupplierProductManagementService {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
-    Long businessUserAccountId = businessUserAccountRepository
-      .findIdByIdentityProviderSubject(identityProviderSubject)
-      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
     // 代表画像が指定された場合の利用可否確認と画像の差し替え
     if (request.mainImagePendingFileUploadId() != null) {
       PendingFileUpload mainImageUpload = findUsablePendingFileUpload(
         request.mainImagePendingFileUploadId(),
-        businessUserAccountId,
+        identityProviderSubject,
         FileUploadUsage.PRODUCT_MAIN_IMAGE
       );
       String oldMainImageStorageKey = product.getMainImageStorageKey();
@@ -297,7 +280,7 @@ public class SupplierProductManagementService {
 
       PendingFileUpload storyImageUpload = findUsablePendingFileUpload(
         productStoryRequest.pendingFileUploadId(),
-        businessUserAccountId,
+        identityProviderSubject,
         FileUploadUsage.PRODUCT_STORY_IMAGE
       );
 
@@ -431,12 +414,8 @@ public class SupplierProductManagementService {
     UUID productPublicId,
     SupplierProductUpdateVisibilityRequest request
   ) {
-    Long supplierBusinessId = businessUserAccountRepository
-      .findBusinessIdByIdentityProviderSubject(identityProviderSubject)
-      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
     Product product = productRepository
-      .findByPublicIdAndSupplierBusinessId(productPublicId, supplierBusinessId)
+      .findByPublicIdAndIdentityProviderSubject(productPublicId, identityProviderSubject)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     product.updateVisibility(request.hidden());
@@ -452,12 +431,8 @@ public class SupplierProductManagementService {
     String identityProviderSubject,
     UUID productPublicId
   ) {
-    Long supplierBusinessId = businessUserAccountRepository
-      .findBusinessIdByIdentityProviderSubject(identityProviderSubject)
-      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
     Product product = productRepository
-      .findByPublicIdAndSupplierBusinessId(productPublicId, supplierBusinessId)
+      .findByPublicIdAndIdentityProviderSubject(productPublicId, identityProviderSubject)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     // 商品を削除する前に、関連画像を削除待ちとして登録
@@ -474,13 +449,13 @@ public class SupplierProductManagementService {
 
   private PendingFileUpload findUsablePendingFileUpload(
     UUID pendingFileUploadId,
-    Long businessUserAccountId,
+    String identityProviderSubject,
     FileUploadUsage expectedUsage
   ) {
     PendingFileUpload pendingFileUpload = pendingFileUploadRepository
-      .findByPublicIdAndBusinessUserAccountId(
+      .findByPublicIdAndIdentityProviderSubject(
         pendingFileUploadId,
-        businessUserAccountId
+        identityProviderSubject
       )
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
