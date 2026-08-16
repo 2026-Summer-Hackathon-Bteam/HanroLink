@@ -87,7 +87,6 @@ public class ProcurementRequestReadService {
     String identityProviderSubject,
     UUID procurementRequestPublicId
   ) {
-    // 認証情報に基づく商品詳細の閲覧者情報の取得
     ProcurementRequestViewer viewer = resolveViewer(
       authenticatedJwtAccountRole,
       identityProviderSubject
