@@ -24,6 +24,7 @@ import ProcurementRequestEditPage from './pages/ProcurementRequestEditPage'
 import ProductSearchPage from './pages/ProductSearchPage'
 import ProcurementRequestSearchPage from './pages/ProcurementRequestSearchPage'
 import ChatPage from './pages/ChatPage'
+import AdminInitialPasswordChangePage from './pages/AdminInitialPasswordChangePage'
 
 function App() {
   return (
@@ -36,8 +37,11 @@ function App() {
         <Route element={<PublicLayout />}>
           <Route path="signup" element={<SignupPage />} />
           <Route path="signup/confirm" element={<SignupConfirmPage />} />
-
           <Route path="login" element={<LoginPage />} />
+          <Route
+            path="/login/new-password"
+            element={<AdminInitialPasswordChangePage />}
+          />
         </Route>
 
         <Route element={<AuthenticatedLayout />}>

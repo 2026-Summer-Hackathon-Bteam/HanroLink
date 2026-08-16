@@ -1,0 +1,87 @@
+import { useState, type SubmitEvent } from 'react'
+import { getAuthErrorMessage } from '../features/auth/authService'
+
+function AdminInitialPasswordChangePage() {
+  const [password, setPassword] = useState('')
+  const [passwordConfirm, setPasswordConfirm] = useState('')
+  const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setError('')
+
+    if (password !== passwordConfirm) {
+      setError('パスワードと確認用パスワードが一致していません。')
+      return
+    }
+    setIsSubmitting(true)
+
+    try {
+      // 通信処理を書く
+    } catch (e: unknown) {
+      setError(getAuthErrorMessage(e))
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="mx-auto max-w-300 px-4 text-center md:px-6 lg:px-8">
+      <h2>管理者パスワード変更</h2>
+      <p className="mb-8">
+        管理者の初期パスワードは変更する必要があります。
+        <br />
+        新しいパスワードに変更してください。
+      </p>
+
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-8 max-w-120 mx-auto"
+      >
+        <div className="flex flex-col gap-1">
+          <label htmlFor="password" className="text-xs self-start">
+            新しいパスワード
+          </label>
+          <input
+            type="password"
+            name="password"
+            id="password"
+            required
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
+            autoComplete="new-password"
+          ></input>
+        </div>
+        <div className="flex flex-col gap-1">
+          <label htmlFor="passwordConfirm" className="text-xs self-start">
+            新しいパスワード（確認用）
+          </label>
+          <input
+            type="password"
+            name="passwordConfirm"
+            id="passwordConfirm"
+            required
+            onChange={(e) => setPasswordConfirm(e.target.value)}
+            value={passwordConfirm}
+            autoComplete="new-password"
+          ></input>
+          {error && (
+            <p role="alert" className="self-start text-error">
+              {error}
+            </p>
+          )}
+        </div>
+        <button
+          type="submit"
+          className="h-9 w-45 mx-auto mt-8 rounded-full border border-accent bg-accentbg"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? '送信中...' : '送信する'}
+        </button>
+      </form>
+    </div>
+  )
+}
+
+export default AdminInitialPasswordChangePage

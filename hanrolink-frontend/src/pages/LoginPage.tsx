@@ -44,6 +44,14 @@ function LoginPage() {
         })
         return
       }
+
+      if (
+        result.nextStep.signInStep ===
+        'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED'
+      ) {
+        navigate('/login/new-password')
+        return
+      }
       // 上の２つ以外の状態をまとめて処理
       setError(
         `想定外のログイン状態です。管理者にお問い合わせください。（状態コード: ${result.nextStep.signInStep}）`,
