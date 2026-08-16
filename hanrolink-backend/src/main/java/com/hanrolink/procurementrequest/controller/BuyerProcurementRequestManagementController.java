@@ -73,19 +73,31 @@ public class BuyerProcurementRequestManagementController {
     return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
   }
 
-  // 募集を登録したBuyerアカウントのみ利用可能
+  /**
+   * 募集情報の更新を受け付ける
+   * @param jwt 認証済みユーザーのJWT
+   * @param procurementRequestId 更新対象の募集の公開識別子
+   * @param request 募集の更新情報
+   * @return 募集の更新結果
+   */
+  @RequiresApprovedBuyer
   @ApiResponse(
     responseCode = "204",
     description = "No Content"
   )
   @PutMapping(ProcurementRequestApi.V1.BY_ID)
   public ResponseEntity<Void> update(
+    @AuthenticationPrincipal Jwt jwt,
     @PathVariable UUID procurementRequestId,
     @Valid @RequestBody BuyerProcurementRequestUpdateRequest request
   ) {
+    buyerProcurementRequestManagementService.update(
+      jwt.getSubject(),
+      procurementRequestId,
+      request
+    );
 
-    // TODO: Serviceで募集情報を更新し、204 No Contentを返す
-    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    return ResponseEntity.noContent().build();
   }
 
   // 募集を登録したBuyerアカウントのみ利用可能

@@ -48,6 +48,12 @@ public class MonthlyProcurementQuantity {
     this.desiredQuantity = desiredQuantity;
   }
 
+  public void updateDesiredQuantity(
+    Integer desiredQuantity
+  ) {
+    this.desiredQuantity = desiredQuantity;
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();
@@ -58,5 +64,9 @@ public class MonthlyProcurementQuantity {
   @PreUpdate
   private void onUpdate() {
     this.updatedAt = Instant.now();
+  }
+
+  public YearMonth getTargetMonth() {
+    return YearMonth.from(targetMonth);
   }
 }

@@ -70,6 +70,22 @@ public class ProcurementRequest {
     this.deliveryShelfLifeDays = deliveryShelfLifeDays;
   }
 
+  public void update(
+    Short productCategoryId,
+    String title,
+    String description,
+    String requiredTradeTerms,
+    Integer desiredUnitPrice,
+    Short deliveryShelfLifeDays
+  ) {
+    this.productCategoryId = productCategoryId;
+    this.title = title;
+    this.description = description;
+    this.requiredTradeTerms = requiredTradeTerms;
+    this.desiredUnitPrice = desiredUnitPrice;
+    this.deliveryShelfLifeDays = deliveryShelfLifeDays;
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();

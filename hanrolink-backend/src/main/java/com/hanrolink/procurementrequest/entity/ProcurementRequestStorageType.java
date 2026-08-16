@@ -65,4 +65,8 @@ public class ProcurementRequestStorageType {
   private void onUpdate() {
     this.updatedAt = Instant.now();
   }
+
+  public StorageType getStorageType() {
+    return storageType;
+  }
 }
