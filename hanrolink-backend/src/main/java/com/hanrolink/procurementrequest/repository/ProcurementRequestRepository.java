@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import com.hanrolink.procurementrequest.entity.ProcurementRequest;
 import com.hanrolink.procurementrequest.repository.projection.BuyerProcurementRequestListProjection;
+import com.hanrolink.procurementrequest.repository.projection.ProcurementRequestDetailProjection;
 
 @Repository
 public interface ProcurementRequestRepository extends JpaRepository<ProcurementRequest, Long> {
@@ -28,6 +29,33 @@ public interface ProcurementRequestRepository extends JpaRepository<ProcurementR
     UUID procurementRequestPublicId,
     @Param("identityProviderSubject")
     String identityProviderSubject
+  );
+
+  @Query("""
+    SELECT new com.hanrolink.procurementrequest.repository.projection.ProcurementRequestDetailProjection(
+      procurementRequest.id,
+      procurementRequest.publicId,
+      procurementRequest.buyerBusinessId,
+      business.publicId,
+      business.name,
+      procurementRequest.productCategoryId,
+      productCategory.name,
+      procurementRequest.title,
+      procurementRequest.description,
+      procurementRequest.requiredTradeTerms,
+      procurementRequest.desiredUnitPrice,
+      procurementRequest.deliveryShelfLifeDays
+    )
+    FROM ProcurementRequest procurementRequest
+    JOIN Business business
+      ON business.id = procurementRequest.buyerBusinessId
+    JOIN ProductCategory productCategory
+      ON productCategory.id = procurementRequest.productCategoryId
+    WHERE procurementRequest.publicId = :procurementRequestPublicId
+    """)
+  Optional<ProcurementRequestDetailProjection> findDetailByPublicId(
+    @Param("procurementRequestPublicId")
+    UUID procurementRequestPublicId
   );
 
   @Query("""
