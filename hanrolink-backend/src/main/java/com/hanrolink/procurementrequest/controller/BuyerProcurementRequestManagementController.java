@@ -65,12 +65,19 @@ public class BuyerProcurementRequestManagementController {
     );
   }
 
-  // 認証中のBuyerアカウントが登録した募集のみ取得可能
+  /**
+   * 自社に紐づく募集情報一覧の取得を受け付ける
+   * @param jwt 認証済みユーザーのJWT
+   * @return 募集情報の一覧
+   */
+  @RequiresApprovedBuyer
   @GetMapping(ProcurementRequestApi.V1.MINE)
-  public ResponseEntity<List<BuyerProcurementRequestListResponse>> list() {
-
-    // TODO: Serviceから募集情報リストを取得し、ResponseEntity.ok(response)で返す
-    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+  public ResponseEntity<List<BuyerProcurementRequestListResponse>> list(
+    @AuthenticationPrincipal Jwt jwt
+  ) {
+    return ResponseEntity.ok(
+      buyerProcurementRequestManagementService.list(jwt.getSubject())
+    );
   }
 
   /**

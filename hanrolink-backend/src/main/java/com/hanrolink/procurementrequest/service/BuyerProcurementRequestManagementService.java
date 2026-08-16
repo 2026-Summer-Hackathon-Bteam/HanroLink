@@ -25,6 +25,7 @@ import com.hanrolink.procurementrequest.request.BuyerProcurementRequestCreateReq
 import com.hanrolink.procurementrequest.request.BuyerProcurementRequestUpdateRequest;
 import com.hanrolink.procurementrequest.request.component.MonthlyProcurementQuantityRequest;
 import com.hanrolink.procurementrequest.response.BuyerProcurementRequestCreateResponse;
+import com.hanrolink.procurementrequest.response.BuyerProcurementRequestListResponse;
 import com.hanrolink.product.enums.StorageType;
 
 @Service
@@ -105,6 +106,28 @@ public class BuyerProcurementRequestManagementService {
     return new BuyerProcurementRequestCreateResponse(
       savedProcurementRequest.getPublicId()
     );
+  }
+
+  /**
+   * 自社に紐づく募集情報の一覧を取得する
+   * @param identityProviderSubject 認証プロバイダーのユーザー識別子
+   * @return 募集情報の一覧
+   */
+  @Transactional(readOnly = true)
+  public List<BuyerProcurementRequestListResponse> list(
+    String identityProviderSubject
+  ) {
+    return procurementRequestRepository
+      .findManagementListByIdentityProviderSubject(identityProviderSubject)
+      .stream()
+      .map(procurementRequest ->
+        new BuyerProcurementRequestListResponse(
+          procurementRequest.publicId(),
+          procurementRequest.title(),
+          procurementRequest.updatedAt()
+        )
+      )
+      .toList();
   }
 
   /**
