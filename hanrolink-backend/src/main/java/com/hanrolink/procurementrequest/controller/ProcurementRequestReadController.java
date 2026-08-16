@@ -3,7 +3,6 @@ package com.hanrolink.procurementrequest.controller;
 import java.util.UUID;
 
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -20,6 +19,7 @@ import com.hanrolink.procurementrequest.service.ProcurementRequestReadService;
 import com.hanrolink.security.authorization.AuthenticatedAccountRoleResolver;
 import com.hanrolink.security.authorization.enums.JwtAccountRole;
 import com.hanrolink.security.authorization.policy.RequiresAdminOrApprovedBusiness;
+import com.hanrolink.security.authorization.policy.RequiresAdminOrApprovedSupplier;
 
 import jakarta.validation.Valid;
 
@@ -66,7 +66,12 @@ public class ProcurementRequestReadController {
     );
   }
 
-  // 管理者、サプライヤー利用可能
+  /**
+   * 指定された条件に基づく募集一覧の取得を受け付ける
+   * @param request 募集の検索条件
+   * @return 募集一覧
+   */
+  @RequiresAdminOrApprovedSupplier
   @GetMapping(ProcurementRequestApi.V1.BASE)
   public ResponseEntity<ProcurementRequestSearchResponse> search(
     @Valid
@@ -74,8 +79,8 @@ public class ProcurementRequestReadController {
     @ModelAttribute
     ProcurementRequestSearchRequest request
   ) {
-
-    // TODO: Serviceから募集情報リストを取得し、ResponseEntity.ok(response)で返す
-    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    return ResponseEntity.ok(
+      procurementRequestReadService.search(request)
+    );
   }
 }

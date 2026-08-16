@@ -1,9 +1,13 @@
 package com.hanrolink.procurementrequest.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,6 +16,8 @@ import org.springframework.stereotype.Repository;
 import com.hanrolink.procurementrequest.entity.ProcurementRequest;
 import com.hanrolink.procurementrequest.repository.projection.BuyerProcurementRequestListProjection;
 import com.hanrolink.procurementrequest.repository.projection.ProcurementRequestDetailProjection;
+import com.hanrolink.procurementrequest.repository.projection.ProcurementRequestSearchResultProjection;
+import com.hanrolink.product.enums.StorageType;
 
 @Repository
 public interface ProcurementRequestRepository extends JpaRepository<ProcurementRequest, Long> {
@@ -56,6 +62,67 @@ public interface ProcurementRequestRepository extends JpaRepository<ProcurementR
   Optional<ProcurementRequestDetailProjection> findDetailByPublicId(
     @Param("procurementRequestPublicId")
     UUID procurementRequestPublicId
+  );
+
+  @Query("""
+    SELECT new com.hanrolink.procurementrequest.repository.projection.ProcurementRequestSearchResultProjection(
+      procurementRequest.id,
+      procurementRequest.publicId,
+      procurementRequest.title,
+      procurementRequest.description,
+      productCategory.name,
+      business.publicId,
+      business.name
+    )
+    FROM ProcurementRequest procurementRequest
+    JOIN ProductCategory productCategory
+      ON productCategory.id = procurementRequest.productCategoryId
+    JOIN Business business
+      ON business.id = procurementRequest.buyerBusinessId
+    WHERE (
+      :#{#productCategoryIds == null || #productCategoryIds.isEmpty()} = true
+      OR procurementRequest.productCategoryId IN :productCategoryIds
+    )
+      AND (
+        :#{#storageTypes == null || #storageTypes.isEmpty()} = true
+        OR EXISTS (
+          SELECT procurementRequestStorageType.id
+          FROM ProcurementRequestStorageType procurementRequestStorageType
+          WHERE procurementRequestStorageType.procurementRequestId =
+            procurementRequest.id
+            AND procurementRequestStorageType.storageType IN :storageTypes
+        )
+      )
+      AND (
+        :#{#desiredProcurementMonths == null || #desiredProcurementMonths.isEmpty()} = true
+        OR EXISTS (
+          SELECT monthlyProcurementQuantity.id
+          FROM MonthlyProcurementQuantity monthlyProcurementQuantity
+          WHERE monthlyProcurementQuantity.procurementRequestId = procurementRequest.id
+            AND monthlyProcurementQuantity.targetMonth IN :desiredProcurementMonths
+        )
+      )
+      AND (
+        :#{#keyword == null || #keyword.isBlank()} = true
+        OR LOWER(procurementRequest.title)
+          LIKE LOWER(CONCAT('%', :keyword, '%'))
+        OR LOWER(procurementRequest.description)
+          LIKE LOWER(CONCAT('%', :keyword, '%'))
+      )
+    ORDER BY
+      procurementRequest.updatedAt DESC,
+      procurementRequest.id DESC
+    """)
+  Page<ProcurementRequestSearchResultProjection> findSearchResults(
+    @Param("desiredProcurementMonths")
+    List<LocalDate> desiredProcurementMonths,
+    @Param("productCategoryIds")
+    List<Short> productCategoryIds,
+    @Param("storageTypes")
+    Set<StorageType> storageTypes,
+    @Param("keyword")
+    String keyword,
+    Pageable pageable
   );
 
   @Query("""

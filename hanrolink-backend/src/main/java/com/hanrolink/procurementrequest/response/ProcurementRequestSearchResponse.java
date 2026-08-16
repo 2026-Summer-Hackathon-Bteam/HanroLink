@@ -4,13 +4,13 @@ import java.util.List;
 import java.util.Objects;
 
 import com.hanrolink.pagination.response.component.PaginationResponse;
-import com.hanrolink.procurementrequest.response.component.ProcurementRequestResultResponse;
+import com.hanrolink.procurementrequest.response.component.ProcurementRequestSearchResultResponse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record ProcurementRequestSearchResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  List<ProcurementRequestResultResponse> procurementRequests,
+  List<ProcurementRequestSearchResultResponse> procurementRequests,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   PaginationResponse pagination

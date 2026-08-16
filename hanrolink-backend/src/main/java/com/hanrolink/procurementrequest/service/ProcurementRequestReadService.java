@@ -1,13 +1,18 @@
 package com.hanrolink.procurementrequest.service;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,15 +26,22 @@ import com.hanrolink.business.enums.BusinessRole;
 import com.hanrolink.negotiationrequest.policy.NegotiationRequestPolicy;
 import com.hanrolink.negotiationrequest.policy.ProcurementNegotiationRequestPolicy;
 import com.hanrolink.negotiationrequest.repository.ProcurementNegotiationRequestRepository;
+import com.hanrolink.pagination.response.component.PaginationResponse;
 import com.hanrolink.procurementrequest.policy.MonthlyProcurementQuantityPolicy;
 import com.hanrolink.procurementrequest.repository.MonthlyProcurementQuantityRepository;
 import com.hanrolink.procurementrequest.repository.ProcurementRequestRepository;
 import com.hanrolink.procurementrequest.repository.ProcurementRequestStorageTypeRepository;
 import com.hanrolink.procurementrequest.repository.projection.ProcurementRequestDetailProjection;
+import com.hanrolink.procurementrequest.repository.projection.ProcurementRequestSearchMonthlyProcurementQuantityProjection;
+import com.hanrolink.procurementrequest.repository.projection.ProcurementRequestSearchResultProjection;
+import com.hanrolink.procurementrequest.repository.projection.ProcurementRequestSearchStorageTypeProjection;
+import com.hanrolink.procurementrequest.request.ProcurementRequestSearchRequest;
 import com.hanrolink.procurementrequest.response.ProcurementRequestDetailResponse;
+import com.hanrolink.procurementrequest.response.ProcurementRequestSearchResponse;
 import com.hanrolink.procurementrequest.response.component.MonthlyProcurementQuantityResponse;
 import com.hanrolink.procurementrequest.response.component.ProcurementRequestBuyerResponse;
 import com.hanrolink.procurementrequest.response.component.ProcurementRequestPermissionsResponse;
+import com.hanrolink.procurementrequest.response.component.ProcurementRequestSearchResultResponse;
 import com.hanrolink.product.response.component.StorageTypeResponse;
 import com.hanrolink.productcategory.response.component.ProductCategoryResponse;
 import com.hanrolink.security.authorization.enums.ApplicationRole;
@@ -188,6 +200,127 @@ public class ProcurementRequestReadService {
     );
   }
 
+  /**
+   * 指定された条件に基づく募集一覧を取得する
+   * @param request 募集の検索条件
+   * @return 募集一覧
+   */
+  @Transactional(readOnly = true)
+  public ProcurementRequestSearchResponse search(
+    ProcurementRequestSearchRequest request
+  ) {
+    // 検索条件の生成
+    List<LocalDate> desiredProcurementMonths =
+      toMonthStartDates(
+        request.desiredProcurementMonths()
+      );
+
+    Pageable pageable = PageRequest.of(
+      request.page() - 1,
+      request.pageSize()
+    );
+
+    // 条件に一致する募集情報の取得
+    Page<ProcurementRequestSearchResultProjection> procurementRequestPage =
+      procurementRequestRepository
+        .findSearchResults(
+          desiredProcurementMonths,
+          request.productCategoryIds(),
+          request.storageTypes(),
+          request.keyword(),
+          pageable
+        );
+
+    List<Long> procurementRequestIds =
+      procurementRequestPage
+        .getContent()
+        .stream()
+        .map(procurementRequestSearchList ->
+          procurementRequestSearchList.id()
+        )
+        .toList();
+
+    // 検索結果に含まれる募集関連情報の一括取得
+    List<ProcurementRequestSearchStorageTypeProjection> storageTypes =
+      List.of();
+    if (!procurementRequestIds.isEmpty()) {
+      storageTypes = procurementRequestStorageTypeRepository
+        .findSearchResultsByProcurementRequestIds(procurementRequestIds);
+    }
+    Map<Long, List<String>> storageTypesByProcurementRequestId =
+      storageTypes
+        .stream()
+        .collect(
+          Collectors.groupingBy(
+            storageType -> storageType.procurementRequestId(),
+            Collectors.mapping(
+              storageType ->
+                storageType.storageType().getDisplayName(),
+              Collectors.toList()
+            )
+          )
+        );
+
+    List<ProcurementRequestSearchMonthlyProcurementQuantityProjection> monthlyProcurementQuantities =
+      List.of();
+    if (!procurementRequestIds.isEmpty()) {
+      monthlyProcurementQuantities = monthlyProcurementQuantityRepository
+        .findSearchResultsByProcurementRequestIds(procurementRequestIds);
+    }
+    Map<Long, List<ProcurementRequestSearchMonthlyProcurementQuantityProjection>>
+      monthlyProcurementQuantitiesByProcurementRequestId =
+        monthlyProcurementQuantities
+          .stream()
+          .collect(
+            Collectors.groupingBy(
+              monthlyProcurementQuantity ->
+                monthlyProcurementQuantity.procurementRequestId()
+            )
+          );
+
+    // 検索結果レスポンスの生成
+    List<ProcurementRequestSearchResultResponse> procurementRequests =
+      procurementRequestPage
+        .getContent()
+        .stream()
+        .map(procurementRequest ->
+          new ProcurementRequestSearchResultResponse(
+            procurementRequest.publicId(),
+            procurementRequest.title(),
+            procurementRequest.description(),
+            procurementRequest.productCategoryName(),
+            storageTypesByProcurementRequestId.getOrDefault(
+              procurementRequest.id(),
+              List.of()
+            ),
+            toLatestMonthlyProcurementQuantityResponses(
+              monthlyProcurementQuantitiesByProcurementRequestId.getOrDefault(
+                procurementRequest.id(),
+                List.of()
+              )
+            ),
+            new ProcurementRequestBuyerResponse(
+              procurementRequest.businessPublicId(),
+              procurementRequest.businessName()
+            )
+          )
+        )
+        .toList();
+
+    PaginationResponse paginationResponse =
+      new PaginationResponse(
+        procurementRequestPage.getNumber() + 1,
+        procurementRequestPage.getSize(),
+        procurementRequestPage.getTotalElements(),
+        procurementRequestPage.getTotalPages()
+      );
+
+    return new ProcurementRequestSearchResponse(
+      procurementRequests,
+      paginationResponse
+    );
+  }
+
   private ProcurementRequestViewer resolveViewer(
     JwtAccountRole authenticatedJwtAccountRole,
     String identityProviderSubject
@@ -232,4 +365,44 @@ public class ProcurementRequestReadService {
     Long businessId,
     ApplicationRole role
   ) {}
+
+  private List<LocalDate> toMonthStartDates(
+    List<YearMonth> months
+  ) {
+    if (months == null) {
+      return List.of();
+    }
+
+    return months
+      .stream()
+      .map(month -> month.atDay(1))
+      .toList();
+  }
+
+  private List<MonthlyProcurementQuantityResponse> toLatestMonthlyProcurementQuantityResponses(
+    List<ProcurementRequestSearchMonthlyProcurementQuantityProjection> monthlyProcurementQuantities
+  ) {
+    Comparator<ProcurementRequestSearchMonthlyProcurementQuantityProjection> byTargetMonth =
+      Comparator.comparing(
+        monthlyProcurementQuantity ->
+          monthlyProcurementQuantity.targetMonth()
+      );
+
+    return monthlyProcurementQuantities
+      .stream()
+      .sorted(byTargetMonth.reversed())
+      .limit(
+        MonthlyProcurementQuantityPolicy.TARGET_MONTH_COUNT
+      )
+      .sorted(byTargetMonth)
+      .map(monthlyProcurementQuantity ->
+        new MonthlyProcurementQuantityResponse(
+          YearMonth.from(
+            monthlyProcurementQuantity.targetMonth()
+          ),
+          monthlyProcurementQuantity.desiredQuantity()
+        )
+      )
+      .toList();
+  }
 }
