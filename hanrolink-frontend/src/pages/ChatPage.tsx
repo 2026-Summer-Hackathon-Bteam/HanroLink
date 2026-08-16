@@ -20,6 +20,23 @@ const formatChatDateTime = (createdAt: string) =>
     hour12: false,
   })
 
+function formatFileSize(bytes: number): string {
+  if (bytes === 0) {
+    return '0 B'
+  }
+
+  const units = ['B', 'KB', 'MB', 'GB']
+  const unitIndex = Math.min(
+    Math.floor(Math.log(bytes) / Math.log(1024)),
+    units.length - 1,
+  )
+  const value = bytes / 1024 ** unitIndex
+
+  return `${new Intl.NumberFormat('ja-JP', {
+    maximumSignificantDigits: 3,
+  }).format(value)} ${units[unitIndex]}`
+}
+
 function ChatPage() {
   const [sendMessage, setSendMessage] = useState('')
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
@@ -150,6 +167,7 @@ function ChatPage() {
               まだメッセージはありません。
             </p>
           )}
+
           {messages.map((message) => (
             <article key={message.id}>
               {!message.isMine && (
@@ -184,16 +202,23 @@ function ChatPage() {
                   {message.messageFiles && message.messageFiles.length > 0 && (
                     <ul className="mt-2 space-y-1 border-t border-border/20 pt-2">
                       {message.messageFiles.map((file, index) => (
-                        <li key={`${file.url}-${index}`} className='flex'>
-                          <span className='shrink-0'>添付：</span>
+                        <li key={`${file.url}-${index}`} className="flex">
+                          <span className="shrink-0">添付：</span>
                           <a
                             href={file.url}
                             target="_blank"
                             rel="noreferrer"
-                            className="min-w-0 flex-1 block max-w-full truncate text-other underline underline-offset-2 hover:no-underline"
+                            className="group flex min-w-0 flex-1 text-other"
                             title={file.displayFilename ?? '添付ファイル'}
                           >
-                            {file.displayFilename ?? '添付ファイル'}
+                            <span className="min-w-0 truncate border-b border-current group-hover:border-transparent">
+                              {file.displayFilename ?? '添付ファイル'}
+                            </span>
+                            <span className="shrink-0  border-b border-current group-hover:border-transparent">
+                              {typeof file.fileSizeBytes === 'number'
+                                ? `（${formatFileSize(file.fileSizeBytes)}）`
+                                : '（ファイルサイズ不明）'}
+                            </span>
                           </a>
                         </li>
                       ))}
