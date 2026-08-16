@@ -18,12 +18,12 @@ public interface PendingFileUploadRepository extends JpaRepository<PendingFileUp
     FROM PendingFileUpload pendingFileUpload
     JOIN BusinessUserAccount businessUserAccount
       ON businessUserAccount.id = pendingFileUpload.businessUserAccountId
-    WHERE pendingFileUpload.publicId = :publicId
+    WHERE pendingFileUpload.publicId = :pendingFileUploadPublicId
       AND businessUserAccount.identityProviderSubject = :identityProviderSubject
     """)
   Optional<PendingFileUpload> findByPublicIdAndIdentityProviderSubject(
-    @Param("publicId")
-    UUID publicId,
+    @Param("pendingFileUploadPublicId")
+    UUID pendingFileUploadPublicId,
     @Param("identityProviderSubject")
     String identityProviderSubject
   );
