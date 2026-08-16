@@ -232,4 +232,25 @@ public class BuyerProcurementRequestManagementService {
     monthlyProcurementQuantityRepository.deleteAll(unusedMonthlyProcurementQuantities);
     monthlyProcurementQuantityRepository.saveAll(newMonthlyProcurementQuantities);
   }
+
+  /**
+   * 自社に紐づく募集情報を削除する
+   * @param identityProviderSubject 認証プロバイダーのユーザー識別子
+   * @param procurementRequestPublicId 削除対象の募集の公開識別子
+   */
+  @Transactional
+  public void delete(
+    String identityProviderSubject,
+    UUID procurementRequestPublicId
+  ) {
+    ProcurementRequest procurementRequest =
+      procurementRequestRepository
+        .findByPublicIdAndIdentityProviderSubject(
+          procurementRequestPublicId,
+          identityProviderSubject
+        )
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+    procurementRequestRepository.delete(procurementRequest);
+  }
 }

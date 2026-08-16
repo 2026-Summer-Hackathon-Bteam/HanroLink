@@ -100,17 +100,27 @@ public class BuyerProcurementRequestManagementController {
     return ResponseEntity.noContent().build();
   }
 
-  // 募集を登録したBuyerアカウントのみ利用可能
+  /**
+   * 募集情報の削除を受け付ける
+   * @param jwt 認証済みユーザーのJWT
+   * @param procurementRequestId 削除対象の募集の公開識別子
+   * @return 募集の削除結果
+   */
+  @RequiresApprovedBuyer
   @ApiResponse(
     responseCode = "204",
     description = "No Content"
   )
   @DeleteMapping(ProcurementRequestApi.V1.BY_ID)
   public ResponseEntity<Void> delete(
+    @AuthenticationPrincipal Jwt jwt,
     @PathVariable UUID procurementRequestId
   ) {
+    buyerProcurementRequestManagementService.delete(
+      jwt.getSubject(),
+      procurementRequestId
+    );
 
-    // TODO: Serviceで登録元Buyerの募集情報を削除し、204 No Contentを返す
-    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    return ResponseEntity.noContent().build();
   }
 }
