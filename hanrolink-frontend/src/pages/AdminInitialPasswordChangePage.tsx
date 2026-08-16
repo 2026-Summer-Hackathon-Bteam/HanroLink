@@ -1,11 +1,16 @@
 import { useState, type SubmitEvent } from 'react'
-import { getAuthErrorMessage } from '../features/auth/authService'
+import { useNavigate } from 'react-router-dom'
+import {
+  getAuthErrorMessage,
+  confirmInitialPassword,
+} from '../features/auth/authService'
 
 function AdminInitialPasswordChangePage() {
   const [password, setPassword] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const navigate = useNavigate()
 
   const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -18,7 +23,19 @@ function AdminInitialPasswordChangePage() {
     setIsSubmitting(true)
 
     try {
-      // 通信処理を書く
+      const result = await confirmInitialPassword({
+        newPassword: password,
+      })
+
+      if (result.isSignedIn && result.nextStep.signInStep === 'DONE') {
+        navigate('/mypage/admin', {
+          replace: true,
+        })
+        return
+      }
+      setError(
+        `想定外のログイン状態です。管理者にお問い合わせください。（状態コード: ${result.nextStep.signInStep}）`,
+      )
     } catch (e: unknown) {
       setError(getAuthErrorMessage(e))
     } finally {
