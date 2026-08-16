@@ -23,6 +23,7 @@ import ProcurementRequestDetailPage from './pages/ProcurementRequestDetailPage'
 import ProcurementRequestEditPage from './pages/ProcurementRequestEditPage'
 import ProductSearchPage from './pages/ProductSearchPage'
 import ProcurementRequestSearchPage from './pages/ProcurementRequestSearchPage'
+import ChatPage from './pages/ChatPage'
 
 function App() {
   return (
@@ -86,6 +87,7 @@ function App() {
             <Route path="mypage/admin" element={<AdminMyPage />} />
             <Route path="mypage/supplier" element={<SupplierMyPage />} />
             <Route path="mypage/buyer" element={<BuyerMyPage />} />
+            <Route path="/chats/:channelId" element={<ChatPage />} />
           </Route>
         </Route>
       </Routes>
