@@ -270,7 +270,7 @@ public class SupplierProductManagementService {
       pendingFileUploadRepository.delete(mainImageUpload);
     }
 
-    // 指定された商品ストーリー画像の利用可否確認
+    // 指定された商品ストーリー画像の利用可否確認と画像の差し替え
     Map<Long, PendingFileUpload> storyImageUploadsByProductStoryId = new HashMap<>();
 
     for (ProductStoryUpdateRequest productStoryRequest : request.productStories()) {
