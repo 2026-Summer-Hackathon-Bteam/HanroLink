@@ -4,21 +4,26 @@ import java.util.List;
 import java.util.Objects;
 
 import com.hanrolink.pagination.response.component.PaginationResponse;
-import com.hanrolink.product.response.component.ProductSearchListItemResponse;
+import com.hanrolink.product.response.component.ProductSearchResultResponse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record ProductSearchListResponse(
+public record ProductSearchResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  List<ProductSearchListItemResponse> products,
+  List<ProductSearchResultResponse> products,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   PaginationResponse pagination
 ) {
-  public ProductSearchListResponse {
+  public ProductSearchResponse {
+    Objects.requireNonNull(
+      products,
+      "ProductSearchResponse.products must not be null"
+    );
+
     Objects.requireNonNull(
       pagination,
-      "ProductSearchListResponse.pagination must not be null"
+      "ProductSearchResponse.pagination must not be null"
     );
   }
 }

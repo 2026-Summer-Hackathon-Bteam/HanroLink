@@ -1,5 +1,7 @@
 package com.hanrolink.product.controller;
 
+import java.util.UUID;
+
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
@@ -10,14 +12,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hanrolink.account.enums.JwtAccountRole;
 import com.hanrolink.product.api.ProductApi;
 import com.hanrolink.product.request.ProductSearchRequest;
 import com.hanrolink.product.response.ProductDetailResponse;
-import com.hanrolink.product.response.ProductSearchListResponse;
+import com.hanrolink.product.response.ProductSearchResponse;
 import com.hanrolink.product.service.ProductService;
 import com.hanrolink.security.authorization.AuthenticatedAccountRoleResolver;
-import com.hanrolink.security.authorization.policy.RequiresAdminOrApprovedBusinessUserAccount;
+import com.hanrolink.security.authorization.enums.JwtAccountRole;
+import com.hanrolink.security.authorization.policy.RequiresAdminOrApprovedBusiness;
 
 import jakarta.validation.Valid;
 
@@ -27,13 +29,13 @@ import jakarta.validation.Valid;
  */
 @Profile("s3")
 @RestController
-public class ProductController {
+public class ProductReadController {
 
   private final ProductService productService;
 
   private final AuthenticatedAccountRoleResolver authenticatedAccountRoleResolver;
 
-  public ProductController(
+  public ProductReadController(
     ProductService productService,
     AuthenticatedAccountRoleResolver authenticatedAccountRoleResolver
   ) {
@@ -44,14 +46,14 @@ public class ProductController {
   /**
    * 商品詳細情報を取得する
    * @param jwt 認証済みユーザーのJWT
-   * @param productId 取得対象の商品ID
+   * @param productId 取得対象の商品の公開識別子
    * @return 商品詳細情報
    */
-  @RequiresAdminOrApprovedBusinessUserAccount
+  @RequiresAdminOrApprovedBusiness
   @GetMapping(ProductApi.V1.BY_ID)
   public ResponseEntity<ProductDetailResponse> getDetail(
     @AuthenticationPrincipal Jwt jwt,
-    @PathVariable Long productId
+    @PathVariable UUID productId
   ) {
     JwtAccountRole authenticatedJwtAccountRole =
       authenticatedAccountRoleResolver.resolve(jwt);
@@ -70,9 +72,9 @@ public class ProductController {
    * @param request 商品の検索条件
    * @return 商品の検索結果
    */
-  @RequiresAdminOrApprovedBusinessUserAccount
+  @RequiresAdminOrApprovedBusiness
   @GetMapping(ProductApi.V1.BASE)
-  public ResponseEntity<ProductSearchListResponse> search(
+  public ResponseEntity<ProductSearchResponse> search(
     @Valid
     @ParameterObject
     @ModelAttribute

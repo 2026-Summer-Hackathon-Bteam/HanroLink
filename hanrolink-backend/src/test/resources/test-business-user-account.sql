@@ -1,9 +1,6 @@
 INSERT INTO business_user_accounts (
   business_id,
-  public_id,
   identity_provider_subject,
-  role,
-  review_status,
   last_name,
   first_name,
   last_name_kana,
@@ -21,9 +18,6 @@ VALUES
       WHERE name = 'テスト株式会社'
     ),
     '00000000-0000-0000-0000-000000000001',
-    '00000000-0000-0000-0000-000000000001',
-    'BUYER',
-    'PENDING',
     '鈴木',
     '太郎',
     'スズキ',

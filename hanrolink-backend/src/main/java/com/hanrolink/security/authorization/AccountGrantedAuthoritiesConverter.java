@@ -10,17 +10,17 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
-import com.hanrolink.account.entity.BusinessUserAccount;
-import com.hanrolink.account.enums.JwtAccountRole;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
+import com.hanrolink.account.repository.projection.BusinessUserAccountAuthorizationProjection;
+import com.hanrolink.security.authorization.enums.JwtAccountRole;
 
 @Component
 public class AccountGrantedAuthoritiesConverter
   implements Converter<Jwt, Collection<GrantedAuthority>> {
 
   private static final String ROLE_PREFIX = "ROLE_";
-
   private static final String REVIEW_PREFIX = "REVIEW_";
+  private static final String UNREGISTERED_AUTHORITY = "UNREGISTERED_BUSINESS_USER_ACCOUNT";
 
   private final BusinessUserAccountRepository businessUserAccountRepository;
 
@@ -41,32 +41,32 @@ public class AccountGrantedAuthoritiesConverter
     }
 
     return businessUserAccountRepository
-      .findByIdentityProviderSubject(jwt.getSubject())
-      .map(this::convertAccount)
+      .findAuthorizationByIdentityProviderSubject(jwt.getSubject())
+      .map(this::toGrantedAuthorities)
       .orElseGet(() -> List.of(
         new SimpleGrantedAuthority(
-          "UNREGISTERED_BUSINESS_USER_ACCOUNT"
+          UNREGISTERED_AUTHORITY
         )
       ));
   }
 
-  private Collection<GrantedAuthority> convertAccount(
-    BusinessUserAccount businessUserAccount
+  private Collection<GrantedAuthority> toGrantedAuthorities(
+    BusinessUserAccountAuthorizationProjection authorization
   ) {
     List<GrantedAuthority> authorities = new ArrayList<>();
 
-    if (businessUserAccount.getRole() != null) {
+    if (authorization.businessRole() != null) {
       authorities.add(
         new SimpleGrantedAuthority(
-          ROLE_PREFIX + businessUserAccount.getRole().name()
+          ROLE_PREFIX + authorization.businessRole().name()
         )
       );
     }
 
-    if (businessUserAccount.getReviewStatus() != null) {
+    if (authorization.businessReviewStatus() != null) {
       authorities.add(
         new SimpleGrantedAuthority(
-          REVIEW_PREFIX + businessUserAccount.getReviewStatus().name()
+          REVIEW_PREFIX + authorization.businessReviewStatus().name()
         )
       );
     }

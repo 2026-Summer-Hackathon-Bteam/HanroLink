@@ -1,6 +1,7 @@
 package com.hanrolink.procurementrequest.entity;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,8 +20,11 @@ public class ProcurementRequest {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "buyer_account_id", nullable = false)
-  private Long buyerAccountId;
+  @Column(name = "public_id", updatable = false, nullable = false)
+  private UUID publicId = UUID.randomUUID();
+
+  @Column(name = "buyer_business_id", nullable = false)
+  private Long buyerBusinessId;
 
   @Column(name = "product_category_id", nullable = false)
   private Short productCategoryId;
@@ -39,9 +43,6 @@ public class ProcurementRequest {
 
   @Column(name = "delivery_shelf_life_days")
   private Short deliveryShelfLifeDays;
-
-  @Column(name = "deleted_at")
-  private Instant deletedAt;
 
   @Column(name = "created_at", updatable = false, nullable = false)
   private Instant createdAt;

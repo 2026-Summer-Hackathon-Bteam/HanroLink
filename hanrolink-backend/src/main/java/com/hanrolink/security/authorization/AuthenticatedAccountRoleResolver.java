@@ -9,7 +9,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
-import com.hanrolink.account.enums.JwtAccountRole;
+import com.hanrolink.security.authorization.enums.JwtAccountRole;
 
 @Component
 public class AuthenticatedAccountRoleResolver {

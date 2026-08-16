@@ -1,6 +1,7 @@
 package com.hanrolink.negotiationrequest.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class BuyerProductNegotiationRequestController {
   )
   @PostMapping(BuyerNegotiationRequestApi.V1.CREATE)
   public ResponseEntity<Void> create(
-    @PathVariable Long productId
+    @PathVariable UUID productId
   ) {
 
     // TODO: バイヤーが商品に対して商談希望を登録して、201 Createdで返す

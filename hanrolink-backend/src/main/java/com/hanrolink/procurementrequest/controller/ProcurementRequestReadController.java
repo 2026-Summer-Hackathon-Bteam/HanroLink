@@ -1,6 +1,6 @@
 package com.hanrolink.procurementrequest.controller;
 
-import java.util.List;
+import java.util.UUID;
 
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hanrolink.procurementrequest.api.ProcurementRequestApi;
 import com.hanrolink.procurementrequest.request.ProcurementRequestSearchRequest;
 import com.hanrolink.procurementrequest.response.ProcurementRequestDetailResponse;
-import com.hanrolink.procurementrequest.response.ProcurementRequestListResponse;
+import com.hanrolink.procurementrequest.response.ProcurementRequestSearchResponse;
 
 import jakarta.validation.Valid;
 
@@ -27,7 +27,7 @@ public class ProcurementRequestReadController {
   // 管理者、サプライヤー、募集を登録したバイヤー利用可能
   @GetMapping(ProcurementRequestApi.V1.BY_ID)
   public ResponseEntity<ProcurementRequestDetailResponse> getDetail(
-    @PathVariable Long procurementRequestId
+    @PathVariable UUID procurementRequestId
   ) {
 
     // TODO: Serviceから募集情報詳細を取得し、ResponseEntity.ok(response)で返す
@@ -36,7 +36,7 @@ public class ProcurementRequestReadController {
 
   // 管理者、サプライヤー利用可能
   @GetMapping(ProcurementRequestApi.V1.BASE)
-  public ResponseEntity<List<ProcurementRequestListResponse>> search(
+  public ResponseEntity<ProcurementRequestSearchResponse> search(
     @Valid
     @ParameterObject
     @ModelAttribute

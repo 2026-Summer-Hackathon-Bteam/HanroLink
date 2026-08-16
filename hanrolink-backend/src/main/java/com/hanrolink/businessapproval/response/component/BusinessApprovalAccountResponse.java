@@ -1,24 +1,10 @@
 package com.hanrolink.businessapproval.response.component;
 
-import java.time.Instant;
 import java.util.Objects;
-import java.util.UUID;
-
-import com.hanrolink.account.enums.BusinessUserAccountReviewStatus;
-import com.hanrolink.account.enums.BusinessUserAccountRole;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record BusinessApprovalAccountResponse(
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  UUID id,
-
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  BusinessUserAccountRole role,
-
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  BusinessUserAccountReviewStatus reviewStatus,
-
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   String lastName,
 
@@ -35,27 +21,9 @@ public record BusinessApprovalAccountResponse(
   String phoneNumber,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  String email,
-
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  Instant createdAt
+  String email
 ) {
   public BusinessApprovalAccountResponse {
-    Objects.requireNonNull(
-      id,
-      "BusinessApprovalAccountResponse.id must not be null"
-    );
-
-    Objects.requireNonNull(
-      role,
-      "BusinessApprovalAccountResponse.role must not be null"
-    );
-
-    Objects.requireNonNull(
-      reviewStatus,
-      "BusinessApprovalAccountResponse.reviewStatus must not be null"
-    );
-
     Objects.requireNonNull(
       lastName,
       "BusinessApprovalAccountResponse.lastName must not be null"
@@ -84,11 +52,6 @@ public record BusinessApprovalAccountResponse(
     Objects.requireNonNull(
       email,
       "BusinessApprovalAccountResponse.email must not be null"
-    );
-
-    Objects.requireNonNull(
-      createdAt,
-      "BusinessApprovalAccountResponse.createdAt must not be null"
     );
   }
 }

@@ -2,12 +2,13 @@ package com.hanrolink.product.response.component;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record ProductSearchListItemResponse(
+public record ProductSearchResultResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  Long id,
+  UUID id,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   String name,
@@ -22,45 +23,53 @@ public record ProductSearchListItemResponse(
   String mainIngredientRegionName,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+  String storageTypeLabel,
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   List<MonthlySupplyCapacityResponse> monthlySupplyCapacities,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   String mainImageUrl
 ) {
-  public ProductSearchListItemResponse {
+  public ProductSearchResultResponse {
     Objects.requireNonNull(
       id,
-      "ProductSearchListItemResponse.id must not be null"
+      "ProductSearchResultResponse.id must not be null"
     );
 
     Objects.requireNonNull(
       name,
-      "ProductSearchListItemResponse.name must not be null"
+      "ProductSearchResultResponse.name must not be null"
     );
 
     Objects.requireNonNull(
       businessName,
-      "ProductSearchListItemResponse.businessName must not be null"
+      "ProductSearchResultResponse.businessName must not be null"
     );
 
     Objects.requireNonNull(
       productCategoryName,
-      "ProductSearchListItemResponse.productCategoryName must not be null"
+      "ProductSearchResultResponse.productCategoryName must not be null"
     );
 
     Objects.requireNonNull(
       mainIngredientRegionName,
-      "ProductSearchListItemResponse.mainIngredientRegionName must not be null"
+      "ProductSearchResultResponse.mainIngredientRegionName must not be null"
+    );
+
+    Objects.requireNonNull(
+      storageTypeLabel,
+      "ProductSearchResultResponse.storageTypeLabel must not be null"
     );
 
     Objects.requireNonNull(
       monthlySupplyCapacities,
-      "ProductSearchListItemResponse.monthlySupplyCapacities must not be null"
+      "ProductSearchResultResponse.monthlySupplyCapacities must not be null"
     );
 
     Objects.requireNonNull(
       mainImageUrl,
-      "ProductSearchListItemResponse.mainImageUrl must not be null"
+      "ProductSearchResultResponse.mainImageUrl must not be null"
     );
   }
 }

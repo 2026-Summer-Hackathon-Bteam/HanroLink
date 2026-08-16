@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hanrolink.product.api.ProductApi;
 import com.hanrolink.product.response.ProductSearchOptionsResponse;
 import com.hanrolink.product.service.ProductSearchOptionsService;
-import com.hanrolink.security.authorization.policy.RequiresAdminOrApprovedBusinessUserAccount;
+import com.hanrolink.security.authorization.policy.RequiresAdminOrApprovedBusiness;
 
 @RestController
 public class ProductSearchOptionsController {
@@ -24,7 +24,7 @@ public class ProductSearchOptionsController {
    * 商品検索フォームで使用する選択肢を取得する
    * @return 商品検索フォームの選択肢
    */
-  @RequiresAdminOrApprovedBusinessUserAccount
+  @RequiresAdminOrApprovedBusiness
   @GetMapping(ProductApi.V1.SEARCH_OPTIONS)
   public ResponseEntity<ProductSearchOptionsResponse> get() {
     return ResponseEntity.ok(

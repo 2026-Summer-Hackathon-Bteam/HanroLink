@@ -2,11 +2,17 @@ package com.hanrolink.onboarding.request.component;
 
 import org.hibernate.validator.constraints.URL;
 
+import com.hanrolink.business.enums.BusinessRole;
+
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record OnboardingBusinessRequest(
+  @NotNull
+  BusinessRole role,
+
   @NotBlank
   @Size(max = 255)
   String name,

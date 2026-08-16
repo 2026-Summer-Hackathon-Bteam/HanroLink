@@ -7,6 +7,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Profile;
@@ -18,12 +19,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.hanrolink.account.enums.AccountRole;
-import com.hanrolink.account.enums.BusinessUserAccountRole;
-import com.hanrolink.account.enums.JwtAccountRole;
 import com.hanrolink.account.exception.UnsupportedJwtAccountRoleException;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
-import com.hanrolink.account.repository.projection.AuthenticatedBusinessUserAccountProjection;
+import com.hanrolink.account.repository.projection.BusinessUserAccountAccessScopeProjection;
+import com.hanrolink.business.enums.BusinessRole;
 import com.hanrolink.infrastructure.s3.S3DownloadUrlGenerator;
 import com.hanrolink.negotiationrequest.policy.NegotiationRequestPolicy;
 import com.hanrolink.negotiationrequest.policy.ProductNegotiationRequestPolicy;
@@ -34,20 +33,22 @@ import com.hanrolink.product.repository.MonthlySupplyCapacityRepository;
 import com.hanrolink.product.repository.ProductRepository;
 import com.hanrolink.product.repository.ProductStoryRepository;
 import com.hanrolink.product.repository.projection.ProductDetailProjection;
-import com.hanrolink.product.repository.projection.ProductSearchListItemProjection;
 import com.hanrolink.product.repository.projection.ProductSearchMonthlySupplyCapacityProjection;
+import com.hanrolink.product.repository.projection.ProductSearchResultProjection;
 import com.hanrolink.product.request.ProductSearchRequest;
 import com.hanrolink.product.response.ProductDetailResponse;
-import com.hanrolink.product.response.ProductSearchListResponse;
+import com.hanrolink.product.response.ProductSearchResponse;
 import com.hanrolink.product.response.component.MonthlySupplyCapacityResponse;
 import com.hanrolink.product.response.component.ProductExpirationTypeResponse;
 import com.hanrolink.product.response.component.ProductMainIngredientRegionResponse;
 import com.hanrolink.product.response.component.ProductPermissionsResponse;
-import com.hanrolink.product.response.component.ProductSearchListItemResponse;
+import com.hanrolink.product.response.component.ProductSearchResultResponse;
 import com.hanrolink.product.response.component.ProductStoryResponse;
 import com.hanrolink.product.response.component.ProductSupplierResponse;
 import com.hanrolink.product.response.component.StorageTypeResponse;
 import com.hanrolink.productcategory.response.component.ProductCategoryResponse;
+import com.hanrolink.security.authorization.enums.ApplicationRole;
+import com.hanrolink.security.authorization.enums.JwtAccountRole;
 
 @Profile("s3")
 @Service
@@ -85,33 +86,33 @@ public class ProductService {
    * 商品詳細情報を取得する
    * @param authenticatedJwtAccountRole JWTから取得したアカウントロール
    * @param identityProviderSubject 認証プロバイダーのユーザー識別子
-   * @param productId 取得対象の商品ID
+   * @param productPublicId 取得対象の商品の公開識別子
    * @return 商品詳細情報
    */
   @Transactional(readOnly = true)
   public ProductDetailResponse getDetail(
     JwtAccountRole authenticatedJwtAccountRole,
     String identityProviderSubject,
-    Long productId
+    UUID productPublicId
   ) {
     // 認証情報に基づく商品詳細の閲覧者情報の取得
-    ProductDetailViewer authenticatedAccount = resolveViewer(
+    ProductDetailViewer viewer = resolveViewer(
       authenticatedJwtAccountRole,
       identityProviderSubject
     );
 
     // 商品詳細の表示に必要な基本情報と関連情報の取得
     ProductDetailProjection product = productRepository
-      .findDetailById(
-        productId,
-        authenticatedAccount.id()
+      .findDetailByPublicId(
+        productPublicId,
+        viewer.businessId()
       )
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     List<MonthlySupplyCapacityResponse> monthlySupplyCapacities =
       monthlySupplyCapacityRepository
         .findLatestListByProductId(
-          productId,
+          product.id(),
           Pageable.ofSize(MonthlySupplyCapacityPolicy.TARGET_MONTH_COUNT)
         )
         .stream()
@@ -132,7 +133,7 @@ public class ProductService {
         .toList();
 
     List<ProductStoryResponse> productStories = productStoryRepository
-      .findListByProductId(productId)
+      .findListByProductId(product.id())
       .stream()
       .map(productStory ->
         new ProductStoryResponse(
@@ -148,13 +149,13 @@ public class ProductService {
 
     // 閲覧者に応じた操作権限と商談申請状態の判定
     boolean canManage =
-      authenticatedAccount.id() != null
-        && authenticatedAccount.id().equals(product.supplierAccountId());
+      viewer.businessId() != null
+        && viewer.businessId().equals(product.supplierBusinessId());
 
     boolean canCreateNegotiationRequest = false;
     boolean hasMyActiveNegotiationRequest = false;
 
-    if (authenticatedAccount.role() == AccountRole.BUYER) {
+    if (viewer.role() == ApplicationRole.BUYER) {
       Instant activeSince =
         Instant.now().minus(
           NegotiationRequestPolicy.ACTIVE_PERIOD_DAYS,
@@ -163,7 +164,7 @@ public class ProductService {
 
       long activeNegotiationRequestCount = productNegotiationRequestRepository
         .countActiveByBuyerAccountId(
-          authenticatedAccount.id(),
+          viewer.businessUserAccountId(),
           activeSince
         );
 
@@ -173,14 +174,14 @@ public class ProductService {
       hasMyActiveNegotiationRequest =
         productNegotiationRequestRepository
           .existsActiveByProductIdAndBuyerAccountId(
-            productId,
-            authenticatedAccount.id(),
+            product.id(),
+            viewer.businessUserAccountId(),
             activeSince
           );
     }
 
     return new ProductDetailResponse(
-      product.id(),
+      product.publicId(),
       product.name(),
       product.hiddenAt() != null,
       new ProductCategoryResponse(
@@ -233,7 +234,7 @@ public class ProductService {
    * @return 商品一覧
    */
   @Transactional(readOnly = true)
-  public ProductSearchListResponse search(
+  public ProductSearchResponse search(
     ProductSearchRequest request
   ) {
     // 検索条件の生成
@@ -248,11 +249,10 @@ public class ProductService {
     );
 
     // 条件に一致する商品情報の取得
-    Page<ProductSearchListItemProjection> productPage =
-      productRepository.findSearchList(
+    Page<ProductSearchResultProjection> productPage =
+      productRepository.findSearchResults(
         availableSupplyMonths,
         request.mainIngredientRegionIds(),
-        request.productCategoryGroupIds(),
         request.productCategoryIds(),
         request.storageTypes(),
         pageable
@@ -263,8 +263,8 @@ public class ProductService {
       productPage
         .getContent()
         .stream()
-        .map(productSearchList ->
-          productSearchList.id()
+        .map(product ->
+          product.id()
         )
         .toList();
 
@@ -289,17 +289,18 @@ public class ProductService {
           );
 
     // 商品ごとの検索結果レスポンスの生成
-    List<ProductSearchListItemResponse> products =
+    List<ProductSearchResultResponse> products =
       productPage
         .getContent()
         .stream()
         .map(product ->
-          new ProductSearchListItemResponse(
-            product.id(),
+          new ProductSearchResultResponse(
+            product.publicId(),
             product.name(),
             product.businessName(),
             product.productCategoryName(),
             product.mainIngredientRegionName(),
+            product.storageType().getDisplayName(),
             toLatestMonthlySupplyCapacityResponses(
               monthlySupplyCapacitiesByProductId
                 .getOrDefault(
@@ -321,7 +322,7 @@ public class ProductService {
         productPage.getTotalPages()
       );
 
-    return new ProductSearchListResponse(
+    return new ProductSearchResponse(
       products,
       pagination
     );
@@ -334,7 +335,8 @@ public class ProductService {
     if (authenticatedJwtAccountRole == JwtAccountRole.ADMIN) {
       return new ProductDetailViewer(
         null,
-        AccountRole.ADMIN
+        null,
+        ApplicationRole.ADMIN
       );
     }
 
@@ -342,31 +344,33 @@ public class ProductService {
       throw new UnsupportedJwtAccountRoleException();
     }
 
-    AuthenticatedBusinessUserAccountProjection account =
+    BusinessUserAccountAccessScopeProjection viewerAccessScope =
       businessUserAccountRepository
-        .findAuthenticatedAccountByIdentityProviderSubject(
+        .findAccessScopeByIdentityProviderSubject(
           identityProviderSubject
         )
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     return new ProductDetailViewer(
-      account.id(),
-      accountRoleOf(account.role())
+      viewerAccessScope.businessUserAccountId(),
+      viewerAccessScope.businessId(),
+      accountRoleOf(viewerAccessScope.businessRole())
     );
   }
 
-  private AccountRole accountRoleOf(
-    BusinessUserAccountRole role
+  private ApplicationRole accountRoleOf(
+    BusinessRole role
   ) {
     return switch (role) {
-      case SUPPLIER -> AccountRole.SUPPLIER;
-      case BUYER -> AccountRole.BUYER;
+      case SUPPLIER -> ApplicationRole.SUPPLIER;
+      case BUYER -> ApplicationRole.BUYER;
     };
   }
 
   private record ProductDetailViewer(
-    Long id,
-    AccountRole role
+    Long businessUserAccountId,
+    Long businessId,
+    ApplicationRole role
   ) {}
 
   private List<LocalDate> toMonthStartDates(

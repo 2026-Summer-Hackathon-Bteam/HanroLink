@@ -1,8 +1,6 @@
 package com.hanrolink.account.repository;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,20 +8,17 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.hanrolink.account.entity.BusinessUserAccount;
-import com.hanrolink.account.enums.BusinessUserAccountRole;
-import com.hanrolink.account.repository.projection.AuthenticatedBusinessUserAccountProjection;
-import com.hanrolink.account.enums.BusinessUserAccountReviewStatus;
-import com.hanrolink.business.entity.Business;
-import com.hanrolink.businessapproval.response.AdminBusinessApprovalListResponse;
+import com.hanrolink.account.repository.projection.BusinessUserAccountAccessScopeProjection;
+import com.hanrolink.account.repository.projection.FileUploadContextProjection;
+import com.hanrolink.account.repository.projection.BusinessProfileAccessProjection;
+import com.hanrolink.account.repository.projection.BusinessUserAccountAuthorizationProjection;
 
 @Repository
 public interface BusinessUserAccountRepository extends JpaRepository<BusinessUserAccount, Long> {
 
-  Optional<BusinessUserAccount> findByIdentityProviderSubject(String identityProviderSubject);
-
   boolean existsByIdentityProviderSubject(String identityProviderSubject);
 
-  Optional<BusinessUserAccount> findByPublicId(UUID publicId);
+  Optional<BusinessUserAccount> findByBusinessId(Long businessId);
 
   @Query("""
     SELECT businessUserAccount.id
@@ -37,35 +32,82 @@ public interface BusinessUserAccountRepository extends JpaRepository<BusinessUse
   );
 
   @Query("""
-    SELECT new com.hanrolink.account.repository.projection.AuthenticatedBusinessUserAccountProjection(
-      businessUserAccount.id,
-      businessUserAccount.role
-    )
+    SELECT businessUserAccount.businessId
     FROM BusinessUserAccount businessUserAccount
     WHERE businessUserAccount.identityProviderSubject
       = :identityProviderSubject
     """)
-  Optional<AuthenticatedBusinessUserAccountProjection>
-    findAuthenticatedAccountByIdentityProviderSubject(
+  Optional<Long> findBusinessIdByIdentityProviderSubject(
+    @Param("identityProviderSubject")
+    String identityProviderSubject
+  );
+
+  @Query("""
+    SELECT new com.hanrolink.account.repository.projection.BusinessUserAccountAuthorizationProjection(
+      business.role,
+      business.reviewStatus
+    )
+    FROM BusinessUserAccount businessUserAccount
+    JOIN Business business
+      ON business.id = businessUserAccount.businessId
+    WHERE businessUserAccount.identityProviderSubject
+      = :identityProviderSubject
+    """)
+  Optional<BusinessUserAccountAuthorizationProjection> findAuthorizationByIdentityProviderSubject(
+    @Param("identityProviderSubject")
+    String identityProviderSubject
+  );
+
+  @Query("""
+    SELECT new com.hanrolink.account.repository.projection.BusinessProfileAccessProjection(
+      business.publicId,
+      business.role
+    )
+    FROM BusinessUserAccount businessUserAccount
+    JOIN Business business
+      ON business.id = businessUserAccount.businessId
+    WHERE businessUserAccount.identityProviderSubject
+      = :identityProviderSubject
+    """)
+  Optional<BusinessProfileAccessProjection> findBusinessProfileAccessByIdentityProviderSubject(
+    @Param("identityProviderSubject")
+    String identityProviderSubject
+  );
+
+  @Query("""
+    SELECT new com.hanrolink.account.repository.projection.BusinessUserAccountAccessScopeProjection(
+      businessUserAccount.id,
+      business.id,
+      business.role
+    )
+    FROM BusinessUserAccount businessUserAccount
+    JOIN Business business
+      ON business.id = businessUserAccount.businessId
+    WHERE businessUserAccount.identityProviderSubject
+      = :identityProviderSubject
+    """)
+  Optional<BusinessUserAccountAccessScopeProjection>
+    findAccessScopeByIdentityProviderSubject(
       @Param("identityProviderSubject")
       String identityProviderSubject
     );
 
   @Query("""
-    SELECT business
-    FROM Business business
-    JOIN BusinessUserAccount businessUserAccount
-      ON businessUserAccount.businessId = business.id
-    WHERE businessUserAccount.publicId = :businessUserAccountPublicId
-      AND businessUserAccount.role = :businessUserAccountRole
+    SELECT new com.hanrolink.account.repository.projection.FileUploadContextProjection(
+      businessUserAccount.id,
+      business.publicId
+    )
+    FROM BusinessUserAccount businessUserAccount
+    JOIN Business business
+      ON business.id = businessUserAccount.businessId
+    WHERE businessUserAccount.identityProviderSubject
+      = :identityProviderSubject
     """)
-  Optional<Business> findBusinessByBusinessUserAccountPublicIdAndRole(
-    @Param("businessUserAccountPublicId")
-    UUID businessUserAccountPublicId,
-
-    @Param("businessUserAccountRole")
-    BusinessUserAccountRole role
-  );
+  Optional<FileUploadContextProjection>
+    findFileUploadContextByIdentityProviderSubject(
+      @Param("identityProviderSubject")
+      String identityProviderSubject
+    );
 
   @Query("""
     SELECT business.name
@@ -78,22 +120,4 @@ public interface BusinessUserAccountRepository extends JpaRepository<BusinessUse
     @Param("identityProviderSubject")
     String identityProviderSubject
   );
-
-  @Query("""
-    SELECT new com.hanrolink.businessapproval.response.AdminBusinessApprovalListResponse(
-      businessUserAccount.publicId,
-      business.name,
-      businessUserAccount.createdAt
-    )
-    FROM BusinessUserAccount businessUserAccount
-    JOIN Business business
-      ON business.id = businessUserAccount.businessId
-    WHERE businessUserAccount.reviewStatus = :reviewStatus
-    ORDER BY businessUserAccount.createdAt ASC
-    """)
-  List<AdminBusinessApprovalListResponse>
-    findBusinessUserAccountSummariesByReviewStatus(
-      @Param("reviewStatus")
-      BusinessUserAccountReviewStatus reviewStatus
-    );
 }

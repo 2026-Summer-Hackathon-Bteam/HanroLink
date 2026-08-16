@@ -1,4 +1,4 @@
-package com.hanrolink.businessuseraccount.repository;
+package com.hanrolink.business.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -16,9 +16,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
-import com.hanrolink.account.enums.BusinessUserAccountReviewStatus;
-import com.hanrolink.account.repository.BusinessUserAccountRepository;
-import com.hanrolink.businessapproval.response.AdminBusinessApprovalListResponse;
+import com.hanrolink.business.enums.BusinessReviewStatus;
+import com.hanrolink.business.repository.projection.AdminBusinessApprovalListProjection;
 
 @DataJpaTest
 @Testcontainers
@@ -29,7 +28,7 @@ import com.hanrolink.businessapproval.response.AdminBusinessApprovalListResponse
   "/test-business.sql",
   "/test-business-user-account.sql"
 })
-class BusinessUserAccountRepositoryTest {
+class BusinessRepositoryTest {
 
   @Container
   @ServiceConnection
@@ -37,38 +36,24 @@ class BusinessUserAccountRepositoryTest {
     new PostgreSQLContainer("postgres:17.7");
 
   @Autowired
-  private BusinessUserAccountRepository businessUserAccountRepository;
+  private BusinessRepository businessRepository;
 
   @Test
-  void findBusinessNameByIdentityProviderSubject_shouldReturnBusinessName() {
-    String identityProviderSubject = "00000000-0000-0000-0000-000000000001";
-
-    String businessName =
-      businessUserAccountRepository
-        .findBusinessNameByIdentityProviderSubject(
-          identityProviderSubject
-        )
-        .orElseThrow();
-
-    assertEquals("テスト株式会社", businessName);
-  }
-
-  @Test
-  void findBusinessUserAccountSummariesByReviewStatus_shouldReturnPendingAccounts() {
-    List<AdminBusinessApprovalListResponse> responses =
-      businessUserAccountRepository
-        .findBusinessUserAccountSummariesByReviewStatus(
-          BusinessUserAccountReviewStatus.PENDING
+  void findApprovalListByReviewStatus_shouldReturnPendingBusinesses() {
+    List<AdminBusinessApprovalListProjection> responses =
+      businessRepository
+        .findApprovalListByReviewStatus(
+          BusinessReviewStatus.PENDING
         );
 
     assertEquals(1, responses.size());
 
-    AdminBusinessApprovalListResponse response =
+    AdminBusinessApprovalListProjection response =
       responses.getFirst();
 
     assertEquals(
       UUID.fromString("00000000-0000-0000-0000-000000000001"),
-      response.businessUserAccountId()
+      response.businessId()
     );
     assertEquals(
       "テスト株式会社",

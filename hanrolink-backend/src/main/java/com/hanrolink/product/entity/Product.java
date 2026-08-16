@@ -1,6 +1,7 @@
 package com.hanrolink.product.entity;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -27,12 +28,15 @@ public class Product {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @Column(name = "public_id", updatable = false, nullable = false)
+  private UUID publicId = UUID.randomUUID();
+
   @Column(
-    name = "supplier_account_id",
+    name = "supplier_business_id",
     updatable = false,
     nullable = false
   )
-  private Long supplierAccountId;
+  private Long supplierBusinessId;
 
   @Column(name = "product_category_id", nullable = false)
   private Short productCategoryId;
@@ -106,7 +110,7 @@ public class Product {
   protected Product() {}
 
   public Product(
-    Long supplierAccountId,
+    Long supplierBusinessId,
     Short productCategoryId,
     Short mainIngredientRegionId,
     String name,
@@ -124,7 +128,7 @@ public class Product {
     Short shippingLeadTimeDays,
     String salesAreaRestriction
   ) {
-    this.supplierAccountId = supplierAccountId;
+    this.supplierBusinessId = supplierBusinessId;
     this.productCategoryId = productCategoryId;
     this.mainIngredientRegionId = mainIngredientRegionId;
     this.name = name;
@@ -210,6 +214,10 @@ public class Product {
 
   public Long getId() {
     return id;
+  }
+
+  public UUID getPublicId() {
+    return publicId;
   }
 
   public String getMainImageStorageKey() {

@@ -91,25 +91,20 @@ public class SupplierProductManagementService {
     String identityProviderSubject,
     SupplierProductCreateRequest request
   ) {
-    Long supplierAccountId = businessUserAccountRepository
-      .findIdByIdentityProviderSubject(identityProviderSubject)
-      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-    // 代表画像のアップロード情報の検証
+    // 画像のアップロード情報の検証
     PendingFileUpload mainImageUpload = findUsablePendingFileUpload(
       request.mainImagePendingFileUploadId(),
-      supplierAccountId,
+      identityProviderSubject,
       FileUploadUsage.PRODUCT_MAIN_IMAGE
     );
 
-    // 商品ストーリー画像のアップロード情報の検証
     Map<UUID, PendingFileUpload> storyImageUploadsByPendingFileUploadId =
       new HashMap<>();
 
     for (ProductStoryCreateRequest productStoryRequest : request.productStories()) {
       PendingFileUpload storyImageUpload = findUsablePendingFileUpload(
         productStoryRequest.pendingFileUploadId(),
-        supplierAccountId,
+        identityProviderSubject,
         FileUploadUsage.PRODUCT_STORY_IMAGE
       );
 
@@ -119,8 +114,13 @@ public class SupplierProductManagementService {
       );
     }
 
+    // 商品と関連情報の保存
+    Long supplierBusinessId = businessUserAccountRepository
+      .findBusinessIdByIdentityProviderSubject(identityProviderSubject)
+      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
     Product product = new Product(
-      supplierAccountId,
+      supplierBusinessId,
       request.productCategoryId(),
       request.mainIngredientRegionId(),
       request.name(),
@@ -180,12 +180,12 @@ public class SupplierProductManagementService {
     );
 
     return new SupplierProductCreateResponse(
-      savedProduct.getId()
+      savedProduct.getPublicId()
     );
   }
 
   /**
-   * 自身に紐づく商品一覧を取得する
+   * 自社に紐づく商品一覧を取得する
    * @param identityProviderSubject 認証プロバイダーのユーザー識別子
    * @return 商品一覧
    */
@@ -193,16 +193,12 @@ public class SupplierProductManagementService {
   public List<SupplierProductListResponse> list(
     String identityProviderSubject
   ) {
-    Long supplierAccountId = businessUserAccountRepository
-      .findIdByIdentityProviderSubject(identityProviderSubject)
-      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
     return productRepository
-      .findManagementListBySupplierAccountId(supplierAccountId)
+      .findManagementListByIdentityProviderSubject(identityProviderSubject)
       .stream()
       .map(product ->
         new SupplierProductListResponse(
-          product.id(),
+          product.publicId(),
           product.name(),
           s3DownloadUrlGenerator.generate(product.mainImageStorageKey()),
           product.hiddenAt() != null,
@@ -213,31 +209,26 @@ public class SupplierProductManagementService {
   }
 
   /**
-   * 自身に紐づく商品情報を更新する
+   * 自社に紐づく商品情報を更新する
    * @param identityProviderSubject 認証プロバイダーのユーザー識別子
-   * @param productId 更新対象の商品ID
+   * @param productPublicId 更新対象の商品の公開識別子
    * @param request 商品の更新情報
    */
   @Transactional
   public void update(
     String identityProviderSubject,
-    Long productId,
+    UUID productPublicId,
     SupplierProductUpdateRequest request
   ) {
-    // 認証済みユーザーが所有する更新対象商品の取得
-    Long supplierAccountId = businessUserAccountRepository
-      .findIdByIdentityProviderSubject(identityProviderSubject)
-      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
+    // 商品と関連情報の取得
     Product product = productRepository
-      .findByIdAndSupplierAccountId(productId, supplierAccountId)
+      .findByPublicIdAndIdentityProviderSubject(productPublicId, identityProviderSubject)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-    // 商品に紐づく既存関連情報の取得
     List<MonthlySupplyCapacity> monthlySupplyCapacities =
-      monthlySupplyCapacityRepository.findAllByProductId(productId);
+      monthlySupplyCapacityRepository.findAllByProductId(product.getId());
     List<ProductStory> productStories =
-      productStoryRepository.findAllByProductId(productId);
+      productStoryRepository.findAllByProductId(product.getId());
 
     // リクエストの商品ストーリーIDと登録済みIDの完全一致確認
     Set<Long> registeredProductStoryIds =
@@ -269,7 +260,7 @@ public class SupplierProductManagementService {
     if (request.mainImagePendingFileUploadId() != null) {
       PendingFileUpload mainImageUpload = findUsablePendingFileUpload(
         request.mainImagePendingFileUploadId(),
-        supplierAccountId,
+        identityProviderSubject,
         FileUploadUsage.PRODUCT_MAIN_IMAGE
       );
       String oldMainImageStorageKey = product.getMainImageStorageKey();
@@ -279,7 +270,7 @@ public class SupplierProductManagementService {
       pendingFileUploadRepository.delete(mainImageUpload);
     }
 
-    // 指定された商品ストーリー画像の利用可否確認
+    // 後続の差し替えに使用する商品ストーリー画像の利用可否確認
     Map<Long, PendingFileUpload> storyImageUploadsByProductStoryId = new HashMap<>();
 
     for (ProductStoryUpdateRequest productStoryRequest : request.productStories()) {
@@ -289,7 +280,7 @@ public class SupplierProductManagementService {
 
       PendingFileUpload storyImageUpload = findUsablePendingFileUpload(
         productStoryRequest.pendingFileUploadId(),
-        supplierAccountId,
+        identityProviderSubject,
         FileUploadUsage.PRODUCT_STORY_IMAGE
       );
 
@@ -344,7 +335,7 @@ public class SupplierProductManagementService {
       if (existingMonthlySupplyCapacity == null) {
         newMonthlySupplyCapacities.add(
           new MonthlySupplyCapacity(
-            productId,
+            product.getId(),
             targetMonth,
             monthlySupplyCapacityRequest.availableQuantity()
           )
@@ -370,7 +361,7 @@ public class SupplierProductManagementService {
     monthlySupplyCapacityRepository.deleteAll(unusedMonthlySupplyCapacities);
     monthlySupplyCapacityRepository.saveAll(newMonthlySupplyCapacities);
 
-    // 商品ストーリーの内容と画像のIDごとの更新
+    // 商品ストーリーの内容更新と指定された画像の差し替え
     Map<Long, ProductStory> existingProductStoriesById =
       productStories
         .stream()
@@ -412,49 +403,41 @@ public class SupplierProductManagementService {
   }
 
   /**
-   * 自身に紐づく商品の表示状態を更新する
+   * 自社に紐づく商品の表示状態を更新する
    * @param identityProviderSubject 認証プロバイダーのユーザー識別子
-   * @param productId 更新対象の商品ID
+   * @param productPublicId 更新対象の商品の公開識別子
    * @param request 表示状態の更新情報
    */
   @Transactional
   public void updateVisibility(
     String identityProviderSubject,
-    Long productId,
+    UUID productPublicId,
     SupplierProductUpdateVisibilityRequest request
   ) {
-    Long supplierAccountId = businessUserAccountRepository
-      .findIdByIdentityProviderSubject(identityProviderSubject)
-      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
     Product product = productRepository
-      .findByIdAndSupplierAccountId(productId, supplierAccountId)
+      .findByPublicIdAndIdentityProviderSubject(productPublicId, identityProviderSubject)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     product.updateVisibility(request.hidden());
   }
 
   /**
-   * 自身に紐づく商品を削除する
+   * 自社に紐づく商品を削除する
    * @param identityProviderSubject 認証プロバイダーのユーザー識別子
-   * @param productId 削除対象の商品ID
+   * @param productPublicId 削除対象の商品の公開識別子
    */
   @Transactional
   public void delete(
     String identityProviderSubject,
-    Long productId
+    UUID productPublicId
   ) {
-    Long supplierAccountId = businessUserAccountRepository
-      .findIdByIdentityProviderSubject(identityProviderSubject)
-      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
     Product product = productRepository
-      .findByIdAndSupplierAccountId(productId, supplierAccountId)
+      .findByPublicIdAndIdentityProviderSubject(productPublicId, identityProviderSubject)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     // 商品を削除する前に、関連画像を削除待ちとして登録
     List<String> imageStorageKeys = productStoryRepository
-      .findImageStorageKeysByProductId(productId);
+      .findImageStorageKeysByProductId(product.getId());
 
     for (String imageStorageKey : imageStorageKeys) {
       pendingFileDeletionService.create(imageStorageKey);
@@ -466,13 +449,13 @@ public class SupplierProductManagementService {
 
   private PendingFileUpload findUsablePendingFileUpload(
     UUID pendingFileUploadId,
-    Long businessUserAccountId,
+    String identityProviderSubject,
     FileUploadUsage expectedUsage
   ) {
     PendingFileUpload pendingFileUpload = pendingFileUploadRepository
-      .findByPublicIdAndBusinessUserAccountId(
+      .findByPublicIdAndIdentityProviderSubject(
         pendingFileUploadId,
-        businessUserAccountId
+        identityProviderSubject
       )
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 

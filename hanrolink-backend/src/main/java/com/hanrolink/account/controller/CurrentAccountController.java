@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hanrolink.account.api.AccountApi;
-import com.hanrolink.account.enums.JwtAccountRole;
 import com.hanrolink.account.response.CurrentAccountGetResponse;
 import com.hanrolink.account.service.CurrentAccountService;
 import com.hanrolink.security.authorization.AuthenticatedAccountRoleResolver;
+import com.hanrolink.security.authorization.enums.JwtAccountRole;
 
 @RestController
 public class CurrentAccountController {

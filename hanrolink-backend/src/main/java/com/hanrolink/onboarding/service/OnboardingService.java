@@ -76,6 +76,7 @@ public class OnboardingService {
       );
 
     Business business = new Business(
+      request.business().role(),
       request.business().name(),
       request.business().nameKana(),
       request.business().websiteUrl(),
@@ -91,7 +92,6 @@ public class OnboardingService {
     BusinessUserAccount businessUserAccount = new BusinessUserAccount(
       savedBusiness.getId(),
       identityProviderSubject,
-      request.businessUserAccount().role(),
       request.businessUserAccount().lastName(),
       request.businessUserAccount().firstName(),
       request.businessUserAccount().lastNameKana(),

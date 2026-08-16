@@ -1,5 +1,18 @@
+CREATE TYPE business_role AS ENUM (
+  'SUPPLIER',
+  'BUYER'
+);
+
+CREATE TYPE business_review_status AS ENUM (
+  'PENDING',
+  'APPROVED'
+);
+
 CREATE TABLE businesses (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  public_id UUID UNIQUE NOT NULL,
+  role business_role NOT NULL,
+  review_status business_review_status DEFAULT 'PENDING' NOT NULL,
   name VARCHAR(255) NOT NULL,
   name_kana VARCHAR(255) NOT NULL,
   website_url VARCHAR(255),
@@ -15,23 +28,10 @@ CREATE TABLE businesses (
     CHECK (address_postal_code ~ '^[0-9]{7}$')
 );
 
-CREATE TYPE business_user_account_role AS ENUM (
-  'SUPPLIER',
-  'BUYER'
-);
-
-CREATE TYPE business_user_account_review_status AS ENUM (
-  'PENDING',
-  'APPROVED'
-);
-
 CREATE TABLE business_user_accounts (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   business_id BIGINT NOT NULL,
-  public_id UUID UNIQUE NOT NULL,
   identity_provider_subject VARCHAR(255) UNIQUE NOT NULL,
-  role business_user_account_role NOT NULL,
-  review_status business_user_account_review_status DEFAULT 'PENDING' NOT NULL,
   last_name VARCHAR(255) NOT NULL,
   first_name VARCHAR(255) NOT NULL,
   last_name_kana VARCHAR(255) NOT NULL,
@@ -92,7 +92,8 @@ CREATE TYPE storage_type AS ENUM (
 
 CREATE TABLE products (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  supplier_account_id BIGINT NOT NULL,
+  public_id UUID UNIQUE NOT NULL,
+  supplier_business_id BIGINT NOT NULL,
   product_category_id SMALLINT NOT NULL,
   main_ingredient_region_id SMALLINT NOT NULL,
   name VARCHAR(255) NOT NULL,
@@ -113,9 +114,9 @@ CREATE TABLE products (
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
-  CONSTRAINT fk_products_supplier_account
-    FOREIGN KEY (supplier_account_id)
-    REFERENCES business_user_accounts(id),
+  CONSTRAINT fk_products_supplier_business
+    FOREIGN KEY (supplier_business_id)
+    REFERENCES businesses(id),
   CONSTRAINT fk_products_product_category
     FOREIGN KEY (product_category_id)
     REFERENCES product_categories(id),
@@ -170,20 +171,20 @@ CREATE TABLE product_stories (
 
 CREATE TABLE procurement_requests (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  buyer_account_id BIGINT NOT NULL,
+  public_id UUID UNIQUE NOT NULL,
+  buyer_business_id BIGINT NOT NULL,
   product_category_id SMALLINT NOT NULL,
   title VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
   required_trade_terms TEXT,
   desired_unit_price INT,
   delivery_shelf_life_days SMALLINT,
-  deleted_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
-  CONSTRAINT fk_procurement_requests_buyer_account
-    FOREIGN KEY (buyer_account_id)
-    REFERENCES business_user_accounts(id),
+  CONSTRAINT fk_procurement_requests_buyer_business
+    FOREIGN KEY (buyer_business_id)
+    REFERENCES businesses(id),
   CONSTRAINT fk_procurement_requests_product_category
     FOREIGN KEY (product_category_id)
     REFERENCES product_categories(id)
@@ -199,6 +200,7 @@ CREATE TABLE procurement_request_storage_types (
   CONSTRAINT fk_procurement_request_storage_types_procurement_request
     FOREIGN KEY (procurement_request_id)
     REFERENCES procurement_requests(id)
+    ON DELETE CASCADE
 );
 
 CREATE TABLE monthly_procurement_quantities (
@@ -212,6 +214,7 @@ CREATE TABLE monthly_procurement_quantities (
   CONSTRAINT fk_monthly_procurement_quantities_procurement_request
     FOREIGN KEY (procurement_request_id)
     REFERENCES procurement_requests(id)
+    ON DELETE CASCADE
 );
 
 CREATE TYPE file_upload_usage AS ENUM (
@@ -246,7 +249,7 @@ CREATE TABLE pending_file_deletions (
 CREATE TABLE procurement_negotiation_requests (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   supplier_account_id BIGINT NOT NULL,
-  procurement_request_id BIGINT NOT NULL,
+  procurement_request_id BIGINT,
   product_id BIGINT,
   procurement_request_snapshot JSONB NOT NULL,
   product_snapshot JSONB NOT NULL,
@@ -260,7 +263,8 @@ CREATE TABLE procurement_negotiation_requests (
     REFERENCES business_user_accounts(id),
   CONSTRAINT fk_procurement_negotiation_requests_procurement_request
     FOREIGN KEY (procurement_request_id)
-    REFERENCES procurement_requests(id),
+    REFERENCES procurement_requests(id)
+    ON DELETE SET NULL,
   CONSTRAINT fk_procurement_negotiation_requests_product
     FOREIGN KEY (product_id)
     REFERENCES products(id)

@@ -9,20 +9,20 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record AdminBusinessApprovalDetailResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  BusinessApprovalAccountResponse businessUserAccount,
+  BusinessApprovalBusinessResponse business,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  BusinessApprovalBusinessResponse business
+  BusinessApprovalAccountResponse businessUserAccount
 ) {
   public AdminBusinessApprovalDetailResponse {
     Objects.requireNonNull(
-      businessUserAccount,
-      "AdminBusinessApprovalDetailResponse.businessUserAccount must not be null"
+      business,
+      "AdminBusinessApprovalDetailResponse.business must not be null"
     );
 
     Objects.requireNonNull(
-      business,
-      "AdminBusinessApprovalDetailResponse.business must not be null"
+      businessUserAccount,
+      "AdminBusinessApprovalDetailResponse.businessUserAccount must not be null"
     );
   }
 }
