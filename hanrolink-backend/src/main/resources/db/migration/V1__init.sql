@@ -182,6 +182,17 @@ CREATE TABLE procurement_requests (
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
+  CONSTRAINT chk_procurement_requests_desired_unit_price
+    CHECK (
+      desired_unit_price IS NULL
+      OR desired_unit_price > 0
+    ),
+  CONSTRAINT chk_procurement_requests_delivery_shelf_life_days
+    CHECK (
+      delivery_shelf_life_days IS NULL
+      OR delivery_shelf_life_days > 0
+    ),
+
   CONSTRAINT fk_procurement_requests_buyer_business
     FOREIGN KEY (buyer_business_id)
     REFERENCES businesses(id),
@@ -197,6 +208,12 @@ CREATE TABLE procurement_request_storage_types (
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
+  CONSTRAINT uq_procurement_request_storage_types_request_id_storage_type
+    UNIQUE (
+      procurement_request_id,
+      storage_type
+    ),
+
   CONSTRAINT fk_procurement_request_storage_types_procurement_request
     FOREIGN KEY (procurement_request_id)
     REFERENCES procurement_requests(id)
@@ -210,6 +227,17 @@ CREATE TABLE monthly_procurement_quantities (
   desired_quantity INT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+  CONSTRAINT uq_monthly_procurement_quantities_request_id_target_month
+    UNIQUE (
+      procurement_request_id,
+      target_month
+    ),
+
+  CONSTRAINT chk_monthly_procurement_quantities_target_month
+    CHECK (EXTRACT(DAY FROM target_month) = 1),
+  CONSTRAINT chk_monthly_procurement_quantities_desired_quantity
+    CHECK (desired_quantity > 0),
 
   CONSTRAINT fk_monthly_procurement_quantities_procurement_request
     FOREIGN KEY (procurement_request_id)
