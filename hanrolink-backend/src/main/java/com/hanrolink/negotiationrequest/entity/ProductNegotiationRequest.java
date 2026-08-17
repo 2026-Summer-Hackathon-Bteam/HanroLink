@@ -5,6 +5,8 @@ import java.time.Instant;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import com.hanrolink.negotiationrequest.snapshot.ProductSnapshot;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,7 +15,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import tools.jackson.databind.JsonNode;
 
 @Entity
 @Table(name = "product_negotiation_requests")
@@ -39,7 +40,7 @@ public class ProductNegotiationRequest {
     updatable = false,
     nullable = false
   )
-  private JsonNode productSnapshot;
+  private ProductSnapshot productSnapshot;
 
   @Column(name = "product_main_image_storage_key", updatable = false, nullable = false)
   private String productMainImageStorageKey;
