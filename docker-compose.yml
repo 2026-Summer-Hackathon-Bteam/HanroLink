@@ -30,9 +30,9 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       SPRING_PROFILES_ACTIVE: "dev,cognito"
       JAVA_TOOL_OPTIONS: "-Duser.timezone=UTC"
-      COGNITO_ISSUER_URI: ${COGNITO_ISSUER_URI}
-      COGNITO_CLIENT_ID: ${COGNITO_CLIENT_ID}
-      COGNITO_REGION: ${COGNITO_REGION}
+
+    env_file:
+      - ./hanrolink-backend/.env
 
     container_name: hanrolink-backend
 
