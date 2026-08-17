@@ -20,9 +20,13 @@ function GuestPage() {
         if (!isCancelled) {
           setProductsData(result)
         }
-      } catch {
+      } catch (error: unknown) {
         if (!isCancelled) {
-          setError('商品情報の取得に失敗しました。')
+          setError(
+            error instanceof Error
+              ? error.message
+              : '商品情報の取得に失敗しました。',
+          )
         }
       }
     }
@@ -54,7 +58,7 @@ function GuestPage() {
       <div className="mx-auto grid max-w-300 grid-cols-1 justify-items-center gap-7 px-4 md:grid-cols-2 xl:grid-cols-3">
         {productsData.map((product, index) => (
           <GuestCard
-          // バックエンドからのデータにidが追加されたら、keyをindexからidに変える
+            // バックエンドからのデータにidが追加されたら、keyをindexからidに変える
             key={index}
             name={product.name}
             supplierName={product.supplierBusinessName}
