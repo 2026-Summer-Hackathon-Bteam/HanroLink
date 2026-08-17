@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import {
   getAuthErrorMessage,
   confirmInitialPassword,
+  signOutUser,
 } from '../features/auth/authService'
+import { getCurrentAccount } from '../features/auth/currentAccountService'
 
 function AdminInitialPasswordChangePage() {
   const [password, setPassword] = useState('')
@@ -28,9 +30,29 @@ function AdminInitialPasswordChangePage() {
       })
 
       if (result.isSignedIn && result.nextStep.signInStep === 'DONE') {
-        navigate('/mypage/admin', {
-          replace: true,
-        })
+        try {
+          const account = await getCurrentAccount()
+
+          if (account.role !== 'ADMIN') {
+            throw new Error('管理者権限を確認できませんでした。')
+          }
+
+          navigate('/mypage/admin', {
+            replace: true,
+          })
+        } catch (accountError: unknown) {
+          const accountErrorMessage =
+            accountError instanceof Error
+              ? accountError.message
+              : '自己情報の取得に失敗しました。'
+          
+          try {
+            await signOutUser()
+          } catch {
+            // errorを更新せず、自己情報取得エラーを残す
+          }
+          setError(accountErrorMessage)
+        }
         return
       }
       setError(
