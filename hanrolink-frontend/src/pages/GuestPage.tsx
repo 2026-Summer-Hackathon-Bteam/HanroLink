@@ -1,9 +1,70 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import logo from '../assets/HanroLink_logo.png'
 import mainVisual from '../assets/mainvisual.png'
 import GuestCard from '../components/GuestCard'
+import type { GuestData } from '../features/guest/guestTypes'
+import { getGuestData } from '../features/guest/guestService'
 
 function GuestPage() {
+  const [productsData, setProductsData] = useState<GuestData>()
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    let isCancelled = false
+
+    const loadGuestData = async () => {
+      try {
+        const result = await getGuestData()
+
+        if (!isCancelled) {
+          setProductsData(result)
+        }
+      } catch {
+        if (!isCancelled) {
+          setError('商品情報の取得に失敗しました。')
+        }
+      }
+    }
+    void loadGuestData()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [])
+
+  const renderProductList = () => {
+    if (error) {
+      return (
+        <p role="alert" className="py-10 text-center text-error">
+          {error}
+        </p>
+      )
+    }
+
+    if (!productsData) {
+      return <p className="py-10 text-center">読み込み中...</p>
+    }
+
+    if (productsData.length === 0) {
+      return <p className="py-10 text-center">商品情報が登録されていません</p>
+    }
+
+    return (
+      <div className="mx-auto grid max-w-300 grid-cols-1 justify-items-center gap-7 px-4 md:grid-cols-2 xl:grid-cols-3">
+        {productsData.map((product, index) => (
+          <GuestCard
+          // バックエンドからのデータにidが追加されたら、keyをindexからidに変える
+            key={index}
+            name={product.name}
+            supplierName={product.supplierBusinessName}
+            mainImageUrl={product.mainImageUrl}
+          />
+        ))}
+      </div>
+    )
+  }
+
   return (
     <>
       <section className="relative overflow-hidden bg-bg max-w-300 mx-auto flex flex-col md:block md:h-100">
@@ -53,29 +114,7 @@ function GuestPage() {
         <p className="mb-8">
           売り手と買い手のタイミングをマッチするHanroLinkへようこそ&#xFF01;&#xFF01;
         </p>
-        <div className="mx-auto grid max-w-300 grid-cols-1 justify-items-center gap-7 px-4 md:grid-cols-2 xl:grid-cols-3">
-          {/* バックエンドができたらmapで20個分のカードを作る */}
-          <GuestCard />
-          <GuestCard />
-          <GuestCard />
-          <GuestCard />
-          <GuestCard />
-          <GuestCard />
-          <GuestCard />
-          <GuestCard />
-          <GuestCard />
-          <GuestCard />
-          <GuestCard />
-          <GuestCard />
-          <GuestCard />
-          <GuestCard />
-          <GuestCard />
-          <GuestCard />
-          <GuestCard />
-          <GuestCard />
-          <GuestCard />
-          <GuestCard />
-        </div>
+        {renderProductList()}
       </div>
     </>
   )

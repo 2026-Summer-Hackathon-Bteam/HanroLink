@@ -116,7 +116,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/admin/business-registrations/{businessUserAccountId}/approve": {
+    "/api/v1/admin/business-registrations/{businessId}/approve": {
         parameters: {
             query?: never;
             header?: never;
@@ -340,7 +340,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/buyer/{businessUserAccountId}": {
+    "/api/v1/buyer/{businessId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -356,7 +356,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/admin/business-registrations/{businessUserAccountId}": {
+    "/api/v1/admin/business-registrations/{businessId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -424,12 +424,12 @@ export interface components {
             monthlyProcurementQuantities: components["schemas"]["MonthlyProcurementQuantityRequest"][];
         };
         BuyerProcurementRequestCreateResponse: {
-            /** Format: int64 */
-            id: number;
+            /** Format: uuid */
+            id: string;
         };
         SupplierProcurementNegotiationRequestCreateRequest: {
-            /** Format: int64 */
-            productId: number;
+            /** Format: uuid */
+            productId: string;
         };
         NegotiationRequestAcceptResponse: {
             channel: components["schemas"]["NegotiationRequestChannelResponse"];
@@ -514,21 +514,26 @@ export interface components {
         };
         ProcurementRequestBuyerResponse: {
             /** Format: uuid */
-            accountId: string;
+            businessId: string;
             businessName: string;
         };
-        ProcurementRequestListResponse: {
-            /** Format: int64 */
-            id: number;
+        ProcurementRequestSearchResponse: {
+            procurementRequests: components["schemas"]["ProcurementRequestSearchResultResponse"][];
+            pagination: components["schemas"]["PaginationResponse"];
+        };
+        ProcurementRequestSearchResultResponse: {
+            /** Format: uuid */
+            id: string;
             title: string;
             description: string;
             productCategoryName: string;
             storageTypeLabels: string[];
             monthlyProcurementQuantities: components["schemas"]["MonthlyProcurementQuantityResponse"][];
             buyer: components["schemas"]["ProcurementRequestBuyerResponse"];
-            pagination: components["schemas"]["PaginationResponse"];
         };
         ProcurementRequestDetailResponse: {
+            /** Format: uuid */
+            id: string;
             title: string;
             description: string;
             buyer: components["schemas"]["ProcurementRequestBuyerResponse"];
@@ -605,8 +610,8 @@ export interface components {
             expiresAt: string;
         };
         BuyerProcurementRequestListResponse: {
-            /** Format: int64 */
-            id: number;
+            /** Format: uuid */
+            id: string;
             title: string;
             /** Format: date-time */
             updatedAt: string;
@@ -671,26 +676,24 @@ export interface components {
             websiteUrl?: string;
         };
         AdminBusinessApprovalDetailResponse: {
-            businessUserAccount: components["schemas"]["BusinessApprovalAccountResponse"];
             business: components["schemas"]["BusinessApprovalBusinessResponse"];
+            businessUserAccount: components["schemas"]["BusinessApprovalAccountResponse"];
         };
         BusinessApprovalAccountResponse: {
-            /** Format: uuid */
-            id: string;
-            /** @enum {string} */
-            role: "SUPPLIER" | "BUYER";
-            /** @enum {string} */
-            reviewStatus: "PENDING" | "APPROVED";
             lastName: string;
             firstName: string;
             lastNameKana: string;
             firstNameKana: string;
             phoneNumber: string;
             email: string;
-            /** Format: date-time */
-            createdAt: string;
         };
         BusinessApprovalBusinessResponse: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            role: "SUPPLIER" | "BUYER";
+            /** @enum {string} */
+            reviewStatus: "PENDING" | "APPROVED";
             name: string;
             nameKana: string;
             websiteUrl?: string;
@@ -699,10 +702,12 @@ export interface components {
             addressMunicipalityStreet: string;
             addressBuilding?: string;
             phoneNumber: string;
+            /** Format: date-time */
+            createdAt: string;
         };
         AdminBusinessApprovalListResponse: {
             /** Format: uuid */
-            businessUserAccountId: string;
+            businessId: string;
             businessName: string;
             /** Format: date-time */
             createdAt: string;
@@ -721,7 +726,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                procurementRequestId: number;
+                procurementRequestId: string;
             };
             cookie?: never;
         };
@@ -743,11 +748,11 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                procurementRequestId: number;
+                procurementRequestId: string;
             };
             cookie?: never;
         };
-        requestBody?: {
+        requestBody: {
             content: {
                 "application/json": components["schemas"]["BuyerProcurementRequestUpdateRequest"];
             };
@@ -767,7 +772,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                procurementRequestId: number;
+                procurementRequestId: string;
             };
             cookie?: never;
         };
@@ -787,7 +792,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                productId: number;
+                productId: string;
             };
             cookie?: never;
         };
@@ -805,7 +810,7 @@ export interface operations {
     search: {
         parameters: {
             query?: {
-                productCategoryGroupIds?: number[];
+                desiredProcurementMonths?: string[];
                 productCategoryIds?: number[];
                 storageTypes?: ("AMBIENT" | "REFRIGERATED" | "FROZEN")[];
                 keyword?: string;
@@ -824,7 +829,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ProcurementRequestListResponse"][];
+                    "*/*": components["schemas"]["ProcurementRequestSearchResponse"];
                 };
             };
         };
@@ -836,7 +841,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: {
+        requestBody: {
             content: {
                 "application/json": components["schemas"]["BuyerProcurementRequestCreateRequest"];
             };
@@ -858,7 +863,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                procurementRequestId: number;
+                procurementRequestId: string;
             };
             cookie?: never;
         };
@@ -972,7 +977,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                businessUserAccountId: string;
+                businessId: string;
             };
             cookie?: never;
         };
@@ -1254,7 +1259,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                businessUserAccountId: string;
+                businessId: string;
             };
             cookie?: never;
         };
@@ -1276,7 +1281,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                businessUserAccountId: string;
+                businessId: string;
             };
             cookie?: never;
         };
