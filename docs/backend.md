@@ -4,7 +4,7 @@
 
 Cognito認証はデフォルトで有効です。
 
-`hanrolink-backend/.env`に以下の設定を追加してください。
+`hanrolink-backend/.env.example`をコピーして`.env`を作成し、Cognitoの設定値を入力してください。
 
 ```dotenv
 COGNITO_ISSUER_URI=https://cognito-idp.{リージョン}.amazonaws.com/{ユーザープールID}
