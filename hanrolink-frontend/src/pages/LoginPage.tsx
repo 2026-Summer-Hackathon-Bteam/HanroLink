@@ -1,6 +1,12 @@
 import { useState, type SubmitEvent } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { getAuthErrorMessage, signInUser } from '../features/auth/authService'
+import {
+  getAuthErrorMessage,
+  signInUser,
+  signOutUser,
+} from '../features/auth/authService'
+import { getCurrentAccount } from '../features/auth/currentAccountService'
+import { getPathAfterLogin } from '../features/auth/authRouting'
 
 type LocationState = {
   email?: string
@@ -30,9 +36,28 @@ function LoginPage() {
       })
 
       if (result.isSignedIn && result.nextStep.signInStep === 'DONE') {
-        // Cognitoのアクセストークン取得
-        // バックエンドにトークンを送付して自己情報を取得する
-        // レスポンスのステータスにより、遷移先を分岐する
+        try {
+          const account = await getCurrentAccount()
+          const path = getPathAfterLogin(account)
+
+          if (!path) {
+            throw new Error('ログイン後の遷移先を判定できませんでした。')
+          }
+
+          navigate(path, {
+            replace: true,
+          })
+        } catch (error: unknown) {
+          const accountErrorMessage =
+            error instanceof Error ? error.message : '自己情報の取得に失敗しました。'
+
+          try {
+            await signOutUser()
+          } catch {
+            // サインアウトエラーは無視して、自己情報エラーを下で表示する
+          }
+          setError(accountErrorMessage)
+        }
         return
       }
 
@@ -44,7 +69,15 @@ function LoginPage() {
         })
         return
       }
-      // 上の２つ以外の状態をまとめて処理
+
+      if (
+        result.nextStep.signInStep ===
+        'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED'
+      ) {
+        navigate('/login/new-password')
+        return
+      }
+      // 上記以外の状態をまとめて処理
       setError(
         `想定外のログイン状態です。管理者にお問い合わせください。（状態コード: ${result.nextStep.signInStep}）`,
       )

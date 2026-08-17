@@ -4,9 +4,11 @@ import {
   signUp,
   fetchAuthSession,
   signOut,
+  confirmSignIn,
   type ConfirmSignUpOutput,
   type SignInOutput,
   type SignUpOutput,
+  type ConfirmSignInOutput,
 } from 'aws-amplify/auth'
 
 type SignUpUserInput = {
@@ -22,6 +24,10 @@ type ConfirmSignUpUserInput = {
 type SignInUserInput = {
   email: string
   password: string
+}
+
+type ConfirmInitialPasswordInput = {
+  newPassword: string
 }
 
 export function signUpUser({
@@ -74,6 +80,14 @@ export function signOutUser(): Promise<void> {
   return signOut()
 }
 
+export function confirmInitialPassword({
+  newPassword,
+}: ConfirmInitialPasswordInput): Promise<ConfirmSignInOutput> {
+  return confirmSignIn({
+    challengeResponse: newPassword,
+  })
+}
+
 export function getAuthErrorMessage(error: unknown): string {
   const errorName =
     typeof error === 'object' &&
@@ -105,6 +119,8 @@ export function getAuthErrorMessage(error: unknown): string {
       return 'パスワードの再設定が必要です。'
     case 'NetworkError':
       return '通信に失敗しました。通信環境を確認してください。'
+    case 'SignInException':
+      return 'ログイン処理を確認できません。ログイン画面からやり直してください。'
     default:
       return '認証処理に失敗しました。時間をおいて再度お試しください。'
   }
