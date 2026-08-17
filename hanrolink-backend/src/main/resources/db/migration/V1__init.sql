@@ -350,6 +350,7 @@ CREATE TABLE pending_file_deletions (
 
 CREATE TABLE procurement_negotiation_requests (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  public_id UUID UNIQUE NOT NULL,
   supplier_account_id BIGINT NOT NULL,
   buyer_business_id BIGINT NOT NULL,
   procurement_request_id BIGINT,
@@ -379,6 +380,7 @@ CREATE TABLE procurement_negotiation_requests (
 
 CREATE TABLE product_negotiation_requests (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  public_id UUID UNIQUE NOT NULL,
   buyer_account_id BIGINT NOT NULL,
   supplier_business_id BIGINT NOT NULL,
   product_id BIGINT,

@@ -1,6 +1,7 @@
 package com.hanrolink.negotiationrequest.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,7 @@ public class BuyerProcurementNegotiationRequestController {
   )
   @PostMapping(BuyerNegotiationRequestApi.V1.ACCEPT)
   public ResponseEntity<NegotiationRequestAcceptResponse> accept(
-    @PathVariable Long procurementNegotiationRequestId
+    @PathVariable UUID procurementNegotiationRequestId
   ) {
 
     // TODO: 自社募集に届いた商談希望を承諾し、チャンネルを作成して、responseと201 Createdで返す

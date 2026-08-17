@@ -1,6 +1,7 @@
 package com.hanrolink.negotiationrequest.entity;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -24,6 +25,9 @@ public class ProcurementNegotiationRequest {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Column(name = "public_id", updatable = false, nullable = false)
+  private UUID publicId = UUID.randomUUID();
 
   @Column(name = "supplier_account_id", updatable = false, nullable = false)
   private Long supplierAccountId;
