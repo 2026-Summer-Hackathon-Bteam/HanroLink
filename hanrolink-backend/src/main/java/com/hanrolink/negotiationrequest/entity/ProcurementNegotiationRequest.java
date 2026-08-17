@@ -23,22 +23,23 @@ public class ProcurementNegotiationRequest {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "supplier_account_id", nullable = false)
+  @Column(name = "supplier_account_id", updatable = false, nullable = false)
   private Long supplierAccountId;
 
-  @Column(name = "buyer_business_id", updatable = true, nullable = false)
+  @Column(name = "buyer_business_id", updatable = false, nullable = false)
   private Long buyerBusinessId;
 
-  @Column(name = "procurement_request_id")
+  @Column(name = "procurement_request_id", updatable = false)
   private Long procurementRequestId;
 
-  @Column(name = "product_id")
+  @Column(name = "product_id", updatable = false)
   private Long productId;
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(
     name = "procurement_request_snapshot",
     columnDefinition = "jsonb",
+    updatable = false,
     nullable = false
   )
   private JsonNode procurementRequestSnapshot;
@@ -47,11 +48,12 @@ public class ProcurementNegotiationRequest {
   @Column(
     name = "product_snapshot",
     columnDefinition = "jsonb",
+    updatable = false,
     nullable = false
   )
   private JsonNode productSnapshot;
 
-  @Column(name = "product_main_image_storage_key", nullable = false)
+  @Column(name = "product_main_image_storage_key", updatable = false, nullable = false)
   private String productMainImageStorageKey;
 
   @Column(name = "accepted_at")

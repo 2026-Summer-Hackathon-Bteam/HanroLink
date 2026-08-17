@@ -23,24 +23,25 @@ public class ProductNegotiationRequest {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "buyer_account_id", nullable = false)
+  @Column(name = "buyer_account_id", updatable = false, nullable = false)
   private Long buyerAccountId;
 
-  @Column(name = "supplier_business_id", updatable = true, nullable = false)
+  @Column(name = "supplier_business_id", updatable = false, nullable = false)
   private Long supplierBusinessId;
 
-  @Column(name = "product_id")
+  @Column(name = "product_id", updatable = false)
   private Long productId;
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(
     name = "product_snapshot",
     columnDefinition = "jsonb",
+    updatable = false,
     nullable = false
   )
   private JsonNode productSnapshot;
 
-  @Column(name = "product_main_image_storage_key", nullable = false)
+  @Column(name = "product_main_image_storage_key", updatable = false, nullable = false)
   private String productMainImageStorageKey;
 
   @Column(name = "accepted_at")
