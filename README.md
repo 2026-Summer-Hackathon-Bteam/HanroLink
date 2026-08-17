@@ -4,21 +4,22 @@
 
 ### Backend
 
-* Java 25
-* Spring Boot 4.1.x
-* Maven Wrapper（mvnw）
+[バックエンド環境](docs/backend.md)
+
+- Java 25
+- Spring Boot 4.1.x
+- Maven Wrapper（mvnw）
 
 ### Database
 
-* PostgreSQL 17
-* Docker Compose
+- PostgreSQL 17
+- Docker Compose
 
 ### Frontend
 
-* React 19.x
-* Vite 8.1.x
-* Tailwind CSS 5.x
-
+- React 19.x
+- Vite 8.1.x
+- Tailwind CSS 5.x
 
 ### ディレクトリ構成
 
@@ -51,9 +52,9 @@ hanrolink
 
 以下がインストールされていることを確認してください。
 
-* Git
-* Docker Desktop
-* Visual Studio Code（推奨）
+- Git
+- Docker Desktop
+- Visual Studio Code（推奨）
 
 Docker Desktopは起動した状態で作業してください。
 
@@ -72,7 +73,6 @@ docker compose up --build
 ```
 
 初回のみイメージのビルドが実行されます。
-
 
 ```bash
 docker compose up -d

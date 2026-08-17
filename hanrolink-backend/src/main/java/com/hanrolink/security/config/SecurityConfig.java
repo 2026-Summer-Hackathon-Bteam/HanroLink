@@ -2,6 +2,7 @@ package com.hanrolink.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -13,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import com.hanrolink.product.api.ProductApi;
 import com.hanrolink.security.authorization.AccountGrantedAuthoritiesConverter;
 
+@Profile("cognito")
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
@@ -29,21 +31,25 @@ public class SecurityConfig {
       .sessionManagement(session ->
         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
       )
-      // Jwtが有効化した場合、下記の設定は変更すること
-      // 全リクエストを許可
       .authorizeHttpRequests(auth -> auth
-        .requestMatchers(HttpMethod.GET, ProductApi.V1.BASE_PUBLIC).permitAll()
-        .anyRequest().permitAll()
+        .requestMatchers(
+          "/v3/api-docs/**",
+          "/swagger-ui/**",
+          "/swagger-ui.html"
+        ).permitAll()
+        .requestMatchers(
+          HttpMethod.GET,
+          ProductApi.V1.BASE_PUBLIC
+        ).permitAll()
+        .anyRequest().authenticated()
+      )
+      .oauth2ResourceServer(resourceServer ->
+        resourceServer.jwt(jwt ->
+          jwt.jwtAuthenticationConverter(
+            jwtAuthenticationConverter
+          )
+        )
       );
-
-      // issuer-uri等を設定後、コメントアウトを解除すること
-      // .oauth2ResourceServer(resourceServer ->
-      //   resourceServer.jwt(jwt ->
-      //     jwt.jwtAuthenticationConverter(
-      //       jwtAuthenticationConverter
-      //     )
-      //   )
-      // );
 
     return http.build();
   }
