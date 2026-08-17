@@ -1,20 +1,28 @@
 package com.hanrolink.procurementrequest.request;
 
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.hanrolink.product.enums.StorageType;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 public record ProcurementRequestSearchRequest(
-  List<@Positive Short> productCategoryGroupIds,
+  @DateTimeFormat(pattern = "yyyy-MM")
+  List<
+    @FutureOrPresent(message = "当月以降の月を指定してください")
+    YearMonth
+  > desiredProcurementMonths,
 
   List<@Positive Short> productCategoryIds,
 

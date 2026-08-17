@@ -46,6 +46,14 @@ public class ProcurementRequestStorageType {
 
   protected ProcurementRequestStorageType() {}
 
+  public ProcurementRequestStorageType(
+    Long procurementRequestId,
+    StorageType storageType
+  ) {
+    this.procurementRequestId = procurementRequestId;
+    this.storageType = storageType;
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();
@@ -56,5 +64,9 @@ public class ProcurementRequestStorageType {
   @PreUpdate
   private void onUpdate() {
     this.updatedAt = Instant.now();
+  }
+
+  public StorageType getStorageType() {
+    return storageType;
   }
 }

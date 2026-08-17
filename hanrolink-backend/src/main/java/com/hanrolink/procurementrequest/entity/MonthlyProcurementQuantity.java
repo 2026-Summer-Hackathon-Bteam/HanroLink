@@ -2,6 +2,7 @@ package com.hanrolink.procurementrequest.entity;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.YearMonth;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,6 +38,22 @@ public class MonthlyProcurementQuantity {
 
   protected MonthlyProcurementQuantity() {}
 
+  public MonthlyProcurementQuantity(
+    Long procurementRequestId,
+    YearMonth targetMonth,
+    Integer desiredQuantity
+  ) {
+    this.procurementRequestId = procurementRequestId;
+    this.targetMonth = targetMonth.atDay(1);
+    this.desiredQuantity = desiredQuantity;
+  }
+
+  public void updateDesiredQuantity(
+    Integer desiredQuantity
+  ) {
+    this.desiredQuantity = desiredQuantity;
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();
@@ -47,5 +64,9 @@ public class MonthlyProcurementQuantity {
   @PreUpdate
   private void onUpdate() {
     this.updatedAt = Instant.now();
+  }
+
+  public YearMonth getTargetMonth() {
+    return YearMonth.from(targetMonth);
   }
 }

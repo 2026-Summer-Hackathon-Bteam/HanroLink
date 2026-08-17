@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record ProcurementRequestResultResponse(
+public record ProcurementRequestSearchResultResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   UUID id,
 
@@ -28,40 +28,40 @@ public record ProcurementRequestResultResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   ProcurementRequestBuyerResponse buyer
 ) {
-  public ProcurementRequestResultResponse {
+  public ProcurementRequestSearchResultResponse {
     Objects.requireNonNull(
       id,
-      "ProcurementRequestResultResponse.id must not be null"
+      "ProcurementRequestSearchResultResponse.id must not be null"
     );
 
     Objects.requireNonNull(
       title,
-      "ProcurementRequestResultResponse.title must not be null"
+      "ProcurementRequestSearchResultResponse.title must not be null"
     );
 
     Objects.requireNonNull(
       description,
-      "ProcurementRequestResultResponse.description must not be null"
+      "ProcurementRequestSearchResultResponse.description must not be null"
     );
 
     Objects.requireNonNull(
       productCategoryName,
-      "ProcurementRequestResultResponse.productCategoryName must not be null"
+      "ProcurementRequestSearchResultResponse.productCategoryName must not be null"
     );
 
     Objects.requireNonNull(
       storageTypeLabels,
-      "ProcurementRequestResultResponse.storageTypeLabels must not be null"
+      "ProcurementRequestSearchResultResponse.storageTypeLabels must not be null"
     );
 
     Objects.requireNonNull(
       monthlyProcurementQuantities,
-      "ProcurementRequestResultResponse.monthlyProcurementQuantities must not be null"
+      "ProcurementRequestSearchResultResponse.monthlyProcurementQuantities must not be null"
     );
 
     Objects.requireNonNull(
       buyer,
-      "ProcurementRequestResultResponse.buyer must not be null"
+      "ProcurementRequestSearchResultResponse.buyer must not be null"
     );
   }
 }
