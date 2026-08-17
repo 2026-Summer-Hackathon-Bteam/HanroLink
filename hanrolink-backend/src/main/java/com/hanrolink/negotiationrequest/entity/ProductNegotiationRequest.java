@@ -26,6 +26,9 @@ public class ProductNegotiationRequest {
   @Column(name = "buyer_account_id", nullable = false)
   private Long buyerAccountId;
 
+  @Column(name = "supplier_business_id", updatable = true, nullable = false)
+  private Long supplierBusinessId;
+
   @Column(name = "product_id")
   private Long productId;
 

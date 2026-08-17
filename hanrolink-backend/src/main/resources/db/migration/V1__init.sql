@@ -351,6 +351,7 @@ CREATE TABLE pending_file_deletions (
 CREATE TABLE procurement_negotiation_requests (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   supplier_account_id BIGINT NOT NULL,
+  buyer_business_id BIGINT NOT NULL,
   procurement_request_id BIGINT,
   product_id BIGINT,
   procurement_request_snapshot JSONB NOT NULL,
@@ -363,6 +364,9 @@ CREATE TABLE procurement_negotiation_requests (
   CONSTRAINT fk_procurement_negotiation_requests_supplier_account
     FOREIGN KEY (supplier_account_id)
     REFERENCES business_user_accounts(id),
+  CONSTRAINT fk_procurement_negotiation_requests_buyer_business
+    FOREIGN KEY (buyer_business_id)
+    REFERENCES businesses(id),
   CONSTRAINT fk_procurement_negotiation_requests_procurement_request
     FOREIGN KEY (procurement_request_id)
     REFERENCES procurement_requests(id)
@@ -376,6 +380,7 @@ CREATE TABLE procurement_negotiation_requests (
 CREATE TABLE product_negotiation_requests (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   buyer_account_id BIGINT NOT NULL,
+  supplier_business_id BIGINT NOT NULL,
   product_id BIGINT,
   product_snapshot JSONB NOT NULL,
   product_main_image_storage_key VARCHAR(255) UNIQUE NOT NULL,
@@ -386,6 +391,9 @@ CREATE TABLE product_negotiation_requests (
   CONSTRAINT fk_product_negotiation_requests_buyer_account
     FOREIGN KEY (buyer_account_id)
     REFERENCES business_user_accounts(id),
+  CONSTRAINT fk_product_negotiation_requests_supplier_business
+    FOREIGN KEY (supplier_business_id)
+    REFERENCES businesses(id),
   CONSTRAINT fk_product_negotiation_requests_product
     FOREIGN KEY (product_id)
     REFERENCES products(id)

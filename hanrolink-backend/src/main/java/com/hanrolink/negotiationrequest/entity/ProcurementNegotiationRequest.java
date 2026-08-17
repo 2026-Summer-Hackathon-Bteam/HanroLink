@@ -26,6 +26,9 @@ public class ProcurementNegotiationRequest {
   @Column(name = "supplier_account_id", nullable = false)
   private Long supplierAccountId;
 
+  @Column(name = "buyer_business_id", updatable = true, nullable = false)
+  private Long buyerBusinessId;
+
   @Column(name = "procurement_request_id")
   private Long procurementRequestId;
 
