@@ -374,6 +374,7 @@ public class ProcurementRequestReadService {
 
     return months
       .stream()
+      .distinct()
       .map(month -> month.atDay(1))
       .toList();
   }
