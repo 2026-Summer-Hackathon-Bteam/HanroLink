@@ -143,12 +143,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       )
       AND (
         :#{#availableSupplyMonths == null || #availableSupplyMonths.isEmpty()} = true
-        OR EXISTS (
-          SELECT monthlySupplyCapacity.id
+        OR (
+          SELECT COUNT(DISTINCT monthlySupplyCapacity.targetMonth)
           FROM MonthlySupplyCapacity monthlySupplyCapacity
           WHERE monthlySupplyCapacity.productId = product.id
             AND monthlySupplyCapacity.targetMonth IN :availableSupplyMonths
-        )
+            AND monthlySupplyCapacity.availableQuantity > 0
+        ) = :#{#availableSupplyMonths.size()}
       )
     ORDER BY
       product.updatedAt DESC,
