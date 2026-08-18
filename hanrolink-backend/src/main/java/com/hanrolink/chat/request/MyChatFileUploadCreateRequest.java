@@ -1,5 +1,9 @@
 package com.hanrolink.chat.request;
 
+import java.util.Locale;
+
+import org.springframework.util.StringUtils;
+
 import com.hanrolink.file.enums.FileMimeType;
 import com.hanrolink.file.policy.ImageFilePolicy;
 import com.hanrolink.file.policy.PdfFilePolicy;
@@ -38,6 +42,22 @@ public record MyChatFileUploadCreateRequest(
         fileSizeBytes <= ImageFilePolicy.MAX_FILE_SIZE_BYTES;
       case APPLICATION_PDF ->
         fileSizeBytes <= PdfFilePolicy.MAX_FILE_SIZE_BYTES;
+    };
+  }
+
+  @AssertTrue(message = "ファイル名の拡張子とファイル形式が一致していません")
+  public boolean hasValidFileExtension() {
+    if (mimeType == null || !StringUtils.hasText(displayFilename)) {
+      return true;
+    }
+
+    String normalizedFilename = displayFilename.toLowerCase(Locale.ROOT);
+
+    return switch (mimeType) {
+      case IMAGE_WEBP ->
+        normalizedFilename.endsWith(".webp");
+      case APPLICATION_PDF ->
+        normalizedFilename.endsWith(".pdf");
     };
   }
 }
