@@ -1,6 +1,10 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 type Role = 'SUPPLIER' | 'BUYER'
+
+type SignupCompleteLocationState = {
+  role: Role
+}
 
 const mypagePathByRole: Record<Role, string> = {
   SUPPLIER: '/mypage/supplier',
@@ -8,8 +12,9 @@ const mypagePathByRole: Record<Role, string> = {
 }
 
 function SignupCompletePage() {
-  // バックエンドから受け取ったデータをroleに代入する
-  const role: Role = 'SUPPLIER'
+  const location = useLocation()
+  const state = location.state as SignupCompleteLocationState | null
+  const role = state?.role
 
   return (
     <>
@@ -35,10 +40,18 @@ function SignupCompletePage() {
           <br />
           その際は、ご対応くださいますようお願いいたします。
         </p>
-        <p className="mt-16 text-center">
-          マイページは<Link to={mypagePathByRole[role]}>こちら</Link>
-          。（審査完了までコンテンツは表示されません）
-        </p>
+        {role && (
+          <p className="mt-16 text-center">
+            マイページは
+            <Link
+              to={mypagePathByRole[role]}
+              className="text-other underline underline-offset-2 hover:no-underline"
+            >
+              こちら
+            </Link>
+            。（審査完了までコンテンツは表示されません）
+          </p>
+        )}
       </div>
     </>
   )

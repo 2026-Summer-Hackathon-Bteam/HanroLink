@@ -1,5 +1,10 @@
-import { useState, type SubmitEvent, type ChangeEvent } from 'react'
+import { useState, type SubmitEvent, type ChangeEvent, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import FormRow from '../components/FormRow'
+import {
+  getOnboardingInitialData,
+  submitOnboarding,
+} from '../features/onboarding/onboardingService'
 
 type BusinessProfileFormData = {
   role: 'SUPPLIER' | 'BUYER' | null
@@ -35,7 +40,37 @@ function BusinessProfileSetupPage() {
     contactFirstNameKana: '',
     contactPhoneNumber: '',
   })
-  const email: string = 'バックエンドから取得'
+  const [email, setEmail] = useState('')
+  const [error, setError] = useState('')
+  const navigate = useNavigate()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  useEffect(() => {
+    let isCancelled = false
+
+    const loadOnboardingInitialData = async () => {
+      try {
+        const result = await getOnboardingInitialData()
+
+        if (!isCancelled) {
+          return setEmail(result.email)
+        }
+      } catch (error: unknown) {
+        if (!isCancelled) {
+          setError(
+            error instanceof Error
+              ? error.message
+              : '初期データの取得に失敗しました。',
+          )
+        }
+      }
+    }
+    void loadOnboardingInitialData()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [])
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -46,17 +81,63 @@ function BusinessProfileSetupPage() {
     }))
   }
 
-  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
+    if (isSubmitting) return
 
     if (!formData.role) return
+
+    setIsSubmitting(true)
+    setError('')
+
+    const submitData = {
+      business: {
+        role: formData.role,
+        name: formData.businessName.trim(),
+        nameKana: formData.businessNameKana.trim(),
+        websiteUrl: formData.businessWebsiteUrl.trim() || undefined,
+        addressPostalCode: formData.businessPostalCode.trim(),
+        addressPrefecture: formData.businessAddressPrefecture.trim(),
+        addressMunicipalityStreet:
+          formData.businessAddressMunicipalityStreet.trim(),
+        addressBuilding: formData.businessAddressBuilding.trim() || undefined,
+        phoneNumber: formData.businessPhoneNumber.trim(),
+      },
+      businessUserAccount: {
+        lastName: formData.contactLastName.trim(),
+        firstName: formData.contactFirstName.trim(),
+        lastNameKana: formData.contactLastNameKana.trim(),
+        firstNameKana: formData.contactFirstNameKana.trim(),
+        phoneNumber: formData.contactPhoneNumber.trim(),
+      },
+    }
+
+    try {
+      const result = await submitOnboarding(submitData)
+
+      if (result.businessUserAccountRegistrationStatus !== 'PENDING') {
+        throw new Error('予期しない登録ステータスが返されました。')
+      }
+
+      navigate('/signup/complete', {
+        replace: true,
+        state: { role: formData.role },
+      })
+    } catch (error: unknown) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : '事業者情報の登録に失敗しました。',
+      )
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
-    // 型生成ファイルにリクエストデータの型が定義されたら、必須項目を確認し、「必須」バッジをつける
     <>
       <div className="mx-auto max-w-300 px-4 text-center md:px-6 lg:px-8">
-        <h2>会社情報登録</h2>
+        <h2>事業者情報登録</h2>
         <p className="mb-8">
           ご登録ありがとうございます。
           <br />
@@ -66,7 +147,7 @@ function BusinessProfileSetupPage() {
           <br />
           審査には通常3日程度お時間をいただきますので、あらかじめご了承ください。
           <br />
-          なお、１事業者につきサプライヤー、バイヤーの両方に登録することはできません。
+          なお、１事業者につきサプライヤー、バイヤーの両方に登録することはできません。          
         </p>
         <form onSubmit={handleSubmit} className="flex flex-col mx-auto">
           <div className="overflow-hidden border border-border divide-y divide-border">
@@ -118,7 +199,7 @@ function BusinessProfileSetupPage() {
               </div>
             </fieldset>
 
-            <FormRow label="会社名" htmlFor="businessName">
+            <FormRow label="事業者名" htmlFor="businessName">
               <input
                 id="businessName"
                 name="businessName"
@@ -127,9 +208,10 @@ function BusinessProfileSetupPage() {
                 onChange={handleChange}
                 value={formData.businessName}
                 required
+                maxLength={255}
               />
             </FormRow>
-            <FormRow label="会社名カナ" htmlFor="businessNameKana">
+            <FormRow label="事業者名カナ" htmlFor="businessNameKana">
               <input
                 id="businessNameKana"
                 name="businessNameKana"
@@ -138,6 +220,7 @@ function BusinessProfileSetupPage() {
                 onChange={handleChange}
                 value={formData.businessNameKana}
                 required
+                maxLength={255}
               />
             </FormRow>
             <FormRow label="郵便番号" htmlFor="businessPostalCode">
@@ -152,11 +235,12 @@ function BusinessProfileSetupPage() {
                 inputMode="numeric"
                 autoComplete="postal-code"
                 maxLength={7}
+                pattern="[0-9]{7}"
               />
               <p>（ハイフンなし）</p>
             </FormRow>
             <FormRow
-              label="会社住所（都道府県）"
+              label="事業者住所（都道府県）"
               htmlFor="businessAddressPrefecture"
             >
               <input
@@ -167,10 +251,11 @@ function BusinessProfileSetupPage() {
                 onChange={handleChange}
                 value={formData.businessAddressPrefecture}
                 required
+                maxLength={50}
               />
             </FormRow>
             <FormRow
-              label="会社住所（市区町村名・町名・番地）"
+              label="事業者住所（市区町村名・町名・番地）"
               htmlFor="businessAddressMunicipalityStreet"
             >
               <input
@@ -181,9 +266,10 @@ function BusinessProfileSetupPage() {
                 onChange={handleChange}
                 value={formData.businessAddressMunicipalityStreet}
                 required
+                maxLength={255}
               />
             </FormRow>
-            <FormRow label="建物名" htmlFor="businessAddressBuilding">
+            <FormRow label="建物名（任意）" htmlFor="businessAddressBuilding">
               <input
                 id="businessAddressBuilding"
                 name="businessAddressBuilding"
@@ -191,9 +277,10 @@ function BusinessProfileSetupPage() {
                 className="w-full"
                 onChange={handleChange}
                 value={formData.businessAddressBuilding}
+                maxLength={255}
               />
             </FormRow>
-            <FormRow label="電話番号" htmlFor="businessPhoneNumber">
+            <FormRow label="事業者電話番号" htmlFor="businessPhoneNumber">
               <input
                 id="businessPhoneNumber"
                 name="businessPhoneNumber"
@@ -202,9 +289,10 @@ function BusinessProfileSetupPage() {
                 onChange={handleChange}
                 value={formData.businessPhoneNumber}
                 required
+                maxLength={20}
               />
             </FormRow>
-            <FormRow label="Webサイト（URL）" htmlFor="businessWebsiteUrl">
+            <FormRow label="WebサイトURL（任意）" htmlFor="businessWebsiteUrl">
               <input
                 id="businessWebsiteUrl"
                 name="businessWebsiteUrl"
@@ -212,6 +300,7 @@ function BusinessProfileSetupPage() {
                 className="w-full"
                 onChange={handleChange}
                 value={formData.businessWebsiteUrl}
+                maxLength={255}
               />
             </FormRow>
 
@@ -235,6 +324,7 @@ function BusinessProfileSetupPage() {
                       onChange={handleChange}
                       value={formData.contactLastName}
                       required
+                      maxLength={255}
                     />
                   </div>
                   <div className="flex items-center gap-3">
@@ -247,6 +337,7 @@ function BusinessProfileSetupPage() {
                       onChange={handleChange}
                       value={formData.contactFirstName}
                       required
+                      maxLength={255}
                     />
                   </div>
                 </div>
@@ -278,6 +369,7 @@ function BusinessProfileSetupPage() {
                       onChange={handleChange}
                       value={formData.contactLastNameKana}
                       required
+                      maxLength={255}
                     />
                   </div>
                   <div className="flex items-center gap-3">
@@ -295,6 +387,7 @@ function BusinessProfileSetupPage() {
                       onChange={handleChange}
                       value={formData.contactFirstNameKana}
                       required
+                      maxLength={255}
                     />
                   </div>
                 </div>
@@ -309,6 +402,8 @@ function BusinessProfileSetupPage() {
                 className="w-full max-w-40"
                 onChange={handleChange}
                 value={formData.contactPhoneNumber}
+                required
+                maxLength={20}
               />
             </FormRow>
 
@@ -317,14 +412,17 @@ function BusinessProfileSetupPage() {
                 担当者メールアドレス
               </div>
               <p className="p-5.5 text-left">{email}</p>
-            </div>
+            </div>            
           </div>
+          <p className='text-left'>※事業者名、事業者住所、建物名、WebサイトURLは、事業者情報として公開されます。</p>
           <button
             type="submit"
-            className="h-9 w-45 mx-auto mt-16 rounded-full border border-accent bg-accentbg"
+            className="h-9 w-45 mx-auto mt-16 rounded-full border border-accent bg-accentbg disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={isSubmitting}
           >
-            送信する
+            {isSubmitting ? '送信中...' : '送信する'}
           </button>
+          {error && <p className="py-2 text-center text-error">{error}</p>}
         </form>
       </div>
     </>
