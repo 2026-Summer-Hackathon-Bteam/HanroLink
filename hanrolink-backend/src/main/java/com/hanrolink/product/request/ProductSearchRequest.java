@@ -40,7 +40,7 @@ public record ProductSearchRequest(
     Short
   > productCategoryIds,
 
-  Set<StorageType> storageTypes,
+  Set<@NotNull StorageType> storageTypes,
 
   @Parameter(
     schema = @Schema(
