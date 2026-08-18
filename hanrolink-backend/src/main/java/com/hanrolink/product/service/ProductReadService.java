@@ -273,7 +273,7 @@ public class ProductReadService {
 
     if (!productIds.isEmpty()) {
       monthlySupplyCapacities = monthlySupplyCapacityRepository
-        .findSearchListByProductIds(productIds);
+        .findSearchResultsByProductIds(productIds);
     }
 
     // 月別供給可能量の商品IDごとの分類
