@@ -33,9 +33,7 @@ public record ProductSnapshot(
   ) {}
 
   public record ProductStorySnapshot(
-    Short position,
     String sectionTitle,
-    String body,
-    String imageStorageKey
+    String body
   ) {}
 }
