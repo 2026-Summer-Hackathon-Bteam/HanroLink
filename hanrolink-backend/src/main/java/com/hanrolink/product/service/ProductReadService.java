@@ -52,7 +52,7 @@ import com.hanrolink.security.authorization.enums.JwtAccountRole;
 
 @Profile("s3")
 @Service
-public class ProductService {
+public class ProductReadService {
 
   private final ProductRepository productRepository;
 
@@ -66,7 +66,7 @@ public class ProductService {
 
   private final S3DownloadUrlGenerator s3DownloadUrlGenerator;
 
-  public ProductService(
+  public ProductReadService(
     ProductRepository productRepository,
     MonthlySupplyCapacityRepository monthlySupplyCapacityRepository,
     ProductStoryRepository productStoryRepository,
