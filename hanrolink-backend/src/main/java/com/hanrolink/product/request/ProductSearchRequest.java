@@ -23,7 +23,7 @@ public record ProductSearchRequest(
     YearMonth
   > availableSupplyMonths,
 
-  List<@Positive Short> mainIngredientRegionIds,
+  List<@Positive Short> mainIngredientOriginRegionIds,
 
   List<@Positive Short> productCategoryIds,
 

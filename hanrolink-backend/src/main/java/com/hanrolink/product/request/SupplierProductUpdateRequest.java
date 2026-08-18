@@ -32,7 +32,7 @@ public record SupplierProductUpdateRequest(
 
   @NotNull
   @Positive
-  Short mainIngredientRegionId,
+  Short mainIngredientOriginPrefectureId,
 
   UUID mainImagePendingFileUploadId,
 

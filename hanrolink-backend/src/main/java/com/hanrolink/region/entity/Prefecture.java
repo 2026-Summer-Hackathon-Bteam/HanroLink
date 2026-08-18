@@ -12,12 +12,15 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "regions")
-public class Region {
+@Table(name = "prefectures")
+public class Prefecture {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Short id;
+
+  @Column(name = "region_id", nullable = false)
+  private Short regionId;
 
   @Column(nullable = false)
   private String name;
@@ -28,7 +31,7 @@ public class Region {
   @Column(name = "updated_at", nullable = false)
   private Instant updatedAt;
 
-  protected Region() {}
+  protected Prefecture() {}
 
   @PrePersist
   private void onCreate() {

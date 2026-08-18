@@ -40,7 +40,7 @@ import com.hanrolink.product.response.ProductDetailResponse;
 import com.hanrolink.product.response.ProductSearchResponse;
 import com.hanrolink.product.response.component.MonthlySupplyCapacityResponse;
 import com.hanrolink.product.response.component.ProductExpirationTypeResponse;
-import com.hanrolink.product.response.component.ProductMainIngredientRegionResponse;
+import com.hanrolink.product.response.component.ProductMainIngredientOriginPrefectureResponse;
 import com.hanrolink.product.response.component.ProductPermissionsResponse;
 import com.hanrolink.product.response.component.ProductSearchResultResponse;
 import com.hanrolink.product.response.component.ProductStoryResponse;
@@ -188,9 +188,9 @@ public class ProductReadService {
         product.productCategoryId(),
         product.productCategoryName()
       ),
-      new ProductMainIngredientRegionResponse(
-        product.mainIngredientRegionId(),
-        product.mainIngredientRegionName()
+      new ProductMainIngredientOriginPrefectureResponse(
+        product.mainIngredientOriginPrefectureId(),
+        product.mainIngredientOriginPrefectureName()
       ),
       product.contentQuantity(),
       new ProductExpirationTypeResponse(
@@ -252,7 +252,7 @@ public class ProductReadService {
     Page<ProductSearchResultProjection> productPage =
       productRepository.findSearchResults(
         availableSupplyMonths,
-        request.mainIngredientRegionIds(),
+        request.mainIngredientOriginRegionIds(),
         request.productCategoryIds(),
         request.storageTypes(),
         pageable
@@ -299,7 +299,7 @@ public class ProductReadService {
             product.name(),
             product.businessName(),
             product.productCategoryName(),
-            product.mainIngredientRegionName(),
+            product.mainIngredientOriginPrefectureName(),
             product.storageType().getDisplayName(),
             toLatestMonthlySupplyCapacityResponses(
               monthlySupplyCapacitiesByProductId

@@ -52,9 +52,20 @@ CREATE TABLE business_user_accounts (
 CREATE TABLE regions (
   id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   name VARCHAR(50) UNIQUE NOT NULL,
-  sort_order SMALLINT UNIQUE NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE TABLE prefectures (
+  id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  region_id SMALLINT NOT NULL,
+  name VARCHAR(50) UNIQUE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+  CONSTRAINT fk_prefectures_region
+    FOREIGN KEY (region_id)
+    REFERENCES regions(id)
 );
 
 CREATE TABLE product_category_groups (
@@ -95,7 +106,7 @@ CREATE TABLE products (
   public_id UUID UNIQUE NOT NULL,
   supplier_business_id BIGINT NOT NULL,
   product_category_id SMALLINT NOT NULL,
-  main_ingredient_region_id SMALLINT NOT NULL,
+  main_ingredient_origin_prefecture_id SMALLINT NOT NULL,
   name VARCHAR(255) NOT NULL,
   main_image_storage_key VARCHAR(255) UNIQUE NOT NULL,
   content_quantity VARCHAR(255) NOT NULL,
@@ -120,9 +131,9 @@ CREATE TABLE products (
   CONSTRAINT fk_products_product_category
     FOREIGN KEY (product_category_id)
     REFERENCES product_categories(id),
-  CONSTRAINT fk_products_main_ingredient_region
-    FOREIGN KEY (main_ingredient_region_id)
-    REFERENCES regions(id)
+  CONSTRAINT fk_products_main_ingredient_origin_prefecture
+    FOREIGN KEY (main_ingredient_origin_prefecture_id)
+    REFERENCES prefectures(id)
 );
 
 CREATE TABLE monthly_supply_capacities (

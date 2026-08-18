@@ -31,7 +31,7 @@ public record SupplierProductCreateRequest(
 
   @NotNull
   @Positive
-  Short mainIngredientRegionId,
+  Short mainIngredientOriginPrefectureId,
 
   @NotNull
   UUID mainImagePendingFileUploadId,

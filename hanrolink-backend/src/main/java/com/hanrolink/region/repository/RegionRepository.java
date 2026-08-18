@@ -18,7 +18,7 @@ public interface RegionRepository extends JpaRepository<Region, Short> {
       region.name
     )
     FROM Region region
-    ORDER BY region.sortOrder ASC
+    ORDER BY region.id ASC
     """)
   List<RegionOptionProjection> findAllOptions();
 }
