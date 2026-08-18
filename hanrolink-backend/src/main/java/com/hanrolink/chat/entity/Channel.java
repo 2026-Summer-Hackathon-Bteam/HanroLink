@@ -29,12 +29,6 @@ public class Channel {
   @Column(name = "buyer_account_id", nullable = false)
   private Long buyerAccountId;
 
-  @Column(name = "product_negotiation_request_id")
-  private Long productNegotiationRequestId;
-
-  @Column(name = "procurement_negotiation_request_id")
-  private Long procurementNegotiationRequestId;
-
   @Column(nullable = false)
   private String name;
 

@@ -31,10 +31,7 @@ public class ProductNegotiationRequest {
   @Column(name = "buyer_account_id", updatable = false, nullable = false)
   private Long buyerAccountId;
 
-  @Column(name = "supplier_business_id", updatable = false, nullable = false)
-  private Long supplierBusinessId;
-
-  @Column(name = "product_id", updatable = false)
+  @Column(name = "product_id", nullable = false, updatable = false)
   private Long productId;
 
   @JdbcTypeCode(SqlTypes.JSON)
@@ -45,12 +42,6 @@ public class ProductNegotiationRequest {
     nullable = false
   )
   private ProductSnapshot productSnapshot;
-
-  @Column(name = "product_main_image_storage_key", updatable = false, nullable = false)
-  private String productMainImageStorageKey;
-
-  @Column(name = "accepted_at")
-  private Instant acceptedAt;
 
   @Column(name = "created_at", updatable = false, nullable = false)
   private Instant createdAt;
