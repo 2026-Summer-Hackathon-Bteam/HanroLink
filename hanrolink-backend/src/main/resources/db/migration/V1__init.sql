@@ -257,10 +257,24 @@ CREATE TABLE pending_file_uploads (
   business_user_account_id BIGINT NOT NULL,
   storage_key VARCHAR(255) UNIQUE NOT NULL,
   usage file_upload_usage NOT NULL,
+  display_filename VARCHAR(255),
   mime_type VARCHAR(100) NOT NULL,
   file_size_bytes BIGINT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+  CONSTRAINT chk_pending_file_uploads_display_filename
+    CHECK (
+      (
+        usage = 'MESSAGE_ATTACHMENT'
+        AND display_filename IS NOT NULL
+        AND BTRIM(display_filename) <> ''
+      )
+      OR (
+        usage <> 'MESSAGE_ATTACHMENT'
+        AND display_filename IS NULL
+      )
+    ),
 
   CONSTRAINT fk_pending_file_uploads_business_user_account
     FOREIGN KEY (business_user_account_id)
@@ -364,8 +378,8 @@ CREATE TABLE message_files (
   message_id BIGINT NOT NULL,
   storage_key VARCHAR(255) UNIQUE NOT NULL,
   mime_type VARCHAR(100) NOT NULL,
-  display_filename VARCHAR(255),
-  file_size_bytes BIGINT,
+  display_filename VARCHAR(255) NOT NULL,
+  file_size_bytes BIGINT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 

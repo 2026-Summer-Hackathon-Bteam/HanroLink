@@ -44,6 +44,9 @@ public class PendingFileUpload {
   )
   private FileUploadUsage usage;
 
+  @Column(name = "display_filename")
+  private String displayFilename;
+
   @Column(name = "mime_type", nullable = false)
   private String mimeType;
 
@@ -62,12 +65,14 @@ public class PendingFileUpload {
     Long businessUserAccountId,
     String storageKey,
     FileUploadUsage usage,
+    String displayFilename,
     String mimeType,
     Long fileSizeBytes
   ) {
     this.businessUserAccountId = businessUserAccountId;
     this.storageKey = storageKey;
     this.usage = usage;
+    this.displayFilename = displayFilename;
     this.mimeType = mimeType;
     this.fileSizeBytes = fileSizeBytes;
   }

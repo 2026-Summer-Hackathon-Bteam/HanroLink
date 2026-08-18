@@ -70,6 +70,7 @@ public class SupplierProductImageUploadService {
         fileUploadContext.businessUserAccountId(),
         imageStorageKey,
         fileUploadUsageOf(request.usage()),
+        null,
         PRODUCT_IMAGE_MIME_TYPE,
         request.fileSizeBytes()
       );

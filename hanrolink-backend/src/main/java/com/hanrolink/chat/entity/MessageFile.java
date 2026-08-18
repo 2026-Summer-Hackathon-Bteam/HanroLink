@@ -28,10 +28,10 @@ public class MessageFile {
   @Column(name = "mime_type", nullable = false)
   private String mimeType;
 
-  @Column(name = "display_filename")
+  @Column(name = "display_filename", nullable = false)
   private String displayFilename;
 
-  @Column(name = "file_size_bytes")
+  @Column(name = "file_size_bytes", nullable = false)
   private Long fileSizeBytes;
 
   @Column(name = "created_at", updatable = false, nullable = false)
