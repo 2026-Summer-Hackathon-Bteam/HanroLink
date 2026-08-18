@@ -40,7 +40,7 @@ function SignupConfirmPage() {
         state: {
           email: email.trim(),
           message:
-            'メールアドレスの確認が完了しました。ログインして会社情報を入力してください。',
+            'メールアドレスの確認が完了しました。ログインして事業者情報を入力してください。',
         },
       })
     } catch (error: unknown) {
