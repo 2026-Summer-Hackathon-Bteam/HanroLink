@@ -17,18 +17,28 @@ import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 public record ProductSearchRequest(
   @DateTimeFormat(pattern = "yyyy-MM")
   List<
+    @NotNull
     @FutureOrPresent(message = "当月以降の月を指定してください")
     YearMonth
   > availableSupplyMonths,
 
-  List<@Positive Short> mainIngredientOriginRegionIds,
+  List<
+    @NotNull
+    @Positive
+    Short
+  > mainIngredientOriginRegionIds,
 
-  List<@Positive Short> productCategoryIds,
+  List<
+    @NotNull
+    @Positive
+    Short
+  > productCategoryIds,
 
   Set<StorageType> storageTypes,
 

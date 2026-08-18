@@ -125,6 +125,29 @@ CREATE TABLE products (
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
+  CONSTRAINT chk_products_desired_retail_price
+    CHECK (desired_retail_price > 0),
+  CONSTRAINT chk_products_shelf_life_days
+    CHECK (
+      shelf_life_days IS NULL
+      OR shelf_life_days >= 0
+    ),
+  CONSTRAINT chk_products_units_per_case
+    CHECK (
+      units_per_case IS NULL
+      OR units_per_case > 0
+    ),
+  CONSTRAINT chk_products_minimum_order_quantity
+    CHECK (
+      minimum_order_quantity IS NULL
+      OR minimum_order_quantity > 0
+    ),
+  CONSTRAINT chk_products_shipping_lead_time_days
+    CHECK (
+      shipping_lead_time_days IS NULL
+      OR shipping_lead_time_days >= 0
+    ),
+
   CONSTRAINT fk_products_supplier_business
     FOREIGN KEY (supplier_business_id)
     REFERENCES businesses(id),
@@ -143,6 +166,17 @@ CREATE TABLE monthly_supply_capacities (
   available_quantity INT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+  CONSTRAINT uq_monthly_supply_capacities_product_id_target_month
+    UNIQUE (
+      product_id,
+      target_month
+    ),
+
+  CONSTRAINT chk_monthly_supply_capacities_target_month
+    CHECK (EXTRACT(DAY FROM target_month) = 1),
+  CONSTRAINT chk_monthly_supply_capacities_available_quantity
+    CHECK (available_quantity >= 0),
 
   CONSTRAINT fk_monthly_supply_capacities_product
     FOREIGN KEY (product_id)
@@ -170,6 +204,16 @@ CREATE TABLE product_stories (
   image_storage_key VARCHAR(255) UNIQUE NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+  CONSTRAINT uq_product_stories_product_id_position
+    UNIQUE (
+      product_id,
+      position
+    )
+    DEFERRABLE INITIALLY DEFERRED,
+
+  CONSTRAINT chk_product_stories_position
+    CHECK (position BETWEEN 1 AND 4),
 
   CONSTRAINT fk_product_stories_product
     FOREIGN KEY (product_id)

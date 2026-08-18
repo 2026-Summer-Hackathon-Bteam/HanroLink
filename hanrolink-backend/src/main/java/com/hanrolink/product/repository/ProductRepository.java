@@ -142,9 +142,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         OR product.storageType IN :storageTypes
       )
       AND (
-        :#{#availableSupplyMonths == null || #availableSupplyMonths.isEmpty()} = true
+        :#{#availableSupplyMonths.isEmpty()} = true
         OR (
-          SELECT COUNT(DISTINCT monthlySupplyCapacity.targetMonth)
+          SELECT COUNT(monthlySupplyCapacity.id)
           FROM MonthlySupplyCapacity monthlySupplyCapacity
           WHERE monthlySupplyCapacity.productId = product.id
             AND monthlySupplyCapacity.targetMonth IN :availableSupplyMonths

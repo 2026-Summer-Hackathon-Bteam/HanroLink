@@ -19,6 +19,7 @@ import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 
 public record SupplierProductUpdateRequest(
@@ -43,7 +44,7 @@ public record SupplierProductUpdateRequest(
   @NotNull
   ProductExpirationType expirationType,
 
-  @Positive
+  @PositiveOrZero
   Short shelfLifeDays,
 
   @NotNull
@@ -67,7 +68,7 @@ public record SupplierProductUpdateRequest(
   @Positive
   Integer minimumOrderQuantity,
 
-  @Positive
+  @PositiveOrZero
   Short shippingLeadTimeDays,
 
   @Size(max = 255)
