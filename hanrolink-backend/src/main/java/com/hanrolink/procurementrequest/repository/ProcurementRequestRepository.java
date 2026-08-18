@@ -85,13 +85,13 @@ public interface ProcurementRequestRepository extends JpaRepository<ProcurementR
     )
       AND (
         :#{#storageTypes == null || #storageTypes.isEmpty()} = true
-        OR (
-          SELECT COUNT(procurementRequestStorageType.id)
+        OR EXISTS (
+          SELECT procurementRequestStorageType.id
           FROM ProcurementRequestStorageType procurementRequestStorageType
           WHERE procurementRequestStorageType.procurementRequestId =
             procurementRequest.id
             AND procurementRequestStorageType.storageType IN :storageTypes
-        ) = :#{#storageTypes == null ? 0 : #storageTypes.size()}
+        )
       )
       AND (
         :#{#desiredProcurementMonths.isEmpty()} = true
