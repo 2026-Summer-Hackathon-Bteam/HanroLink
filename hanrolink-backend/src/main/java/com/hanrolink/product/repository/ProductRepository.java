@@ -40,6 +40,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
   @Query("""
     SELECT new com.hanrolink.product.repository.projection.PublicProductListProjection(
+      product.publicId,
       product.name,
       business.name,
       product.mainImageStorageKey

@@ -1,10 +1,14 @@
 package com.hanrolink.product.response;
 
 import java.util.Objects;
+import java.util.UUID;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record PublicProductListResponse(
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+  UUID id,
+
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   String name,
 
@@ -15,6 +19,11 @@ public record PublicProductListResponse(
   String mainImageUrl
 ) {
   public PublicProductListResponse {
+    Objects.requireNonNull(
+      id,
+      "PublicProductListResponse.id must not be null"
+    );
+
     Objects.requireNonNull(
       name,
       "PublicProductListResponse.name must not be null"
