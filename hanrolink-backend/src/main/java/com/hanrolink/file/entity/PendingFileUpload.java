@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import com.hanrolink.file.enums.FileMimeType;
 import com.hanrolink.file.enums.FileUploadUsage;
 
 import jakarta.persistence.Column;
@@ -47,8 +48,14 @@ public class PendingFileUpload {
   @Column(name = "display_filename")
   private String displayFilename;
 
-  @Column(name = "mime_type", nullable = false)
-  private String mimeType;
+  @Enumerated(EnumType.STRING)
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+  @Column(
+    name = "mime_type",
+    columnDefinition = "file_mime_type",
+    nullable = false
+  )
+  private FileMimeType mimeType;
 
   @Column(name = "file_size_bytes", nullable = false)
   private Long fileSizeBytes;
@@ -66,7 +73,7 @@ public class PendingFileUpload {
     String storageKey,
     FileUploadUsage usage,
     String displayFilename,
-    String mimeType,
+    FileMimeType mimeType,
     Long fileSizeBytes
   ) {
     this.businessUserAccountId = businessUserAccountId;
@@ -101,7 +108,7 @@ public class PendingFileUpload {
     return usage;
   }
 
-  public String getMimeType() {
+  public FileMimeType getMimeType() {
     return mimeType;
   }
 
