@@ -354,11 +354,11 @@ public class ProductReadService {
     return new ProductDetailViewer(
       viewerAccessScope.businessUserAccountId(),
       viewerAccessScope.businessId(),
-      accountRoleOf(viewerAccessScope.businessRole())
+      applicationRoleOf(viewerAccessScope.businessRole())
     );
   }
 
-  private ApplicationRole accountRoleOf(
+  private ApplicationRole applicationRoleOf(
     BusinessRole role
   ) {
     return switch (role) {
