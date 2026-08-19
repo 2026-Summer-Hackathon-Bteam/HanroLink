@@ -2,6 +2,7 @@ package com.hanrolink.negotiationrequest.response;
 
 import java.time.Instant;
 import java.util.Objects;
+import java.util.UUID;
 
 import com.hanrolink.negotiationrequest.response.component.ProductSnapshotSummaryResponse;
 
@@ -9,7 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record BuyerProductNegotiationRequestListResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  Long id,
+  UUID id,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   ProductSnapshotSummaryResponse product,

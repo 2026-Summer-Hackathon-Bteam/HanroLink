@@ -7,15 +7,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record SupplierProductNegotiationRequestBuyerResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  UUID accountId,
+  UUID businessId,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   String businessName
 ) {
   public SupplierProductNegotiationRequestBuyerResponse {
     Objects.requireNonNull(
-      accountId,
-      "SupplierProductNegotiationRequestBuyerResponse.accountId must not be null"
+      businessId,
+      "SupplierProductNegotiationRequestBuyerResponse.businessId must not be null"
     );
 
     Objects.requireNonNull(
