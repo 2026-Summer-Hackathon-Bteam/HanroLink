@@ -44,7 +44,7 @@ public class ProductReadController {
   }
 
   /**
-   * 商品詳細情報を取得する
+   * 商品詳細情報を返す
    * @param jwt 認証済みユーザーのJWT
    * @param productId 取得対象の商品の公開識別子
    * @return 商品詳細情報

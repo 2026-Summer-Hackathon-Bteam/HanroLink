@@ -69,7 +69,7 @@ public class SupplierProductManagementController {
   }
 
   /**
-   * 自社に紐づく商品一覧を取得する
+   * 自社に紐づく商品一覧を返す
    * @param jwt 認証済みユーザーのJWT
    * @return 商品一覧
    */

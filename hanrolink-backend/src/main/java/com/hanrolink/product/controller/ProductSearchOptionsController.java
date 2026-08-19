@@ -21,7 +21,7 @@ public class ProductSearchOptionsController {
   }
 
   /**
-   * 商品検索フォームで使用する選択肢を取得する
+   * 商品検索フォームで使用する選択肢を返す
    * @return 商品検索フォームの選択肢
    */
   @RequiresAdminOrApprovedBusiness

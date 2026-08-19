@@ -21,7 +21,7 @@ public class SupplierProductFormOptionsController {
   }
 
   /**
-   * 商品情報入力フォームで使用する選択肢を取得する
+   * 商品情報入力フォームで使用する選択肢を返す
    * @return 商品情報入力フォームの選択肢
    */
   @RequiresApprovedSupplier
