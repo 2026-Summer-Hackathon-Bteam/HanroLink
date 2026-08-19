@@ -1,8 +1,13 @@
 import type { PendingBusinessRegistration } from './adminMyPageTypes'
-import { adminMyPageMock } from './adminMyPageMock'
+import { authenticatedApi } from '../../lib/api'
 
-export function getPendingBusinessRegistrations(): Promise<
+export async function getPendingBusinessRegistrations(): Promise<
   PendingBusinessRegistration[]
 > {
-  return Promise.resolve(adminMyPageMock)
+  const {data, response} = await authenticatedApi.GET('/api/v1/admin/business-registrations/pending')
+
+  if(!response.ok || !data) {
+    throw new Error(`新規登録者一覧の取得に失敗しました。（ステータス：${response.status}）`)
+  }
+  return data
 }

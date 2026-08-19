@@ -41,9 +41,13 @@ function AdminMyPage() {
         if (!isCancelled) {
           setData(result)
         }
-      } catch {
+      } catch (error: unknown) {
         if (!isCancelled) {
-          setError('マイページの情報を取得できませんでした')
+          setError(
+            error instanceof Error
+              ? error.message
+              : 'マイページの情報を取得できませんでした',
+          )
         }
       }
     }
@@ -79,7 +83,7 @@ function AdminMyPage() {
             <table className="w-full table-fixed [&_th]:px-3 [&_th]:py-2 [&_th]:text-left  [&_td]:px-3 [&_td]:py-2 [&_td]:text-left [&_td]:truncate">
               <thead>
                 <tr className="border-b">
-                  <th>会社名</th>
+                  <th>事業者名</th>
                   <th>登録日時</th>
                   <th>審査残り時間</th>
                 </tr>
@@ -98,23 +102,23 @@ function AdminMyPage() {
                         new Date(a.createdAt).getTime() -
                         new Date(b.createdAt).getTime(),
                     )
-                    .map((pbr) => {
-                      const remainingTime = formatRemainingTime(pbr.createdAt)
+                    .map((business) => {
+                      const remainingTime = formatRemainingTime(business.createdAt)
                       const isExpired = remainingTime === '期限超過'
 
                       return (
                         <tr
-                          key={pbr.businessUserAccountId}
+                          key={business.businessId}
                           className="border-b border-dashed"
                         >
                           <td>
                             <Link
-                              to={`/admin/approvals/${pbr.businessUserAccountId}`}
+                              to={`/admin/approvals/${business.businessId}`}
                             >
-                              {pbr.businessName}
+                              {business.businessName}
                             </Link>
                           </td>
-                          <td>{new Date(pbr.createdAt).toLocaleString()}</td>
+                          <td>{new Date(business.createdAt).toLocaleString()}</td>
                           <td className={isExpired ? 'text-error' : undefined}>
                             {remainingTime}
                           </td>

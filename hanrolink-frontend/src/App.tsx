@@ -52,11 +52,11 @@ function App() {
             />
             <Route path="signup/complete" element={<SignupCompletePage />} />
             <Route
-              path="admin/approvals/:businessUserAccountId"
+              path="admin/approvals/:businessId"
               element={<AdminBusinessApprovalDetailPage />}
             />
             <Route
-              path="buyer/:businessUserAccountId"
+              path="buyer/:businessId"
               element={<BuyerProfilePage />}
             />
             <Route path="/products" element={<ProductSearchPage />} />
