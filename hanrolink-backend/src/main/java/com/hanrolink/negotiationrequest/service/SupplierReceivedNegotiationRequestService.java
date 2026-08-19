@@ -11,7 +11,7 @@ import com.hanrolink.negotiationrequest.policy.NegotiationRequestPolicy;
 import com.hanrolink.negotiationrequest.repository.ProductNegotiationRequestRepository;
 import com.hanrolink.negotiationrequest.response.SupplierReceivedNegotiationRequestListResponse;
 import com.hanrolink.negotiationrequest.response.component.NegotiationRequestProductResponse;
-import com.hanrolink.negotiationrequest.response.component.SupplierReceivedNegotiationRequestBuyerResponse;
+import com.hanrolink.negotiationrequest.response.component.NegotiationRequestSenderBusinessResponse;
 
 @Service
 public class SupplierReceivedNegotiationRequestService {
@@ -51,7 +51,7 @@ public class SupplierReceivedNegotiationRequestService {
             receivedNegotiationRequest.productPublicId(),
             receivedNegotiationRequest.productName()
           ),
-          new SupplierReceivedNegotiationRequestBuyerResponse(
+          new NegotiationRequestSenderBusinessResponse(
             receivedNegotiationRequest.senderBusinessPublicId(),
             receivedNegotiationRequest.senderBusinessName()
           ),

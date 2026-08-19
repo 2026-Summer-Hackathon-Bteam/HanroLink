@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import com.hanrolink.negotiationrequest.response.component.NegotiationRequestProductResponse;
-import com.hanrolink.negotiationrequest.response.component.SupplierReceivedNegotiationRequestBuyerResponse;
+import com.hanrolink.negotiationrequest.response.component.NegotiationRequestSenderBusinessResponse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -17,7 +17,7 @@ public record SupplierReceivedNegotiationRequestListResponse(
   NegotiationRequestProductResponse product,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  SupplierReceivedNegotiationRequestBuyerResponse buyer,
+  NegotiationRequestSenderBusinessResponse senderBusiness,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   Instant expiresAt
@@ -34,8 +34,8 @@ public record SupplierReceivedNegotiationRequestListResponse(
     );
 
     Objects.requireNonNull(
-      buyer,
-      "SupplierReceivedNegotiationRequestListResponse.buyer must not be null"
+      senderBusiness,
+      "SupplierReceivedNegotiationRequestListResponse.senderBusiness must not be null"
     );
 
     Objects.requireNonNull(

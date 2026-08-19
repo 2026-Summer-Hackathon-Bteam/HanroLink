@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.hanrolink.negotiationrequest.policy.NegotiationRequestPolicy;
 import com.hanrolink.negotiationrequest.repository.ProcurementNegotiationRequestRepository;
 import com.hanrolink.negotiationrequest.response.BuyerReceivedNegotiationRequestListResponse;
-import com.hanrolink.negotiationrequest.response.component.BuyerReceivedNegotiationRequestProductResponse;
 import com.hanrolink.negotiationrequest.response.component.NegotiationRequestProcurementRequestResponse;
+import com.hanrolink.negotiationrequest.response.component.NegotiationRequestProductResponse;
 
 @Service
 public class BuyerReceivedNegotiationRequestService {
@@ -51,11 +51,11 @@ public class BuyerReceivedNegotiationRequestService {
             receivedNegotiationRequest.procurementRequestPublicId(),
             receivedNegotiationRequest.procurementRequestTitle()
           ),
-          new BuyerReceivedNegotiationRequestProductResponse(
+          new NegotiationRequestProductResponse(
             receivedNegotiationRequest.productPublicId(),
-            receivedNegotiationRequest.productName(),
-            receivedNegotiationRequest.productOwnerBusinessName()
+            receivedNegotiationRequest.productName()
           ),
+          receivedNegotiationRequest.senderBusinessName(),
           receivedNegotiationRequest.createdAt().plus(
             NegotiationRequestPolicy.ACTIVE_PERIOD_DAYS,
             ChronoUnit.DAYS

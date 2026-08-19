@@ -9,6 +9,6 @@ public record BuyerReceivedNegotiationRequestListProjection(
   String procurementRequestTitle,
   UUID productPublicId,
   String productName,
-  String productOwnerBusinessName,
+  String senderBusinessName,
   Instant createdAt
 ) {}

@@ -22,7 +22,7 @@ public interface ProcurementNegotiationRequestRepository extends JpaRepository<P
       procurementRequest.title,
       product.publicId,
       product.name,
-      productOwnerBusiness.name,
+      senderBusiness.name,
       procurementNegotiationRequest.createdAt
     )
     FROM ProcurementNegotiationRequest procurementNegotiationRequest
@@ -30,11 +30,13 @@ public interface ProcurementNegotiationRequestRepository extends JpaRepository<P
       ON procurementRequest.id = procurementNegotiationRequest.procurementRequestId
     JOIN Product product
       ON product.id = procurementNegotiationRequest.productId
-    JOIN Business productOwnerBusiness
-      ON productOwnerBusiness.id = product.supplierBusinessId
-    JOIN BusinessUserAccount businessUserAccount
-      ON businessUserAccount.businessId = procurementRequest.buyerBusinessId
-    WHERE businessUserAccount.identityProviderSubject = :identityProviderSubject
+    JOIN BusinessUserAccount senderAccount
+      ON senderAccount.id = procurementNegotiationRequest.supplierAccountId
+    JOIN Business senderBusiness
+      ON senderBusiness.id = senderAccount.businessId
+    JOIN BusinessUserAccount recipientAccount
+      ON recipientAccount.businessId = procurementRequest.buyerBusinessId
+    WHERE recipientAccount.identityProviderSubject = :identityProviderSubject
       AND procurementNegotiationRequest.createdAt >= :activeSince
     ORDER BY
       procurementNegotiationRequest.createdAt DESC,
