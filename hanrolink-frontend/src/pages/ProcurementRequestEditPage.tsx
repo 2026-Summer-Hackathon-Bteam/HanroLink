@@ -5,6 +5,7 @@ import { getProcurementRequestDetailData } from '../features/procurementRequest/
 import type { ProcurementRequestFormValues } from '../features/procurementRequest/procurementRequestFormTypes'
 import type { ProcurementRequestDetailData } from '../features/procurementRequest/procurementRequestDetailTypes'
 import { createTargetMonths } from '../shared/utils/yearMonth'
+import { updateProcurementRequest } from '../features/procurementRequest/procurementRequestDetailService'
 
 const convertToInitialValues = (
   detail: ProcurementRequestDetailData,
@@ -39,23 +40,17 @@ function ProcurementRequestEditPage() {
   const [initialValues, setInitialValues] =
     useState<ProcurementRequestFormValues | null>(null)
   const [error, setError] = useState('')
-  const parsedProcurementRequestId = Number(procurementRequestId)
-  const isValidProcurementRequestId =
-    procurementRequestId !== undefined &&
-    Number.isInteger(parsedProcurementRequestId) &&
-    parsedProcurementRequestId > 0
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (!isValidProcurementRequestId) return
+    if (!procurementRequestId) return
 
     let isCancelled = false
 
     const loadProcurementRequest = async () => {
       try {
-        const detail = await getProcurementRequestDetailData(
-          parsedProcurementRequestId,
-        )
+        const detail =
+          await getProcurementRequestDetailData(procurementRequestId)
 
         if (!isCancelled) {
           if (!detail.permissions.canManage) {
@@ -76,23 +71,51 @@ function ProcurementRequestEditPage() {
     return () => {
       isCancelled = true
     }
-  }, [isValidProcurementRequestId, parsedProcurementRequestId])
+  }, [procurementRequestId])
 
   const handleCancel = () => {
+    // 詳細画面に明示的に戻すと、ブラウザの戻るボタンを押した時に再度更新画面に遷移してしまうため、-1にした
     navigate(-1)
   }
 
-  const handleUpdate = (values: ProcurementRequestFormValues) => {
-    void values
-    // 募集情報更新処理を入れる
-  }
+  const handleUpdate = async (values: ProcurementRequestFormValues) => {
+    if (!procurementRequestId) return
+    const information = values.procurementRequestInformations
 
-  if (!isValidProcurementRequestId) {
-    return (
-      <p role="alert" className="py-10 text-center text-error">
-        募集情報IDが正しくありません。
-      </p>
-    )
+    if (information.productCategoryId === '') {
+      throw new Error('商品カテゴリーを選択してください。')
+    }
+
+    const monthlyProcurementQuantities =
+      values.monthlyProcurementQuantities.map((quantity) => {
+        if (quantity.desiredQuantity === '') {
+          throw new Error('希望数量を全て入力してください。')
+        }
+        return {
+          targetMonth: quantity.targetMonth,
+          desiredQuantity: quantity.desiredQuantity,
+        }
+      })
+
+    await updateProcurementRequest(procurementRequestId, {
+      title: information.title.trim(),
+      description: information.description.trim(),
+      productCategoryId: information.productCategoryId,
+      requiredTradeTerms: information.requiredTradeTerms.trim() || undefined,
+      desiredUnitPrice:
+        information.desiredUnitPrice === ''
+          ? undefined
+          : information.desiredUnitPrice,
+      deliveryShelfLifeDays:
+        information.deliveryShelfLifeDays === ''
+          ? undefined
+          : information.deliveryShelfLifeDays,
+      storageTypes: information.storageTypes,
+      monthlyProcurementQuantities,
+    })
+    // 詳細画面に明示的に戻すと、ブラウザの戻るボタンを押した時に再度更新画面に遷移してしまうため、-1にした
+    // -1でもProcurementRequestDetailPageが再マウントされ、useEffectが実行されるため、更新後データをAPIから取得する
+    navigate(-1)
   }
 
   if (error) {
