@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
-import com.hanrolink.negotiationrequest.response.component.ProcurementRequestSnapshotSummaryResponse;
+import com.hanrolink.negotiationrequest.response.component.NegotiationRequestProcurementRequestResponse;
 import com.hanrolink.negotiationrequest.response.component.NegotiationRequestProductResponse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,7 +14,7 @@ public record SupplierProcurementNegotiationRequestListResponse(
   UUID id,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  ProcurementRequestSnapshotSummaryResponse procurementRequest,
+  NegotiationRequestProcurementRequestResponse procurementRequest,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   NegotiationRequestProductResponse product,
