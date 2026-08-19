@@ -9,10 +9,43 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.hanrolink.negotiationrequest.entity.ProcurementNegotiationRequest;
+import com.hanrolink.negotiationrequest.repository.projection.BuyerReceivedNegotiationRequestListProjection;
 import com.hanrolink.negotiationrequest.repository.projection.SupplierSentNegotiationRequestListProjection;
 
 @Repository
 public interface ProcurementNegotiationRequestRepository extends JpaRepository<ProcurementNegotiationRequest, Long> {
+
+  @Query("""
+    SELECT new com.hanrolink.negotiationrequest.repository.projection.BuyerReceivedNegotiationRequestListProjection(
+      procurementNegotiationRequest.publicId,
+      procurementRequest.publicId,
+      procurementRequest.title,
+      product.publicId,
+      product.name,
+      productOwnerBusiness.name,
+      procurementNegotiationRequest.createdAt
+    )
+    FROM ProcurementNegotiationRequest procurementNegotiationRequest
+    JOIN ProcurementRequest procurementRequest
+      ON procurementRequest.id = procurementNegotiationRequest.procurementRequestId
+    JOIN Product product
+      ON product.id = procurementNegotiationRequest.productId
+    JOIN Business productOwnerBusiness
+      ON productOwnerBusiness.id = product.supplierBusinessId
+    JOIN BusinessUserAccount businessUserAccount
+      ON businessUserAccount.businessId = procurementRequest.buyerBusinessId
+    WHERE businessUserAccount.identityProviderSubject = :identityProviderSubject
+      AND procurementNegotiationRequest.createdAt >= :activeSince
+    ORDER BY
+      procurementNegotiationRequest.createdAt DESC,
+      procurementNegotiationRequest.id DESC
+    """)
+  List<BuyerReceivedNegotiationRequestListProjection> findActiveReceivedListByIdentityProviderSubject(
+    @Param("identityProviderSubject")
+    String identityProviderSubject,
+    @Param("activeSince")
+    Instant activeSince
+  );
 
   @Query("""
     SELECT new com.hanrolink.negotiationrequest.repository.projection.SupplierSentNegotiationRequestListProjection(
