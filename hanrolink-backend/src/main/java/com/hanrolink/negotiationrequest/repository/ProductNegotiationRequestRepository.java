@@ -10,9 +10,41 @@ import org.springframework.stereotype.Repository;
 
 import com.hanrolink.negotiationrequest.entity.ProductNegotiationRequest;
 import com.hanrolink.negotiationrequest.repository.projection.BuyerSentNegotiationRequestListProjection;
+import com.hanrolink.negotiationrequest.repository.projection.SupplierReceivedNegotiationRequestListProjection;
 
 @Repository
 public interface ProductNegotiationRequestRepository extends JpaRepository<ProductNegotiationRequest, Long> {
+
+  @Query("""
+    SELECT new com.hanrolink.negotiationrequest.repository.projection.SupplierReceivedNegotiationRequestListProjection(
+      productNegotiationRequest.publicId,
+      product.publicId,
+      product.name,
+      senderBusiness.publicId,
+      senderBusiness.name,
+      productNegotiationRequest.createdAt
+    )
+    FROM ProductNegotiationRequest productNegotiationRequest
+    JOIN Product product
+      ON product.id = productNegotiationRequest.productId
+    JOIN BusinessUserAccount senderAccount
+      ON senderAccount.id = productNegotiationRequest.buyerAccountId
+    JOIN Business senderBusiness
+      ON senderBusiness.id = senderAccount.businessId
+    JOIN BusinessUserAccount recipientAccount
+      ON recipientAccount.businessId = product.supplierBusinessId
+    WHERE recipientAccount.identityProviderSubject = :identityProviderSubject
+      AND productNegotiationRequest.createdAt >= :activeSince
+    ORDER BY
+      productNegotiationRequest.createdAt DESC,
+      productNegotiationRequest.id DESC
+    """)
+  List<SupplierReceivedNegotiationRequestListProjection> findActiveReceivedListByIdentityProviderSubject(
+    @Param("identityProviderSubject")
+    String identityProviderSubject,
+    @Param("activeSince")
+    Instant activeSince
+  );
 
   @Query("""
     SELECT new com.hanrolink.negotiationrequest.repository.projection.BuyerSentNegotiationRequestListProjection(
