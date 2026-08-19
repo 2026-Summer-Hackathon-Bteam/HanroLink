@@ -190,7 +190,7 @@ CREATE TABLE procurement_requests (
   CONSTRAINT chk_procurement_requests_delivery_shelf_life_days
     CHECK (
       delivery_shelf_life_days IS NULL
-      OR delivery_shelf_life_days >= 0
+      OR delivery_shelf_life_days > 0
     ),
 
   CONSTRAINT fk_procurement_requests_buyer_business
