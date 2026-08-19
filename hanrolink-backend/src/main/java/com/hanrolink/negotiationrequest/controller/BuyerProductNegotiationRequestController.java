@@ -45,7 +45,7 @@ public class BuyerProductNegotiationRequestController {
   }
 
   /**
-   * バイヤー自身が送信した有効な商談希望一覧の取得を受け付ける
+   * バイヤー自身が送信した有効な募集商談希望一覧の取得を受け付ける
    * @param jwt 認証済みユーザーのJWT
    * @return 有効な商品商談希望の一覧
    */
