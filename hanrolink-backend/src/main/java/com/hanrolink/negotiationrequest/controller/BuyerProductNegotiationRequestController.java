@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,11 +14,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hanrolink.negotiationrequest.api.BuyerNegotiationRequestApi;
 import com.hanrolink.negotiationrequest.response.BuyerProductNegotiationRequestListResponse;
+import com.hanrolink.negotiationrequest.service.BuyerProductNegotiationRequestService;
+import com.hanrolink.security.authorization.policy.RequiresApprovedBuyer;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @RestController
 public class BuyerProductNegotiationRequestController {
+
+  private final BuyerProductNegotiationRequestService buyerProductNegotiationRequestService;
+
+  public BuyerProductNegotiationRequestController(
+    BuyerProductNegotiationRequestService buyerProductNegotiationRequestService
+  ) {
+    this.buyerProductNegotiationRequestService = buyerProductNegotiationRequestService;
+  }
 
   // バイヤーのみ利用可能
   @ApiResponse(
@@ -32,11 +44,18 @@ public class BuyerProductNegotiationRequestController {
     return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
   }
 
-  // 登録元のバイヤーのみ利用可能
+  /**
+   * バイヤー自身が送信した有効な商談希望一覧の取得を受け付ける
+   * @param jwt 認証済みユーザーのJWT
+   * @return 有効な商品商談希望の一覧
+   */
+  @RequiresApprovedBuyer
   @GetMapping(BuyerNegotiationRequestApi.V1.MINE_PRODUCT_NEGOTIATION_REQUESTS)
-  public ResponseEntity<List<BuyerProductNegotiationRequestListResponse>> list() {
-
-    // TODO: バイヤー自身が送った未承諾の商談希望一覧を取得して、ResponseEntity.ok(response)で返す
-    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+  public ResponseEntity<List<BuyerProductNegotiationRequestListResponse>> list(
+    @AuthenticationPrincipal Jwt jwt
+  ) {
+    return ResponseEntity.ok(
+      buyerProductNegotiationRequestService.list(jwt.getSubject())
+    );
   }
 }
