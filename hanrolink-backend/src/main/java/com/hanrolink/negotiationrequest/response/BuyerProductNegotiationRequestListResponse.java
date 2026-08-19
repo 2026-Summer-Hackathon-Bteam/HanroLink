@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
-import com.hanrolink.negotiationrequest.response.component.ProductSnapshotSummaryResponse;
+import com.hanrolink.negotiationrequest.response.component.NegotiationRequestProductResponse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -13,7 +13,7 @@ public record BuyerProductNegotiationRequestListResponse(
   UUID id,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  ProductSnapshotSummaryResponse product,
+  NegotiationRequestProductResponse product,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   Instant expiresAt
