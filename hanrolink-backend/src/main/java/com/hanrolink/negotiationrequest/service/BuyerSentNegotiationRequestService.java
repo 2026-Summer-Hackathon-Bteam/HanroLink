@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.hanrolink.negotiationrequest.policy.NegotiationRequestPolicy;
 import com.hanrolink.negotiationrequest.repository.ProductNegotiationRequestRepository;
-import com.hanrolink.negotiationrequest.repository.projection.BuyerSentNegotiationRequestListProjection;
 import com.hanrolink.negotiationrequest.response.BuyerSentNegotiationRequestListResponse;
 import com.hanrolink.negotiationrequest.response.component.NegotiationRequestProductResponse;
 
@@ -37,23 +36,21 @@ public class BuyerSentNegotiationRequestService {
       NegotiationRequestPolicy.ACTIVE_PERIOD_DAYS,
       ChronoUnit.DAYS
     );
-    List<BuyerSentNegotiationRequestListProjection> activeSentNegotiationRequests =
-      productNegotiationRequestRepository
-        .findActiveSentListByIdentityProviderSubject(
-          identityProviderSubject,
-          activeSince
-        );
 
-    return activeSentNegotiationRequests
+    return productNegotiationRequestRepository
+      .findActiveSentListByIdentityProviderSubject(
+        identityProviderSubject,
+        activeSince
+      )
       .stream()
-      .map(activeProductNegotiationRequest ->
+      .map(sentNegotiationRequest ->
         new BuyerSentNegotiationRequestListResponse(
-          activeProductNegotiationRequest.publicId(),
+          sentNegotiationRequest.publicId(),
           new NegotiationRequestProductResponse(
-            activeProductNegotiationRequest.productPublicId(),
-            activeProductNegotiationRequest.productName()
+            sentNegotiationRequest.productPublicId(),
+            sentNegotiationRequest.productName()
           ),
-          activeProductNegotiationRequest.createdAt()
+          sentNegotiationRequest.createdAt()
             .plus(
               NegotiationRequestPolicy.ACTIVE_PERIOD_DAYS,
               ChronoUnit.DAYS

@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.hanrolink.negotiationrequest.policy.NegotiationRequestPolicy;
 import com.hanrolink.negotiationrequest.repository.ProcurementNegotiationRequestRepository;
-import com.hanrolink.negotiationrequest.repository.projection.SupplierSentNegotiationRequestListProjection;
 import com.hanrolink.negotiationrequest.response.SupplierSentNegotiationRequestListResponse;
 import com.hanrolink.negotiationrequest.response.component.NegotiationRequestProcurementRequestResponse;
 import com.hanrolink.negotiationrequest.response.component.NegotiationRequestProductResponse;
@@ -38,27 +37,25 @@ public class SupplierSentNegotiationRequestService {
       NegotiationRequestPolicy.ACTIVE_PERIOD_DAYS,
       ChronoUnit.DAYS
     );
-    List<SupplierSentNegotiationRequestListProjection> activeSentNegotiationRequests =
-      procurementNegotiationRequestRepository
-        .findActiveSentListByIdentityProviderSubject(
-          identityProviderSubject,
-          activeSince
-        );
 
-    return activeSentNegotiationRequests
+    return procurementNegotiationRequestRepository
+      .findActiveSentListByIdentityProviderSubject(
+        identityProviderSubject,
+        activeSince
+      )
       .stream()
-      .map(activeProcurementNegotiationRequest ->
+      .map(sentNegotiationRequest ->
         new SupplierSentNegotiationRequestListResponse(
-          activeProcurementNegotiationRequest.publicId(),
+          sentNegotiationRequest.publicId(),
           new NegotiationRequestProcurementRequestResponse(
-            activeProcurementNegotiationRequest.procurementRequestPublicId(),
-            activeProcurementNegotiationRequest.procurementRequestTitle()
+            sentNegotiationRequest.procurementRequestPublicId(),
+            sentNegotiationRequest.procurementRequestTitle()
           ),
           new NegotiationRequestProductResponse(
-            activeProcurementNegotiationRequest.productPublicId(),
-            activeProcurementNegotiationRequest.productName()
+            sentNegotiationRequest.productPublicId(),
+            sentNegotiationRequest.productName()
           ),
-          activeProcurementNegotiationRequest.createdAt().plus(
+          sentNegotiationRequest.createdAt().plus(
             NegotiationRequestPolicy.ACTIVE_PERIOD_DAYS,
             ChronoUnit.DAYS
           )
