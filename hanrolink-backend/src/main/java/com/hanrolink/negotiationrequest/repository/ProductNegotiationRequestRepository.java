@@ -9,13 +9,13 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.hanrolink.negotiationrequest.entity.ProductNegotiationRequest;
-import com.hanrolink.negotiationrequest.repository.projection.BuyerProductNegotiationRequestListProjection;
+import com.hanrolink.negotiationrequest.repository.projection.BuyerSentNegotiationRequestListProjection;
 
 @Repository
 public interface ProductNegotiationRequestRepository extends JpaRepository<ProductNegotiationRequest, Long> {
 
   @Query("""
-    SELECT new com.hanrolink.negotiationrequest.repository.projection.BuyerProductNegotiationRequestListProjection(
+    SELECT new com.hanrolink.negotiationrequest.repository.projection.BuyerSentNegotiationRequestListProjection(
       productNegotiationRequest.publicId,
       product.publicId,
       product.name,
@@ -32,7 +32,7 @@ public interface ProductNegotiationRequestRepository extends JpaRepository<Produ
       productNegotiationRequest.createdAt DESC,
       productNegotiationRequest.id DESC
     """)
-  List<BuyerProductNegotiationRequestListProjection> findActiveListByIdentityProviderSubject(
+  List<BuyerSentNegotiationRequestListProjection> findActiveSentListByIdentityProviderSubject(
     @Param("identityProviderSubject")
     String identityProviderSubject,
     @Param("activeSince")

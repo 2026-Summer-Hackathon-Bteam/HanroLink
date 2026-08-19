@@ -9,7 +9,7 @@ import com.hanrolink.negotiationrequest.response.component.NegotiationRequestPro
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record SupplierProcurementNegotiationRequestListResponse(
+public record SupplierSentNegotiationRequestListResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   UUID id,
 
@@ -22,25 +22,25 @@ public record SupplierProcurementNegotiationRequestListResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   Instant expiresAt
 ) {
-  public SupplierProcurementNegotiationRequestListResponse {
+  public SupplierSentNegotiationRequestListResponse {
     Objects.requireNonNull(
       id,
-      "SupplierProcurementNegotiationRequestListResponse.id must not be null"
+      "SupplierSentNegotiationRequestListResponse.id must not be null"
     );
 
     Objects.requireNonNull(
       procurementRequest,
-      "SupplierProcurementNegotiationRequestListResponse.procurementRequest must not be null"
+      "SupplierSentNegotiationRequestListResponse.procurementRequest must not be null"
     );
 
     Objects.requireNonNull(
       product,
-      "SupplierProcurementNegotiationRequestListResponse.product must not be null"
+      "SupplierSentNegotiationRequestListResponse.product must not be null"
     );
 
     Objects.requireNonNull(
       expiresAt,
-      "SupplierProcurementNegotiationRequestListResponse.expiresAt must not be null"
+      "SupplierSentNegotiationRequestListResponse.expiresAt must not be null"
     );
   }
 }

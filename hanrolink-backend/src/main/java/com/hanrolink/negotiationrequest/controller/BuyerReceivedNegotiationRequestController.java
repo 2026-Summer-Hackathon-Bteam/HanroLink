@@ -12,16 +12,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hanrolink.negotiationrequest.api.BuyerNegotiationRequestApi;
 import com.hanrolink.negotiationrequest.response.NegotiationRequestAcceptResponse;
-import com.hanrolink.negotiationrequest.response.BuyerProcurementNegotiationRequestListResponse;
+import com.hanrolink.negotiationrequest.response.BuyerReceivedNegotiationRequestListResponse;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @RestController
-public class BuyerProcurementNegotiationRequestController {
+public class BuyerReceivedNegotiationRequestController {
 
   // 登録元のバイヤーのみ利用可能
   @GetMapping(BuyerNegotiationRequestApi.V1.MINE_PROCUREMENT_NEGOTIATION_REQUESTS)
-  public ResponseEntity<List<BuyerProcurementNegotiationRequestListResponse>> list() {
+  public ResponseEntity<List<BuyerReceivedNegotiationRequestListResponse>> list() {
 
     // TODO: 自社募集に届いた未承諾の商談希望一覧を取得して、ResponseEntity.ok(response)で返す
     return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();

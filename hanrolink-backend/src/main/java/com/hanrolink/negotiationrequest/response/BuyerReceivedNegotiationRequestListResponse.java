@@ -5,11 +5,11 @@ import java.util.Objects;
 import java.util.UUID;
 
 import com.hanrolink.negotiationrequest.response.component.NegotiationRequestProcurementRequestResponse;
-import com.hanrolink.negotiationrequest.response.component.BuyerProcurementNegotiationProductResponse;
+import com.hanrolink.negotiationrequest.response.component.BuyerReceivedNegotiationRequestProductResponse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record BuyerProcurementNegotiationRequestListResponse(
+public record BuyerReceivedNegotiationRequestListResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   UUID id,
 
@@ -17,30 +17,30 @@ public record BuyerProcurementNegotiationRequestListResponse(
   NegotiationRequestProcurementRequestResponse procurementRequest,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  BuyerProcurementNegotiationProductResponse product,
+  BuyerReceivedNegotiationRequestProductResponse product,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   Instant expiresAt
 ) {
-  public BuyerProcurementNegotiationRequestListResponse {
+  public BuyerReceivedNegotiationRequestListResponse {
     Objects.requireNonNull(
       id,
-      "BuyerProcurementNegotiationRequestListResponse.id must not be null"
+      "BuyerReceivedNegotiationRequestListResponse.id must not be null"
     );
 
     Objects.requireNonNull(
       procurementRequest,
-      "BuyerProcurementNegotiationRequestListResponse.procurementRequest must not be null"
+      "BuyerReceivedNegotiationRequestListResponse.procurementRequest must not be null"
     );
 
     Objects.requireNonNull(
       product,
-      "BuyerProcurementNegotiationRequestListResponse.product must not be null"
+      "BuyerReceivedNegotiationRequestListResponse.product must not be null"
     );
 
     Objects.requireNonNull(
       expiresAt,
-      "BuyerProcurementNegotiationRequestListResponse.expiresAt must not be null"
+      "BuyerReceivedNegotiationRequestListResponse.expiresAt must not be null"
     );
   }
 }

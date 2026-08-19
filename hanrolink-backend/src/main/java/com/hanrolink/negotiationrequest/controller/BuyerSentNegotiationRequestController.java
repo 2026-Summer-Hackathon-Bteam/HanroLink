@@ -13,21 +13,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hanrolink.negotiationrequest.api.BuyerNegotiationRequestApi;
-import com.hanrolink.negotiationrequest.response.BuyerProductNegotiationRequestListResponse;
-import com.hanrolink.negotiationrequest.service.BuyerProductNegotiationRequestService;
+import com.hanrolink.negotiationrequest.response.BuyerSentNegotiationRequestListResponse;
+import com.hanrolink.negotiationrequest.service.BuyerSentNegotiationRequestService;
 import com.hanrolink.security.authorization.policy.RequiresApprovedBuyer;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @RestController
-public class BuyerProductNegotiationRequestController {
+public class BuyerSentNegotiationRequestController {
 
-  private final BuyerProductNegotiationRequestService buyerProductNegotiationRequestService;
+  private final BuyerSentNegotiationRequestService buyerSentNegotiationRequestService;
 
-  public BuyerProductNegotiationRequestController(
-    BuyerProductNegotiationRequestService buyerProductNegotiationRequestService
+  public BuyerSentNegotiationRequestController(
+    BuyerSentNegotiationRequestService buyerSentNegotiationRequestService
   ) {
-    this.buyerProductNegotiationRequestService = buyerProductNegotiationRequestService;
+    this.buyerSentNegotiationRequestService = buyerSentNegotiationRequestService;
   }
 
   // バイヤーのみ利用可能
@@ -51,11 +51,11 @@ public class BuyerProductNegotiationRequestController {
    */
   @RequiresApprovedBuyer
   @GetMapping(BuyerNegotiationRequestApi.V1.MINE_PRODUCT_NEGOTIATION_REQUESTS)
-  public ResponseEntity<List<BuyerProductNegotiationRequestListResponse>> list(
+  public ResponseEntity<List<BuyerSentNegotiationRequestListResponse>> list(
     @AuthenticationPrincipal Jwt jwt
   ) {
     return ResponseEntity.ok(
-      buyerProductNegotiationRequestService.list(jwt.getSubject())
+      buyerSentNegotiationRequestService.list(jwt.getSubject())
     );
   }
 }

@@ -5,7 +5,7 @@ import java.util.UUID;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-public record SupplierProcurementNegotiationRequestCreateRequest(
+public record SupplierSentNegotiationRequestCreateRequest(
   @NotNull
   @Positive
   UUID productId

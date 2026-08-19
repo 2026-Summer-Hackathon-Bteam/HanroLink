@@ -5,22 +5,22 @@ import java.util.UUID;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record SupplierProductNegotiationRequestBuyerResponse(
+public record SupplierReceivedNegotiationRequestBuyerResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   UUID businessId,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   String businessName
 ) {
-  public SupplierProductNegotiationRequestBuyerResponse {
+  public SupplierReceivedNegotiationRequestBuyerResponse {
     Objects.requireNonNull(
       businessId,
-      "SupplierProductNegotiationRequestBuyerResponse.businessId must not be null"
+      "SupplierReceivedNegotiationRequestBuyerResponse.businessId must not be null"
     );
 
     Objects.requireNonNull(
       businessName,
-      "SupplierProductNegotiationRequestBuyerResponse.businessName must not be null"
+      "SupplierReceivedNegotiationRequestBuyerResponse.businessName must not be null"
     );
   }
 }

@@ -9,17 +9,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.hanrolink.negotiationrequest.policy.NegotiationRequestPolicy;
 import com.hanrolink.negotiationrequest.repository.ProcurementNegotiationRequestRepository;
-import com.hanrolink.negotiationrequest.repository.projection.SupplierProcurementNegotiationRequestListProjection;
-import com.hanrolink.negotiationrequest.response.SupplierProcurementNegotiationRequestListResponse;
+import com.hanrolink.negotiationrequest.repository.projection.SupplierSentNegotiationRequestListProjection;
+import com.hanrolink.negotiationrequest.response.SupplierSentNegotiationRequestListResponse;
 import com.hanrolink.negotiationrequest.response.component.NegotiationRequestProcurementRequestResponse;
 import com.hanrolink.negotiationrequest.response.component.NegotiationRequestProductResponse;
 
 @Service
-public class SupplierProcurementNegotiationRequestService {
+public class SupplierSentNegotiationRequestService {
 
   private final ProcurementNegotiationRequestRepository procurementNegotiationRequestRepository;
 
-  public SupplierProcurementNegotiationRequestService(
+  public SupplierSentNegotiationRequestService(
     ProcurementNegotiationRequestRepository procurementNegotiationRequestRepository
   ) {
     this.procurementNegotiationRequestRepository = procurementNegotiationRequestRepository;
@@ -31,24 +31,24 @@ public class SupplierProcurementNegotiationRequestService {
    * @return 有効な募集商談希望の一覧
    */
   @Transactional(readOnly = true)
-  public List<SupplierProcurementNegotiationRequestListResponse> list(
+  public List<SupplierSentNegotiationRequestListResponse> list(
     String identityProviderSubject
   ) {
     Instant activeSince = Instant.now().minus(
       NegotiationRequestPolicy.ACTIVE_PERIOD_DAYS,
       ChronoUnit.DAYS
     );
-    List<SupplierProcurementNegotiationRequestListProjection> activeProcurementNegotiationRequests =
+    List<SupplierSentNegotiationRequestListProjection> activeSentNegotiationRequests =
       procurementNegotiationRequestRepository
-        .findActiveListByIdentityProviderSubject(
+        .findActiveSentListByIdentityProviderSubject(
           identityProviderSubject,
           activeSince
         );
 
-    return activeProcurementNegotiationRequests
+    return activeSentNegotiationRequests
       .stream()
       .map(activeProcurementNegotiationRequest ->
-        new SupplierProcurementNegotiationRequestListResponse(
+        new SupplierSentNegotiationRequestListResponse(
           activeProcurementNegotiationRequest.publicId(),
           new NegotiationRequestProcurementRequestResponse(
             activeProcurementNegotiationRequest.procurementRequestPublicId(),

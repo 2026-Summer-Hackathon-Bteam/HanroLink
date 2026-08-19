@@ -14,23 +14,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hanrolink.negotiationrequest.api.SupplierNegotiationRequestApi;
-import com.hanrolink.negotiationrequest.request.SupplierProcurementNegotiationRequestCreateRequest;
-import com.hanrolink.negotiationrequest.response.SupplierProcurementNegotiationRequestListResponse;
-import com.hanrolink.negotiationrequest.service.SupplierProcurementNegotiationRequestService;
+import com.hanrolink.negotiationrequest.request.SupplierSentNegotiationRequestCreateRequest;
+import com.hanrolink.negotiationrequest.response.SupplierSentNegotiationRequestListResponse;
+import com.hanrolink.negotiationrequest.service.SupplierSentNegotiationRequestService;
 import com.hanrolink.security.authorization.policy.RequiresApprovedSupplier;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 
 @RestController
-public class SupplierProcurementNegotiationRequestController {
+public class SupplierSentNegotiationRequestController {
 
-  private final SupplierProcurementNegotiationRequestService supplierProcurementNegotiationRequestService;
+  private final SupplierSentNegotiationRequestService supplierSentNegotiationRequestService;
 
-  public SupplierProcurementNegotiationRequestController(
-    SupplierProcurementNegotiationRequestService supplierProcurementNegotiationRequestService
+  public SupplierSentNegotiationRequestController(
+    SupplierSentNegotiationRequestService supplierSentNegotiationRequestService
   ) {
-    this.supplierProcurementNegotiationRequestService = supplierProcurementNegotiationRequestService;
+    this.supplierSentNegotiationRequestService = supplierSentNegotiationRequestService;
   }
 
   // サプライヤーのみ利用可能
@@ -41,7 +41,7 @@ public class SupplierProcurementNegotiationRequestController {
   @PostMapping(SupplierNegotiationRequestApi.V1.CREATE)
   public ResponseEntity<Void> create(
     @PathVariable UUID procurementRequestId,
-    @Valid @RequestBody SupplierProcurementNegotiationRequestCreateRequest request
+    @Valid @RequestBody SupplierSentNegotiationRequestCreateRequest request
   ) {
 
     // TODO: サプライヤーが募集に対して商談希望を登録して、201 Createdで返す
@@ -55,11 +55,11 @@ public class SupplierProcurementNegotiationRequestController {
    */
   @RequiresApprovedSupplier
   @GetMapping(SupplierNegotiationRequestApi.V1.MINE_PROCUREMENT_NEGOTIATION_REQUESTS)
-  public ResponseEntity<List<SupplierProcurementNegotiationRequestListResponse>> list(
+  public ResponseEntity<List<SupplierSentNegotiationRequestListResponse>> list(
     @AuthenticationPrincipal Jwt jwt
   ) {
     return ResponseEntity.ok(
-      supplierProcurementNegotiationRequestService.list(jwt.getSubject())
+      supplierSentNegotiationRequestService.list(jwt.getSubject())
     );
   }
 }
