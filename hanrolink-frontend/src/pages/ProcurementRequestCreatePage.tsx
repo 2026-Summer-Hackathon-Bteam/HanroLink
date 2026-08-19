@@ -1,32 +1,67 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import ProcurementRequestForm from '../features/procurementRequest/components/ProcurementRequestForm'
 import type { ProcurementRequestFormValues } from '../features/procurementRequest/procurementRequestFormTypes'
 import { createTargetMonths } from '../shared/utils/yearMonth'
+import { createProcurementRequest } from '../features/procurementRequest/procurementRequestFormService'
 
-const createProcurementRequestInitialValues = ():ProcurementRequestFormValues => {
-  return {
-    procurementRequestInformations: {
-      title: '',
-      description: '',
-      productCategoryId: '',
-      requiredTradeTerms: '',
-      desiredUnitPrice: '',
-      deliveryShelfLifeDays: '',
-      storageTypes: [],
-    },
-    monthlyProcurementQuantities: createTargetMonths().map((targetMonth) => ({
-      targetMonth,
-      desiredQuantity: '',
-    })),
+const createProcurementRequestInitialValues =
+  (): ProcurementRequestFormValues => {
+    return {
+      procurementRequestInformations: {
+        title: '',
+        description: '',
+        productCategoryId: '',
+        requiredTradeTerms: '',
+        desiredUnitPrice: '',
+        deliveryShelfLifeDays: '',
+        storageTypes: [],
+      },
+      monthlyProcurementQuantities: createTargetMonths().map((targetMonth) => ({
+        targetMonth,
+        desiredQuantity: '',
+      })),
+    }
   }
-}
 
 function ProcurementRequestCreatePage() {
-  const [initialValues] = useState<ProcurementRequestFormValues>(createProcurementRequestInitialValues)
+  const [initialValues] = useState<ProcurementRequestFormValues>(
+    createProcurementRequestInitialValues,
+  )
+  const navigate = useNavigate()
 
-  const handleCreate = (values: ProcurementRequestFormValues) => {
-    void values
-    // 送信処理を書く
+  const handleCreate = async (values: ProcurementRequestFormValues) => {
+    const information = values.procurementRequestInformations
+
+    if (information.productCategoryId === '') {
+      throw new Error('商品カテゴリーを選択してください。')
+    }
+
+    const monthlyProcurementQuantities =
+      values.monthlyProcurementQuantities.map((quantity) => {
+        if (quantity.desiredQuantity === '') {
+          throw new Error('希望数量を全て入力してください。')
+        }
+        return {
+          targetMonth: quantity.targetMonth,
+          desiredQuantity: quantity.desiredQuantity,
+        }
+      })
+
+    const result = await createProcurementRequest({
+      title: information.title.trim(),
+      description: information.description.trim(),
+      productCategoryId:information.productCategoryId,
+      requiredTradeTerms: information.requiredTradeTerms.trim() || undefined,
+      desiredUnitPrice: information.desiredUnitPrice === '' ? undefined : information.desiredUnitPrice,
+      deliveryShelfLifeDays: information.deliveryShelfLifeDays === '' ? undefined : information.deliveryShelfLifeDays,
+      storageTypes: information.storageTypes,
+      monthlyProcurementQuantities,
+    })
+
+    navigate(`/procurement-requests/${result.id}`, {
+      replace: true
+    })
   }
 
   return (

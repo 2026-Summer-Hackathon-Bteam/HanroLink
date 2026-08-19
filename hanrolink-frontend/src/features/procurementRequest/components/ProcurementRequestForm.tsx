@@ -29,6 +29,7 @@ function ProcurementRequestForm({
     useState<number | ''>('')
   const [formOptionError, setFormOptionError] = useState('')
   const [formError, setFormError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     let isCancelled = false
@@ -50,9 +51,13 @@ function ProcurementRequestForm({
             selectedCategory?.productCategoryGroupId ?? '',
           )
         }
-      } catch {
+      } catch (error: unknown) {
         if (!isCancelled) {
-          setFormOptionError('フォーム選択肢の取得に失敗しました。')
+          setFormOptionError(
+            error instanceof Error
+              ? error.message
+              : 'フォーム選択肢の取得に失敗しました。',
+          )
         }
       }
     }
@@ -83,19 +88,29 @@ function ProcurementRequestForm({
   const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
 
+    if (isSubmitting) return
+
     if (procurementRequestInformations.storageTypes.length === 0) {
       // 保存方法のエラーを表示
       setFormError('保存方法は１つ以上選択してください。')
       return
     }
 
+    setIsSubmitting(true)
     setFormError('')
 
-    // TODO: 入力検証と送信処理
-    await onSubmit({
-      procurementRequestInformations,
-      monthlyProcurementQuantities,
-    })
+    try {
+      await onSubmit({
+        procurementRequestInformations,
+        monthlyProcurementQuantities,
+      })
+    } catch (error: unknown) {
+      setFormError(
+        error instanceof Error ? error.message : '募集情報の送信に失敗しました',
+      )
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   if (formOptionError) {
@@ -176,7 +191,7 @@ function ProcurementRequestForm({
               >
                 <option value="">選択してください</option>
                 {[...procurementRequestFormOptions.productCategoryGroups]
-                  .sort((a, b) => a.sortOrder - b.sortOrder)
+                  .sort((a, b) => a.id - b.id)
                   .map((option) => (
                     <option key={option.id} value={option.id}>
                       {option.name}
@@ -217,7 +232,7 @@ function ProcurementRequestForm({
                       option.productCategoryGroupId ===
                       selectedProductCategoryGroupId,
                   )
-                  .sort((a, b) => a.sortOrder - b.sortOrder)
+                  .sort((a, b) => a.id - b.id)
                   .map((option) => (
                     <option key={option.id} value={option.id}>
                       {option.name}
@@ -406,16 +421,18 @@ function ProcurementRequestForm({
           <button
             type="button"
             onClick={onCancel}
-            className="flex h-9 w-45 items-center justify-center rounded-full border border-accent bg-bg"
+            className="flex h-9 w-45 items-center justify-center rounded-full border border-accent bg-bg disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={isSubmitting}
           >
             キャンセル
           </button>
         )}
         <button
           type="submit"
-          className="h-9 w-45 rounded-full border border-accent bg-accentbg"
+          className="h-9 w-45 rounded-full border border-accent bg-accentbg disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={isSubmitting}
         >
-          {mode === 'create' ? '登録する' : '更新する'}
+          {isSubmitting ? mode=== 'create'? '登録中...': '更新中...' : mode === 'create' ? '登録する' : '更新する'}
         </button>
       </div>
       {formError && (
