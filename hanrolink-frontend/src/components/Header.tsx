@@ -58,7 +58,6 @@ const navMenuByRoleAndStatus = {
       BUYER: [
         menuItemsByName.buyerMyPage,
         menuItemsByName.products,
-        menuItemsByName.recruitments,
       ],
     },
   },
