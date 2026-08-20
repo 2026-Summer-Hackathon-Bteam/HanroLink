@@ -114,6 +114,7 @@ function AdminMyPage() {
                           <td>
                             <Link
                               to={`/admin/approvals/${business.businessId}`}
+                              className="text-other underline underline-offset-2 hover:no-underline"
                             >
                               {business.businessName}
                             </Link>

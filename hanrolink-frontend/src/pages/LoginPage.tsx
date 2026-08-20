@@ -25,6 +25,9 @@ function LoginPage() {
 
   const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
+
+    if (isSubmitting) return
+
     setError('')
     setIsSubmitting(true)
 
@@ -49,7 +52,9 @@ function LoginPage() {
           })
         } catch (error: unknown) {
           const accountErrorMessage =
-            error instanceof Error ? error.message : '自己情報の取得に失敗しました。'
+            error instanceof Error
+              ? error.message
+              : '自己情報の取得に失敗しました。'
 
           try {
             await signOutUser()
@@ -126,7 +131,7 @@ function LoginPage() {
           </div>
           <button
             type="submit"
-            className="h-9 w-45 mx-auto mt-8 rounded-full border border-accent bg-accentbg"
+            className="h-9 w-45 mx-auto mt-8 rounded-full border border-accent bg-accentbg disabled:cursor-not-allowed disabled:opacity-50"
             disabled={isSubmitting}
           >
             {isSubmitting ? '送信中...' : 'ログイン'}
