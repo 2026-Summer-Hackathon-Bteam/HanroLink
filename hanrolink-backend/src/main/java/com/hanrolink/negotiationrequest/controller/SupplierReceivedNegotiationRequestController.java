@@ -46,17 +46,27 @@ public class SupplierReceivedNegotiationRequestController {
     );
   }
 
-  // 商談希望の宛先となるサプライヤーのみ利用可能
+  /**
+   * 自社の商品に届いた商談希望の承諾を受け付ける
+   * @param jwt 認証済みユーザーのJWT
+   * @param productNegotiationRequestId 承諾対象となる商談希望の公開識別子
+   * @return 作成したチャンネル情報を含む承諾結果
+   */
+  @RequiresApprovedSupplier
   @ApiResponse(
     responseCode = "201",
     description = "Created"
   )
   @PostMapping(SupplierNegotiationRequestApi.V1.ACCEPT)
   public ResponseEntity<NegotiationRequestAcceptResponse> accept(
+    @AuthenticationPrincipal Jwt jwt,
     @PathVariable UUID productNegotiationRequestId
   ) {
-
-    // TODO: 自社商品に届いた商談希望を承諾し、チャンネルを作成して、responseと201 Createdで返す
-    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    return ResponseEntity.status(HttpStatus.CREATED).body(
+      supplierReceivedNegotiationRequestService.accept(
+        jwt.getSubject(),
+        productNegotiationRequestId
+      )
+    );
   }
 }

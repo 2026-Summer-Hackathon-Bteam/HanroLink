@@ -93,6 +93,26 @@ public class Channel {
 
   protected Channel() {}
 
+  public Channel(
+    Long supplierAccountId,
+    Long buyerAccountId,
+    String name,
+    NegotiationTargetType negotiationTargetType,
+    ProductSnapshot requestedProductSnapshot,
+    ProductSnapshot acceptedProductSnapshot,
+    ProcurementRequestSnapshot requestedProcurementRequestSnapshot,
+    ProcurementRequestSnapshot acceptedProcurementRequestSnapshot
+  ) {
+    this.supplierAccountId = supplierAccountId;
+    this.buyerAccountId = buyerAccountId;
+    this.name = name;
+    this.negotiationTargetType = negotiationTargetType;
+    this.requestedProductSnapshot = requestedProductSnapshot;
+    this.acceptedProductSnapshot = acceptedProductSnapshot;
+    this.requestedProcurementRequestSnapshot = requestedProcurementRequestSnapshot;
+    this.acceptedProcurementRequestSnapshot = acceptedProcurementRequestSnapshot;
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();
@@ -103,5 +123,21 @@ public class Channel {
   @PreUpdate
   private void onUpdate() {
     this.updatedAt = Instant.now();
+  }
+
+  public UUID getPublicId() {
+    return publicId;
+  }
+
+  public Long getBuyerAccountId() {
+    return buyerAccountId;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public Instant getUpdatedAt() {
+    return updatedAt;
   }
 }

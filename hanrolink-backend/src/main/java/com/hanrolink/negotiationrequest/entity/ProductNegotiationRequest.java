@@ -77,4 +77,16 @@ public class ProductNegotiationRequest {
   private void onUpdate() {
     this.updatedAt = Instant.now();
   }
+
+  public Long getBuyerAccountId() {
+    return buyerAccountId;
+  }
+
+  public Long getProductId() {
+    return productId;
+  }
+
+  public ProductSnapshot getProductSnapshot() {
+    return productSnapshot;
+  }
 }

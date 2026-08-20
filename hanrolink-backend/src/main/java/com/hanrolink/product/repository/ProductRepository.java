@@ -236,6 +236,40 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       ON productCategory.id = product.productCategoryId
     JOIN Prefecture prefecture
       ON prefecture.id = product.mainIngredientOriginPrefectureId
+    WHERE product.id = :productId
+    """)
+  Optional<ProductSnapshotProjection> findSnapshotById(
+    @Param("productId")
+    Long productId
+  );
+
+  @Query("""
+    SELECT new com.hanrolink.product.repository.projection.ProductSnapshotProjection(
+      product.updatedAt,
+      product.id,
+      product.productCategoryId,
+      productCategory.name,
+      product.mainIngredientOriginPrefectureId,
+      prefecture.name,
+      product.name,
+      product.contentQuantity,
+      product.expirationType,
+      product.shelfLifeDays,
+      product.storageType,
+      product.desiredRetailPrice,
+      product.allergyInformation,
+      product.certificationInformation,
+      product.caseSize,
+      product.unitsPerCase,
+      product.minimumOrderQuantity,
+      product.shippingLeadTimeDays,
+      product.salesAreaRestriction
+    )
+    FROM Product product
+    JOIN ProductCategory productCategory
+      ON productCategory.id = product.productCategoryId
+    JOIN Prefecture prefecture
+      ON prefecture.id = product.mainIngredientOriginPrefectureId
     WHERE product.publicId = :productPublicId
     """)
   Optional<ProductSnapshotProjection> findSnapshotByPublicId(

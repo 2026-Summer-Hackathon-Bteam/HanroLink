@@ -2,9 +2,11 @@ package com.hanrolink.negotiationrequest.repository;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -12,6 +14,8 @@ import org.springframework.stereotype.Repository;
 import com.hanrolink.negotiationrequest.entity.ProductNegotiationRequest;
 import com.hanrolink.negotiationrequest.repository.projection.BuyerSentNegotiationRequestListProjection;
 import com.hanrolink.negotiationrequest.repository.projection.SupplierReceivedNegotiationRequestListProjection;
+
+import jakarta.persistence.LockModeType;
 
 @Repository
 public interface ProductNegotiationRequestRepository extends JpaRepository<ProductNegotiationRequest, Long> {
@@ -24,6 +28,27 @@ public interface ProductNegotiationRequestRepository extends JpaRepository<Produ
   boolean existsByProductIdAndBuyerAccountIdAndExpiresAtAfter(
     Long productId,
     Long buyerAccountId,
+    Instant currentTime
+  );
+
+  @Lock(LockModeType.PESSIMISTIC_WRITE)
+  @Query("""
+    SELECT productNegotiationRequest
+    FROM ProductNegotiationRequest productNegotiationRequest
+    JOIN Product product
+      ON product.id = productNegotiationRequest.productId
+    JOIN BusinessUserAccount recipientAccount
+      ON recipientAccount.businessId = product.supplierBusinessId
+    WHERE productNegotiationRequest.publicId = :productNegotiationRequestPublicId
+      AND recipientAccount.identityProviderSubject = :identityProviderSubject
+      AND productNegotiationRequest.expiresAt > :currentTime
+    """)
+  Optional<ProductNegotiationRequest> findActiveReceivedByPublicIdAndIdentityProviderSubject(
+    @Param("productNegotiationRequestPublicId")
+    UUID productNegotiationRequestPublicId,
+    @Param("identityProviderSubject")
+    String identityProviderSubject,
+    @Param("currentTime")
     Instant currentTime
   );
 
