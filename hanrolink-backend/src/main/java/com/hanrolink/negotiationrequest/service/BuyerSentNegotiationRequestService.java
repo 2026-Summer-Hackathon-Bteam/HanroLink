@@ -82,7 +82,7 @@ public class BuyerSentNegotiationRequestService {
     if (activeNegotiationRequestCount >= ProductNegotiationRequestPolicy.MAX_ACTIVE_REQUEST_COUNT) {
       throw new ResponseStatusException(
         HttpStatus.CONFLICT,
-        "有効な商談希望の上限件数に達しています"
+        "商談希望の送信件数が上限に達しているため、新しく送信できません"
       );
     }
 
@@ -104,7 +104,7 @@ public class BuyerSentNegotiationRequestService {
     if (hasActiveNegotiationRequestForProduct) {
       throw new ResponseStatusException(
         HttpStatus.CONFLICT,
-        "この商品には有効な商談希望が存在します"
+        "この商品にはすでに有効な商談希望が存在します"
       );
     }
 
