@@ -414,12 +414,20 @@ CREATE TABLE product_negotiation_requests (
     ON DELETE CASCADE
 );
 
+CREATE TYPE negotiation_target_type AS ENUM (
+  'PRODUCT',
+  'PROCUREMENT_REQUEST'
+);
+
 CREATE TABLE channels (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   public_id UUID UNIQUE NOT NULL,
   supplier_account_id BIGINT NOT NULL,
   buyer_account_id BIGINT NOT NULL,
   name VARCHAR(255) NOT NULL,
+  negotiation_target_type negotiation_target_type NOT NULL,
+  requested_snapshot JSONB NOT NULL,
+  accepted_snapshot JSONB NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 

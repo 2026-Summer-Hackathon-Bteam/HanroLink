@@ -3,8 +3,16 @@ package com.hanrolink.chat.entity;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.hanrolink.chat.enums.NegotiationTargetType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -23,14 +31,42 @@ public class Channel {
   @Column(name = "public_id", updatable = false, nullable = false)
   private UUID publicId = UUID.randomUUID();
 
-  @Column(name = "supplier_account_id", nullable = false)
+  @Column(name = "supplier_account_id",  updatable = false, nullable = false)
   private Long supplierAccountId;
 
-  @Column(name = "buyer_account_id", nullable = false)
+  @Column(name = "buyer_account_id", updatable = false, nullable = false)
   private Long buyerAccountId;
 
   @Column(nullable = false)
   private String name;
+
+  @Enumerated(EnumType.STRING)
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+  @Column(
+    name = "negotiation_target_type",
+    columnDefinition = "negotiation_target_type",
+    updatable = false,
+    nullable = false
+  )
+  private NegotiationTargetType negotiationTargetType;
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(
+    name = "requested_snapshot",
+    columnDefinition = "jsonb",
+    updatable = false,
+    nullable = false
+  )
+  private JsonNode requestedSnapshot;
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(
+    name = "accepted_snapshot",
+    columnDefinition = "jsonb",
+    updatable = false,
+    nullable = false
+  )
+  private JsonNode acceptedSnapshot;
 
   @Column(name = "created_at", updatable = false, nullable = false)
   private Instant createdAt;
