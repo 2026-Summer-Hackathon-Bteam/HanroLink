@@ -426,10 +426,26 @@ CREATE TABLE channels (
   buyer_account_id BIGINT NOT NULL,
   name VARCHAR(255) NOT NULL,
   negotiation_target_type negotiation_target_type NOT NULL,
-  requested_snapshot JSONB NOT NULL,
-  accepted_snapshot JSONB NOT NULL,
+  requested_product_snapshot JSONB NOT NULL,
+  accepted_product_snapshot JSONB NOT NULL,
+  requested_procurement_request_snapshot JSONB,
+  accepted_procurement_request_snapshot JSONB,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+  CONSTRAINT chk_channels_procurement_request_snapshots
+    CHECK (
+      (
+        negotiation_target_type = 'PRODUCT'
+        AND requested_procurement_request_snapshot IS NULL
+        AND accepted_procurement_request_snapshot IS NULL
+      )
+      OR (
+        negotiation_target_type = 'PROCUREMENT_REQUEST'
+        AND requested_procurement_request_snapshot IS NOT NULL
+        AND accepted_procurement_request_snapshot IS NOT NULL
+      )
+    ),
 
   CONSTRAINT fk_channels_supplier_account
     FOREIGN KEY (supplier_account_id)

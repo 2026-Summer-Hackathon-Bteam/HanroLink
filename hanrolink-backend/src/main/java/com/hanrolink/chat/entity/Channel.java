@@ -6,8 +6,9 @@ import java.util.UUID;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.hanrolink.chat.enums.NegotiationTargetType;
+import com.hanrolink.negotiationrequest.snapshot.ProcurementRequestSnapshot;
+import com.hanrolink.negotiationrequest.snapshot.ProductSnapshot;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,7 +32,7 @@ public class Channel {
   @Column(name = "public_id", updatable = false, nullable = false)
   private UUID publicId = UUID.randomUUID();
 
-  @Column(name = "supplier_account_id",  updatable = false, nullable = false)
+  @Column(name = "supplier_account_id", updatable = false, nullable = false)
   private Long supplierAccountId;
 
   @Column(name = "buyer_account_id", updatable = false, nullable = false)
@@ -52,21 +53,37 @@ public class Channel {
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(
-    name = "requested_snapshot",
+    name = "requested_product_snapshot",
     columnDefinition = "jsonb",
     updatable = false,
     nullable = false
   )
-  private JsonNode requestedSnapshot;
+  private ProductSnapshot requestedProductSnapshot;
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(
-    name = "accepted_snapshot",
+    name = "accepted_product_snapshot",
     columnDefinition = "jsonb",
     updatable = false,
     nullable = false
   )
-  private JsonNode acceptedSnapshot;
+  private ProductSnapshot acceptedProductSnapshot;
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(
+    name = "requested_procurement_request_snapshot",
+    columnDefinition = "jsonb",
+    updatable = false
+  )
+  private ProcurementRequestSnapshot requestedProcurementRequestSnapshot;
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(
+    name = "accepted_procurement_request_snapshot",
+    columnDefinition = "jsonb",
+    updatable = false
+  )
+  private ProcurementRequestSnapshot acceptedProcurementRequestSnapshot;
 
   @Column(name = "created_at", updatable = false, nullable = false)
   private Instant createdAt;
