@@ -397,7 +397,7 @@ function ProcurementRequestForm({
                     id={inputId}
                     name={inputId}
                     type="number"
-                    min={1}
+                    min={0}
                     required
                     value={quantity.desiredQuantity}
                     onChange={(event) => {
