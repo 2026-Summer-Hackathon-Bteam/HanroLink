@@ -19,6 +19,7 @@ import com.hanrolink.product.repository.projection.ProductDetailProjection;
 import com.hanrolink.product.repository.projection.ProductSearchResultProjection;
 import com.hanrolink.product.repository.projection.ProductSnapshotProjection;
 import com.hanrolink.product.repository.projection.PublicProductListProjection;
+import com.hanrolink.product.repository.projection.SupplierNegotiationRequestSelectableProductProjection;
 import com.hanrolink.product.repository.projection.SupplierProductListProjection;
 
 @Repository
@@ -188,6 +189,25 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Param("identityProviderSubject")
     String identityProviderSubject
   );
+
+  @Query("""
+    SELECT new com.hanrolink.product.repository.projection.SupplierNegotiationRequestSelectableProductProjection(
+      product.publicId,
+      product.name,
+      product.mainImageStorageKey
+    )
+    FROM Product product
+    JOIN BusinessUserAccount businessUserAccount
+      ON businessUserAccount.businessId = product.supplierBusinessId
+    WHERE businessUserAccount.identityProviderSubject = :identityProviderSubject
+      AND product.hiddenAt IS NULL
+    ORDER BY product.updatedAt DESC
+    """)
+  List<SupplierNegotiationRequestSelectableProductProjection>
+    findSelectableProductsForNegotiationRequest(
+      @Param("identityProviderSubject")
+      String identityProviderSubject
+    );
 
   @Query("""
     SELECT new com.hanrolink.product.repository.projection.ProductSnapshotProjection(
