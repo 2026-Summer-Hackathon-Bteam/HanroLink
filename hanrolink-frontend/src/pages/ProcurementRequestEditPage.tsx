@@ -74,7 +74,7 @@ function ProcurementRequestEditPage() {
   }, [procurementRequestId])
 
   const handleCancel = () => {
-    // 詳細画面に明示的に戻すと、ブラウザの戻るボタンを押した時に再度更新画面に遷移してしまうため、-1にした
+    // 詳細画面に明示的に戻すと、詳細画面の「前のページに戻る」ボタンを押した時に再度更新画面に遷移してしまうため、-1にした
     navigate(-1)
   }
 
@@ -113,7 +113,7 @@ function ProcurementRequestEditPage() {
       storageTypes: information.storageTypes,
       monthlyProcurementQuantities,
     })
-    // 詳細画面に明示的に戻すと、ブラウザの戻るボタンを押した時に再度更新画面に遷移してしまうため、-1にした
+    // 詳細画面に明示的に戻すと、詳細画面の「前のページに戻る」ボタンを押した時に再度更新画面に遷移してしまうため、-1にした
     // -1でもProcurementRequestDetailPageが再マウントされ、useEffectが実行されるため、更新後データをAPIから取得する
     navigate(-1)
   }
