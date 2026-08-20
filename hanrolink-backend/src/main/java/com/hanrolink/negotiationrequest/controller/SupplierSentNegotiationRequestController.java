@@ -33,19 +33,31 @@ public class SupplierSentNegotiationRequestController {
     this.supplierSentNegotiationRequestService = supplierSentNegotiationRequestService;
   }
 
-  // サプライヤーのみ利用可能
+  /**
+   * 募集に対する商談希望の新規作成を受け付ける
+   * @param jwt 認証済みユーザーのJWT
+   * @param procurementRequestId 商談希望の対象となる募集の公開識別子
+   * @param request 商談希望で提示する商品の情報
+   * @return 作成結果
+   */
+  @RequiresApprovedSupplier
   @ApiResponse(
     responseCode = "201",
     description = "Created"
   )
   @PostMapping(SupplierNegotiationRequestApi.V1.CREATE)
   public ResponseEntity<Void> create(
+    @AuthenticationPrincipal Jwt jwt,
     @PathVariable UUID procurementRequestId,
     @Valid @RequestBody SupplierSentNegotiationRequestCreateRequest request
   ) {
+    supplierSentNegotiationRequestService.create(
+      jwt.getSubject(),
+      procurementRequestId,
+      request
+    );
 
-    // TODO: サプライヤーが募集に対して商談希望を登録して、201 Createdで返す
-    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
   /**

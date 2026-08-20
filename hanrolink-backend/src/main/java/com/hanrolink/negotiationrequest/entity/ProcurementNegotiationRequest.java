@@ -68,6 +68,20 @@ public class ProcurementNegotiationRequest {
 
   protected ProcurementNegotiationRequest() {}
 
+  public ProcurementNegotiationRequest(
+    Long supplierAccountId,
+    Long procurementRequestId,
+    Long productId,
+    ProcurementRequestSnapshot procurementRequestSnapshot,
+    ProductSnapshot productSnapshot
+  ) {
+    this.supplierAccountId = supplierAccountId;
+    this.procurementRequestId = procurementRequestId;
+    this.productId = productId;
+    this.procurementRequestSnapshot = procurementRequestSnapshot;
+    this.productSnapshot = productSnapshot;
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();

@@ -17,10 +17,13 @@ import com.hanrolink.procurementrequest.entity.ProcurementRequest;
 import com.hanrolink.procurementrequest.repository.projection.BuyerProcurementRequestListProjection;
 import com.hanrolink.procurementrequest.repository.projection.ProcurementRequestDetailProjection;
 import com.hanrolink.procurementrequest.repository.projection.ProcurementRequestSearchResultProjection;
+import com.hanrolink.procurementrequest.repository.projection.ProcurementRequestSnapshotProjection;
 import com.hanrolink.product.enums.StorageType;
 
 @Repository
 public interface ProcurementRequestRepository extends JpaRepository<ProcurementRequest, Long> {
+
+  boolean existsByPublicId(UUID procurementRequestPublicId);
 
   @Query("""
     SELECT procurementRequest
@@ -141,5 +144,27 @@ public interface ProcurementRequestRepository extends JpaRepository<ProcurementR
   List<BuyerProcurementRequestListProjection> findManagementListByIdentityProviderSubject(
     @Param("identityProviderSubject")
     String identityProviderSubject
+  );
+
+  @Query("""
+    SELECT new com.hanrolink.procurementrequest.repository.projection.ProcurementRequestSnapshotProjection(
+      procurementRequest.updatedAt,
+      procurementRequest.id,
+      procurementRequest.productCategoryId,
+      productCategory.name,
+      procurementRequest.title,
+      procurementRequest.description,
+      procurementRequest.requiredTradeTerms,
+      procurementRequest.desiredUnitPrice,
+      procurementRequest.deliveryShelfLifeDays
+    )
+    FROM ProcurementRequest procurementRequest
+    JOIN ProductCategory productCategory
+      ON productCategory.id = procurementRequest.productCategoryId
+    WHERE procurementRequest.publicId = :procurementRequestPublicId
+    """)
+  Optional<ProcurementRequestSnapshotProjection> findSnapshotByPublicId(
+    @Param("procurementRequestPublicId")
+    UUID procurementRequestPublicId
   );
 }
