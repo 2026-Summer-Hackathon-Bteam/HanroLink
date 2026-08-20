@@ -41,8 +41,8 @@ public class Product {
   @Column(name = "product_category_id", nullable = false)
   private Short productCategoryId;
 
-  @Column(name = "main_ingredient_region_id", nullable = false)
-  private Short mainIngredientRegionId;
+  @Column(name = "main_ingredient_origin_prefecture_id", nullable = false)
+  private Short mainIngredientOriginPrefectureId;
 
   @Column(nullable = false)
   private String name;
@@ -112,7 +112,7 @@ public class Product {
   public Product(
     Long supplierBusinessId,
     Short productCategoryId,
-    Short mainIngredientRegionId,
+    Short mainIngredientOriginPrefectureId,
     String name,
     String mainImageStorageKey,
     String contentQuantity,
@@ -130,7 +130,7 @@ public class Product {
   ) {
     this.supplierBusinessId = supplierBusinessId;
     this.productCategoryId = productCategoryId;
-    this.mainIngredientRegionId = mainIngredientRegionId;
+    this.mainIngredientOriginPrefectureId = mainIngredientOriginPrefectureId;
     this.name = name;
     this.mainImageStorageKey = mainImageStorageKey;
     this.contentQuantity = contentQuantity;
@@ -162,7 +162,7 @@ public class Product {
 
   public void update(
     Short productCategoryId,
-    Short mainIngredientRegionId,
+    Short mainIngredientOriginPrefectureId,
     String name,
     String contentQuantity,
     ProductExpirationType expirationType,
@@ -178,7 +178,7 @@ public class Product {
     String salesAreaRestriction
   ) {
     this.productCategoryId = productCategoryId;
-    this.mainIngredientRegionId = mainIngredientRegionId;
+    this.mainIngredientOriginPrefectureId = mainIngredientOriginPrefectureId;
     this.name = name;
     this.contentQuantity = contentQuantity;
     this.expirationType = expirationType;

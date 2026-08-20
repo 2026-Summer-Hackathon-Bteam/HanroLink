@@ -18,7 +18,7 @@ public record ProductSearchOptionsResponse(
   List<ProductCategoryOptionResponse> productCategories,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  List<RegionOptionResponse> mainIngredientRegions,
+  List<RegionOptionResponse> mainIngredientOriginRegions,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   List<StorageTypeOptionResponse> storageTypes
@@ -35,8 +35,8 @@ public record ProductSearchOptionsResponse(
     );
 
     Objects.requireNonNull(
-      mainIngredientRegions,
-      "ProductSearchOptionsResponse.mainIngredientRegions must not be null"
+      mainIngredientOriginRegions,
+      "ProductSearchOptionsResponse.mainIngredientOriginRegions must not be null"
     );
 
     Objects.requireNonNull(

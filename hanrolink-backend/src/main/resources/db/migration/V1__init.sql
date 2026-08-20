@@ -52,9 +52,20 @@ CREATE TABLE business_user_accounts (
 CREATE TABLE regions (
   id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   name VARCHAR(50) UNIQUE NOT NULL,
-  sort_order SMALLINT UNIQUE NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE TABLE prefectures (
+  id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  region_id SMALLINT NOT NULL,
+  name VARCHAR(50) UNIQUE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+  CONSTRAINT fk_prefectures_region
+    FOREIGN KEY (region_id)
+    REFERENCES regions(id)
 );
 
 CREATE TABLE product_category_groups (
@@ -95,7 +106,7 @@ CREATE TABLE products (
   public_id UUID UNIQUE NOT NULL,
   supplier_business_id BIGINT NOT NULL,
   product_category_id SMALLINT NOT NULL,
-  main_ingredient_region_id SMALLINT NOT NULL,
+  main_ingredient_origin_prefecture_id SMALLINT NOT NULL,
   name VARCHAR(255) NOT NULL,
   main_image_storage_key VARCHAR(255) UNIQUE NOT NULL,
   content_quantity VARCHAR(255) NOT NULL,
@@ -114,15 +125,38 @@ CREATE TABLE products (
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
+  CONSTRAINT chk_products_desired_retail_price
+    CHECK (desired_retail_price > 0),
+  CONSTRAINT chk_products_shelf_life_days
+    CHECK (
+      shelf_life_days IS NULL
+      OR shelf_life_days >= 0
+    ),
+  CONSTRAINT chk_products_units_per_case
+    CHECK (
+      units_per_case IS NULL
+      OR units_per_case > 0
+    ),
+  CONSTRAINT chk_products_minimum_order_quantity
+    CHECK (
+      minimum_order_quantity IS NULL
+      OR minimum_order_quantity > 0
+    ),
+  CONSTRAINT chk_products_shipping_lead_time_days
+    CHECK (
+      shipping_lead_time_days IS NULL
+      OR shipping_lead_time_days >= 0
+    ),
+
   CONSTRAINT fk_products_supplier_business
     FOREIGN KEY (supplier_business_id)
     REFERENCES businesses(id),
   CONSTRAINT fk_products_product_category
     FOREIGN KEY (product_category_id)
     REFERENCES product_categories(id),
-  CONSTRAINT fk_products_main_ingredient_region
-    FOREIGN KEY (main_ingredient_region_id)
-    REFERENCES regions(id)
+  CONSTRAINT fk_products_main_ingredient_origin_prefecture
+    FOREIGN KEY (main_ingredient_origin_prefecture_id)
+    REFERENCES prefectures(id)
 );
 
 CREATE TABLE monthly_supply_capacities (
@@ -132,6 +166,17 @@ CREATE TABLE monthly_supply_capacities (
   available_quantity INT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+  CONSTRAINT uq_monthly_supply_capacities_product_id_target_month
+    UNIQUE (
+      product_id,
+      target_month
+    ),
+
+  CONSTRAINT chk_monthly_supply_capacities_target_month
+    CHECK (EXTRACT(DAY FROM target_month) = 1),
+  CONSTRAINT chk_monthly_supply_capacities_available_quantity
+    CHECK (available_quantity >= 0),
 
   CONSTRAINT fk_monthly_supply_capacities_product
     FOREIGN KEY (product_id)
@@ -159,6 +204,16 @@ CREATE TABLE product_stories (
   image_storage_key VARCHAR(255) UNIQUE NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+  CONSTRAINT uq_product_stories_product_id_position
+    UNIQUE (
+      product_id,
+      position
+    )
+    DEFERRABLE INITIALLY DEFERRED,
+
+  CONSTRAINT chk_product_stories_position
+    CHECK (position BETWEEN 1 AND 4),
 
   CONSTRAINT fk_product_stories_product
     FOREIGN KEY (product_id)
@@ -237,7 +292,7 @@ CREATE TABLE monthly_procurement_quantities (
   CONSTRAINT chk_monthly_procurement_quantities_target_month
     CHECK (EXTRACT(DAY FROM target_month) = 1),
   CONSTRAINT chk_monthly_procurement_quantities_desired_quantity
-    CHECK (desired_quantity > 0),
+    CHECK (desired_quantity >= 0),
 
   CONSTRAINT fk_monthly_procurement_quantities_procurement_request
     FOREIGN KEY (procurement_request_id)
@@ -251,16 +306,35 @@ CREATE TYPE file_upload_usage AS ENUM (
   'MESSAGE_ATTACHMENT'
 );
 
+CREATE TYPE file_mime_type AS ENUM (
+  'IMAGE_WEBP',
+  'APPLICATION_PDF'
+);
+
 CREATE TABLE pending_file_uploads (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   public_id UUID UNIQUE NOT NULL,
   business_user_account_id BIGINT NOT NULL,
   storage_key VARCHAR(255) UNIQUE NOT NULL,
   usage file_upload_usage NOT NULL,
-  mime_type VARCHAR(100) NOT NULL,
+  display_filename VARCHAR(255),
+  mime_type file_mime_type NOT NULL,
   file_size_bytes BIGINT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+  CONSTRAINT chk_pending_file_uploads_display_filename
+    CHECK (
+      (
+        usage = 'MESSAGE_ATTACHMENT'
+        AND display_filename IS NOT NULL
+        AND BTRIM(display_filename) <> ''
+      )
+      OR (
+        usage <> 'MESSAGE_ATTACHMENT'
+        AND display_filename IS NULL
+      )
+    ),
 
   CONSTRAINT fk_pending_file_uploads_business_user_account
     FOREIGN KEY (business_user_account_id)
@@ -363,9 +437,9 @@ CREATE TABLE message_files (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   message_id BIGINT NOT NULL,
   storage_key VARCHAR(255) UNIQUE NOT NULL,
-  mime_type VARCHAR(100) NOT NULL,
-  display_filename VARCHAR(255),
-  file_size_bytes BIGINT,
+  mime_type file_mime_type NOT NULL,
+  display_filename VARCHAR(255) NOT NULL,
+  file_size_bytes BIGINT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 

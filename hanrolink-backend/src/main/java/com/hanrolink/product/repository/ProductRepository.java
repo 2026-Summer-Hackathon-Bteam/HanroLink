@@ -40,6 +40,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
   @Query("""
     SELECT new com.hanrolink.product.repository.projection.PublicProductListProjection(
+      product.publicId,
       product.name,
       business.name,
       product.mainImageStorageKey
@@ -65,8 +66,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       product.hiddenAt,
       product.productCategoryId,
       productCategory.name,
-      product.mainIngredientRegionId,
-      region.name,
+      product.mainIngredientOriginPrefectureId,
+      prefecture.name,
       product.contentQuantity,
       product.expirationType,
       product.shelfLifeDays,
@@ -91,8 +92,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       ON business.id = product.supplierBusinessId
     JOIN ProductCategory productCategory
       ON productCategory.id = product.productCategoryId
-    JOIN Region region
-      ON region.id = product.mainIngredientRegionId
+    JOIN Prefecture prefecture
+      ON prefecture.id = product.mainIngredientOriginPrefectureId
     WHERE product.publicId = :productPublicId
       AND (
         product.hiddenAt IS NULL
@@ -116,7 +117,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       product.name,
       business.name,
       productCategory.name,
-      region.name,
+      prefecture.name,
       product.storageType,
       product.mainImageStorageKey
     )
@@ -125,12 +126,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       ON business.id = product.supplierBusinessId
     JOIN ProductCategory productCategory
       ON productCategory.id = product.productCategoryId
-    JOIN Region region
-      ON region.id = product.mainIngredientRegionId
+    JOIN Prefecture prefecture
+      ON prefecture.id = product.mainIngredientOriginPrefectureId
     WHERE product.hiddenAt IS NULL
       AND (
-        :#{#mainIngredientRegionIds == null || #mainIngredientRegionIds.isEmpty()} = true
-        OR product.mainIngredientRegionId IN :mainIngredientRegionIds
+        :#{#mainIngredientOriginRegionIds == null || #mainIngredientOriginRegionIds.isEmpty()} = true
+        OR prefecture.regionId IN :mainIngredientOriginRegionIds
       )
       AND (
         :#{#productCategoryIds == null || #productCategoryIds.isEmpty()} = true
@@ -141,13 +142,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         OR product.storageType IN :storageTypes
       )
       AND (
-        :#{#availableSupplyMonths == null || #availableSupplyMonths.isEmpty()} = true
-        OR EXISTS (
-          SELECT monthlySupplyCapacity.id
+        :#{#availableSupplyMonths.isEmpty()} = true
+        OR (
+          SELECT COUNT(monthlySupplyCapacity.id)
           FROM MonthlySupplyCapacity monthlySupplyCapacity
           WHERE monthlySupplyCapacity.productId = product.id
             AND monthlySupplyCapacity.targetMonth IN :availableSupplyMonths
-        )
+            AND monthlySupplyCapacity.availableQuantity > 0
+        ) = :#{#availableSupplyMonths.size()}
       )
     ORDER BY
       product.updatedAt DESC,
@@ -156,8 +158,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   Page<ProductSearchResultProjection> findSearchResults(
     @Param("availableSupplyMonths")
     List<LocalDate> availableSupplyMonths,
-    @Param("mainIngredientRegionIds")
-    List<Short> mainIngredientRegionIds,
+    @Param("mainIngredientOriginRegionIds")
+    List<Short> mainIngredientOriginRegionIds,
     @Param("productCategoryIds")
     List<Short> productCategoryIds,
     @Param("storageTypes")

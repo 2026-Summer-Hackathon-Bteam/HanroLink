@@ -16,7 +16,7 @@ import com.hanrolink.product.api.ProductApi;
 import com.hanrolink.product.request.ProductSearchRequest;
 import com.hanrolink.product.response.ProductDetailResponse;
 import com.hanrolink.product.response.ProductSearchResponse;
-import com.hanrolink.product.service.ProductService;
+import com.hanrolink.product.service.ProductReadService;
 import com.hanrolink.security.authorization.AuthenticatedAccountRoleResolver;
 import com.hanrolink.security.authorization.enums.JwtAccountRole;
 import com.hanrolink.security.authorization.policy.RequiresAdminOrApprovedBusiness;
@@ -31,20 +31,20 @@ import jakarta.validation.Valid;
 @RestController
 public class ProductReadController {
 
-  private final ProductService productService;
+  private final ProductReadService productReadService;
 
   private final AuthenticatedAccountRoleResolver authenticatedAccountRoleResolver;
 
   public ProductReadController(
-    ProductService productService,
+    ProductReadService productReadService,
     AuthenticatedAccountRoleResolver authenticatedAccountRoleResolver
   ) {
-    this.productService = productService;
+    this.productReadService = productReadService;
     this.authenticatedAccountRoleResolver = authenticatedAccountRoleResolver;
   }
 
   /**
-   * 商品詳細情報を取得する
+   * 商品詳細情報を返す
    * @param jwt 認証済みユーザーのJWT
    * @param productId 取得対象の商品の公開識別子
    * @return 商品詳細情報
@@ -59,7 +59,7 @@ public class ProductReadController {
       authenticatedAccountRoleResolver.resolve(jwt);
 
     return ResponseEntity.ok(
-      productService.getDetail(
+      productReadService.getDetail(
         authenticatedJwtAccountRole,
         jwt.getSubject(),
         productId
@@ -81,7 +81,7 @@ public class ProductReadController {
     ProductSearchRequest request
   ) {
     return ResponseEntity.ok(
-      productService.search(request)
+      productReadService.search(request)
     );
   }
 }

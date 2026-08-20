@@ -24,7 +24,7 @@ public class PublicProductController {
   }
 
   /**
-   * ゲスト向け画面に掲載する商品一覧を取得する
+   * ゲスト向け画面に掲載する商品一覧を返す
    * @return ゲスト向け画面に掲載する商品一覧
    */
   @GetMapping(ProductApi.V1.BASE_PUBLIC)

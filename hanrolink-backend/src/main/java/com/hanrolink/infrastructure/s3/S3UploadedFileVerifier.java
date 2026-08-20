@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import com.hanrolink.file.enums.FileMimeType;
 import com.hanrolink.file.policy.ImageFilePolicy;
 
 import software.amazon.awssdk.core.ResponseBytes;
@@ -48,7 +49,7 @@ public class S3UploadedFileVerifier {
     try {
       HeadObjectResponse metadata = getMetadata(storageKey);
 
-      if (!Objects.equals(metadata.contentType(), ImageFilePolicy.WEBP_MIME_TYPE)) {
+      if (!Objects.equals(metadata.contentType(), FileMimeType.IMAGE_WEBP.getValue())) {
         return false;
       }
 

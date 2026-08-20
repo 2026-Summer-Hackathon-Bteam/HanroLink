@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import com.hanrolink.product.response.component.MonthlySupplyCapacityResponse;
 import com.hanrolink.product.response.component.ProductExpirationTypeResponse;
-import com.hanrolink.product.response.component.ProductMainIngredientRegionResponse;
+import com.hanrolink.product.response.component.ProductMainIngredientOriginPrefectureResponse;
 import com.hanrolink.product.response.component.ProductPermissionsResponse;
 import com.hanrolink.product.response.component.ProductStoryResponse;
 import com.hanrolink.product.response.component.ProductSupplierResponse;
@@ -29,7 +29,7 @@ public record ProductDetailResponse(
   ProductCategoryResponse productCategory,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  ProductMainIngredientRegionResponse mainIngredientRegion,
+  ProductMainIngredientOriginPrefectureResponse mainIngredientOriginPrefecture,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   String contentQuantity,
@@ -99,8 +99,8 @@ public record ProductDetailResponse(
     );
 
     Objects.requireNonNull(
-      mainIngredientRegion,
-      "ProductDetailResponse.mainIngredientRegion must not be null"
+      mainIngredientOriginPrefecture,
+      "ProductDetailResponse.mainIngredientOriginPrefecture must not be null"
     );
 
     Objects.requireNonNull(

@@ -20,7 +20,7 @@ public record ProductSearchResultResponse(
   String productCategoryName,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  String mainIngredientRegionName,
+  String mainIngredientOriginPrefectureName,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   String storageTypeLabel,
@@ -53,8 +53,8 @@ public record ProductSearchResultResponse(
     );
 
     Objects.requireNonNull(
-      mainIngredientRegionName,
-      "ProductSearchResultResponse.mainIngredientRegionName must not be null"
+      mainIngredientOriginPrefectureName,
+      "ProductSearchResultResponse.mainIngredientOriginPrefectureName must not be null"
     );
 
     Objects.requireNonNull(

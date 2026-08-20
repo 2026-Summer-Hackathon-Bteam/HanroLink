@@ -17,8 +17,8 @@ import com.hanrolink.productcategory.repository.ProductCategoryGroupRepository;
 import com.hanrolink.productcategory.repository.ProductCategoryRepository;
 import com.hanrolink.productcategory.response.component.ProductCategoryGroupOptionResponse;
 import com.hanrolink.productcategory.response.component.ProductCategoryOptionResponse;
-import com.hanrolink.region.repository.RegionRepository;
-import com.hanrolink.region.response.component.RegionOptionResponse;
+import com.hanrolink.region.repository.PrefectureRepository;
+import com.hanrolink.region.response.component.PrefectureOptionResponse;
 
 @Service
 public class SupplierProductFormOptionsService {
@@ -27,19 +27,19 @@ public class SupplierProductFormOptionsService {
 
   private final ProductCategoryRepository productCategoryRepository;
 
-  private final RegionRepository regionRepository;
+  private final PrefectureRepository prefectureRepository;
 
   private final ProductStorySectionTemplateRepository productStorySectionTemplateRepository;
 
   public SupplierProductFormOptionsService(
     ProductCategoryGroupRepository productCategoryGroupRepository,
     ProductCategoryRepository productCategoryRepository,
-    RegionRepository regionRepository,
+    PrefectureRepository prefectureRepository,
     ProductStorySectionTemplateRepository productStorySectionTemplateRepository
   ) {
     this.productCategoryGroupRepository = productCategoryGroupRepository;
     this.productCategoryRepository = productCategoryRepository;
-    this.regionRepository = regionRepository;
+    this.prefectureRepository = prefectureRepository;
     this.productStorySectionTemplateRepository = productStorySectionTemplateRepository;
   }
 
@@ -74,14 +74,14 @@ public class SupplierProductFormOptionsService {
         )
         .toList();
 
-    List<RegionOptionResponse> mainIngredientRegions =
-      regionRepository
+    List<PrefectureOptionResponse> mainIngredientOriginPrefectures =
+      prefectureRepository
         .findAllOptions()
         .stream()
-        .map(region ->
-          new RegionOptionResponse(
-            region.id(),
-            region.name()
+        .map(prefecture ->
+          new PrefectureOptionResponse(
+            prefecture.id(),
+            prefecture.name()
           )
         )
         .toList();
@@ -124,7 +124,7 @@ public class SupplierProductFormOptionsService {
     return new SupplierProductFormOptionsResponse(
       productCategoryGroups,
       productCategories,
-      mainIngredientRegions,
+      mainIngredientOriginPrefectures,
       productExpirationTypes,
       storageTypes,
       productStorySectionTemplates

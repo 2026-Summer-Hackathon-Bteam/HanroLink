@@ -10,7 +10,7 @@ public record ProductSearchResultProjection(
   String name,
   String businessName,
   String productCategoryName,
-  String mainIngredientRegionName,
+  String mainIngredientOriginPrefectureName,
   StorageType storageType,
   String mainImageStorageKey
 ) {}

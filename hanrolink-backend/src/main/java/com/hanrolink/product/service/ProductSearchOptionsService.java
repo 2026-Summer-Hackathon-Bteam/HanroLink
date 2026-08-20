@@ -66,7 +66,7 @@ public class ProductSearchOptionsService {
         )
         .toList();
 
-    List<RegionOptionResponse> mainIngredientRegions =
+    List<RegionOptionResponse> mainIngredientOriginRegions =
       regionRepository
         .findAllOptions()
         .stream()
@@ -91,7 +91,7 @@ public class ProductSearchOptionsService {
     return new ProductSearchOptionsResponse(
       productCategoryGroups,
       productCategories,
-      mainIngredientRegions,
+      mainIngredientOriginRegions,
       storageTypes
     );
   }

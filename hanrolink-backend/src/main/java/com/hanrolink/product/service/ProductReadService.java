@@ -40,7 +40,7 @@ import com.hanrolink.product.response.ProductDetailResponse;
 import com.hanrolink.product.response.ProductSearchResponse;
 import com.hanrolink.product.response.component.MonthlySupplyCapacityResponse;
 import com.hanrolink.product.response.component.ProductExpirationTypeResponse;
-import com.hanrolink.product.response.component.ProductMainIngredientRegionResponse;
+import com.hanrolink.product.response.component.ProductMainIngredientOriginPrefectureResponse;
 import com.hanrolink.product.response.component.ProductPermissionsResponse;
 import com.hanrolink.product.response.component.ProductSearchResultResponse;
 import com.hanrolink.product.response.component.ProductStoryResponse;
@@ -52,7 +52,7 @@ import com.hanrolink.security.authorization.enums.JwtAccountRole;
 
 @Profile("s3")
 @Service
-public class ProductService {
+public class ProductReadService {
 
   private final ProductRepository productRepository;
 
@@ -66,7 +66,7 @@ public class ProductService {
 
   private final S3DownloadUrlGenerator s3DownloadUrlGenerator;
 
-  public ProductService(
+  public ProductReadService(
     ProductRepository productRepository,
     MonthlySupplyCapacityRepository monthlySupplyCapacityRepository,
     ProductStoryRepository productStoryRepository,
@@ -188,9 +188,9 @@ public class ProductService {
         product.productCategoryId(),
         product.productCategoryName()
       ),
-      new ProductMainIngredientRegionResponse(
-        product.mainIngredientRegionId(),
-        product.mainIngredientRegionName()
+      new ProductMainIngredientOriginPrefectureResponse(
+        product.mainIngredientOriginPrefectureId(),
+        product.mainIngredientOriginPrefectureName()
       ),
       product.contentQuantity(),
       new ProductExpirationTypeResponse(
@@ -252,7 +252,7 @@ public class ProductService {
     Page<ProductSearchResultProjection> productPage =
       productRepository.findSearchResults(
         availableSupplyMonths,
-        request.mainIngredientRegionIds(),
+        request.mainIngredientOriginRegionIds(),
         request.productCategoryIds(),
         request.storageTypes(),
         pageable
@@ -273,7 +273,7 @@ public class ProductService {
 
     if (!productIds.isEmpty()) {
       monthlySupplyCapacities = monthlySupplyCapacityRepository
-        .findSearchListByProductIds(productIds);
+        .findSearchResultsByProductIds(productIds);
     }
 
     // 月別供給可能量の商品IDごとの分類
@@ -299,7 +299,7 @@ public class ProductService {
             product.name(),
             product.businessName(),
             product.productCategoryName(),
-            product.mainIngredientRegionName(),
+            product.mainIngredientOriginPrefectureName(),
             product.storageType().getDisplayName(),
             toLatestMonthlySupplyCapacityResponses(
               monthlySupplyCapacitiesByProductId
@@ -354,11 +354,11 @@ public class ProductService {
     return new ProductDetailViewer(
       viewerAccessScope.businessUserAccountId(),
       viewerAccessScope.businessId(),
-      accountRoleOf(viewerAccessScope.businessRole())
+      applicationRoleOf(viewerAccessScope.businessRole())
     );
   }
 
-  private ApplicationRole accountRoleOf(
+  private ApplicationRole applicationRoleOf(
     BusinessRole role
   ) {
     return switch (role) {
@@ -382,6 +382,7 @@ public class ProductService {
 
     return months
       .stream()
+      .distinct()
       .map(month -> month.atDay(1))
       .toList();
   }
