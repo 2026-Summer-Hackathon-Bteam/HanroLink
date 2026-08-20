@@ -2,9 +2,11 @@ package com.hanrolink.negotiationrequest.repository;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -12,6 +14,8 @@ import org.springframework.stereotype.Repository;
 import com.hanrolink.negotiationrequest.entity.ProcurementNegotiationRequest;
 import com.hanrolink.negotiationrequest.repository.projection.BuyerReceivedNegotiationRequestListProjection;
 import com.hanrolink.negotiationrequest.repository.projection.SupplierSentNegotiationRequestListProjection;
+
+import jakarta.persistence.LockModeType;
 
 @Repository
 public interface ProcurementNegotiationRequestRepository extends JpaRepository<ProcurementNegotiationRequest, Long> {
@@ -24,6 +28,28 @@ public interface ProcurementNegotiationRequestRepository extends JpaRepository<P
   boolean existsByProcurementRequestIdAndSupplierAccountIdAndExpiresAtAfter(
     Long procurementRequestId,
     Long supplierAccountId,
+    Instant currentTime
+  );
+
+  @Lock(LockModeType.PESSIMISTIC_WRITE)
+  @Query("""
+    SELECT procurementNegotiationRequest
+    FROM ProcurementNegotiationRequest procurementNegotiationRequest
+    JOIN ProcurementRequest procurementRequest
+      ON procurementRequest.id = procurementNegotiationRequest.procurementRequestId
+    JOIN BusinessUserAccount recipientAccount
+      ON recipientAccount.businessId = procurementRequest.buyerBusinessId
+    WHERE procurementNegotiationRequest.publicId =
+      :procurementNegotiationRequestPublicId
+      AND recipientAccount.identityProviderSubject = :identityProviderSubject
+      AND procurementNegotiationRequest.expiresAt > :currentTime
+    """)
+  Optional<ProcurementNegotiationRequest> findActiveReceivedByPublicIdAndIdentityProviderSubject(
+    @Param("procurementNegotiationRequestPublicId")
+    UUID procurementNegotiationRequestPublicId,
+    @Param("identityProviderSubject")
+    String identityProviderSubject,
+    @Param("currentTime")
     Instant currentTime
   );
 

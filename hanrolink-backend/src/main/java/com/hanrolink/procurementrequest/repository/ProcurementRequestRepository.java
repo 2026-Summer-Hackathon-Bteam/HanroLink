@@ -161,6 +161,28 @@ public interface ProcurementRequestRepository extends JpaRepository<ProcurementR
     FROM ProcurementRequest procurementRequest
     JOIN ProductCategory productCategory
       ON productCategory.id = procurementRequest.productCategoryId
+    WHERE procurementRequest.id = :procurementRequestId
+    """)
+  Optional<ProcurementRequestSnapshotProjection> findSnapshotById(
+    @Param("procurementRequestId")
+    Long procurementRequestId
+  );
+
+  @Query("""
+    SELECT new com.hanrolink.procurementrequest.repository.projection.ProcurementRequestSnapshotProjection(
+      procurementRequest.updatedAt,
+      procurementRequest.id,
+      procurementRequest.productCategoryId,
+      productCategory.name,
+      procurementRequest.title,
+      procurementRequest.description,
+      procurementRequest.requiredTradeTerms,
+      procurementRequest.desiredUnitPrice,
+      procurementRequest.deliveryShelfLifeDays
+    )
+    FROM ProcurementRequest procurementRequest
+    JOIN ProductCategory productCategory
+      ON productCategory.id = procurementRequest.productCategoryId
     WHERE procurementRequest.publicId = :procurementRequestPublicId
     """)
   Optional<ProcurementRequestSnapshotProjection> findSnapshotByPublicId(

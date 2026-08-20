@@ -129,6 +129,10 @@ public class Channel {
     return publicId;
   }
 
+  public Long getSupplierAccountId() {
+    return supplierAccountId;
+  }
+
   public Long getBuyerAccountId() {
     return buyerAccountId;
   }

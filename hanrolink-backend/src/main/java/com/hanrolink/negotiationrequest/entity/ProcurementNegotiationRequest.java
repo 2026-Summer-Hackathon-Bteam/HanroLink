@@ -94,4 +94,24 @@ public class ProcurementNegotiationRequest {
   private void onUpdate() {
     this.updatedAt = Instant.now();
   }
+
+  public Long getSupplierAccountId() {
+    return supplierAccountId;
+  }
+
+  public Long getProcurementRequestId() {
+    return procurementRequestId;
+  }
+
+  public Long getProductId() {
+    return productId;
+  }
+
+  public ProcurementRequestSnapshot getProcurementRequestSnapshot() {
+    return procurementRequestSnapshot;
+  }
+
+  public ProductSnapshot getProductSnapshot() {
+    return productSnapshot;
+  }
 }
