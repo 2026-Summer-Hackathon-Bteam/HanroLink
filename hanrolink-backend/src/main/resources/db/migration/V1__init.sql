@@ -237,7 +237,7 @@ CREATE TABLE monthly_procurement_quantities (
   CONSTRAINT chk_monthly_procurement_quantities_target_month
     CHECK (EXTRACT(DAY FROM target_month) = 1),
   CONSTRAINT chk_monthly_procurement_quantities_desired_quantity
-    CHECK (desired_quantity > 0),
+    CHECK (desired_quantity >= 0),
 
   CONSTRAINT fk_monthly_procurement_quantities_procurement_request
     FOREIGN KEY (procurement_request_id)

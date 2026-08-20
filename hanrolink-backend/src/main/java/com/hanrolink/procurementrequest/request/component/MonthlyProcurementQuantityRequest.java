@@ -4,7 +4,7 @@ import java.time.YearMonth;
 
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 public record MonthlyProcurementQuantityRequest(
   @NotNull
@@ -12,6 +12,6 @@ public record MonthlyProcurementQuantityRequest(
   YearMonth targetMonth,
 
   @NotNull
-  @Positive
+  @PositiveOrZero
   Integer desiredQuantity
 ) {}

@@ -94,13 +94,14 @@ public interface ProcurementRequestRepository extends JpaRepository<ProcurementR
         )
       )
       AND (
-        :#{#desiredProcurementMonths == null || #desiredProcurementMonths.isEmpty()} = true
-        OR EXISTS (
-          SELECT monthlyProcurementQuantity.id
+        :#{#desiredProcurementMonths.isEmpty()} = true
+        OR (
+          SELECT COUNT(monthlyProcurementQuantity.id)
           FROM MonthlyProcurementQuantity monthlyProcurementQuantity
           WHERE monthlyProcurementQuantity.procurementRequestId = procurementRequest.id
             AND monthlyProcurementQuantity.targetMonth IN :desiredProcurementMonths
-        )
+            AND monthlyProcurementQuantity.desiredQuantity > 0
+        ) = :#{#desiredProcurementMonths.size()}
       )
       AND (
         :#{#keyword == null || #keyword.isBlank()} = true
