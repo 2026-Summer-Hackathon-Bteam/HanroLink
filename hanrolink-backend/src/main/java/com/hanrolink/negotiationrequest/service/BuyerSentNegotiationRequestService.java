@@ -144,7 +144,7 @@ public class BuyerSentNegotiationRequestService {
       )
       .toList();
 
-    // 申請時点の商品スナップショットを保持する商談希望の生成
+    // 申請時点の商品スナップショットを保持する商談希望の生成と保存
     ProductNegotiationRequest productNegotiationRequest = new ProductNegotiationRequest(
       buyerAccountId,
       product.id(),
@@ -181,8 +181,6 @@ public class BuyerSentNegotiationRequestService {
         productStories
       )
     );
-
-    // 商品商談希望の保存
     productNegotiationRequestRepository.save(productNegotiationRequest);
   }
 
