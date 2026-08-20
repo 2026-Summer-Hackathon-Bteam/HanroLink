@@ -9,5 +9,5 @@ public record SupplierSentNegotiationRequestListProjection(
   String procurementRequestTitle,
   UUID productPublicId,
   String productName,
-  Instant createdAt
+  Instant expiresAt
 ) {}

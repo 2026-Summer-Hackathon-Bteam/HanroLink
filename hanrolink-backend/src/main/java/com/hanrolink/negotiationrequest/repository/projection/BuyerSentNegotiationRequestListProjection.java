@@ -7,5 +7,5 @@ public record BuyerSentNegotiationRequestListProjection(
   UUID publicId,
   UUID productPublicId,
   String productName,
-  Instant createdAt
+  Instant expiresAt
 ) {}

@@ -15,6 +15,17 @@ import com.hanrolink.negotiationrequest.repository.projection.SupplierSentNegoti
 @Repository
 public interface ProcurementNegotiationRequestRepository extends JpaRepository<ProcurementNegotiationRequest, Long> {
 
+  long countBySupplierAccountIdAndExpiresAtAfter(
+    Long supplierAccountId,
+    Instant currentTime
+  );
+
+  boolean existsByProcurementRequestIdAndSupplierAccountIdAndExpiresAtAfter(
+    Long procurementRequestId,
+    Long supplierAccountId,
+    Instant currentTime
+  );
+
   @Query("""
     SELECT new com.hanrolink.negotiationrequest.repository.projection.BuyerReceivedNegotiationRequestListProjection(
       procurementNegotiationRequest.publicId,
@@ -23,7 +34,7 @@ public interface ProcurementNegotiationRequestRepository extends JpaRepository<P
       product.publicId,
       product.name,
       senderBusiness.name,
-      procurementNegotiationRequest.createdAt
+      procurementNegotiationRequest.expiresAt
     )
     FROM ProcurementNegotiationRequest procurementNegotiationRequest
     JOIN ProcurementRequest procurementRequest
@@ -37,7 +48,7 @@ public interface ProcurementNegotiationRequestRepository extends JpaRepository<P
     JOIN BusinessUserAccount recipientAccount
       ON recipientAccount.businessId = procurementRequest.buyerBusinessId
     WHERE recipientAccount.identityProviderSubject = :identityProviderSubject
-      AND procurementNegotiationRequest.createdAt >= :activeSince
+      AND procurementNegotiationRequest.expiresAt > :currentTime
     ORDER BY
       procurementNegotiationRequest.createdAt DESC,
       procurementNegotiationRequest.id DESC
@@ -45,8 +56,8 @@ public interface ProcurementNegotiationRequestRepository extends JpaRepository<P
   List<BuyerReceivedNegotiationRequestListProjection> findActiveReceivedListByIdentityProviderSubject(
     @Param("identityProviderSubject")
     String identityProviderSubject,
-    @Param("activeSince")
-    Instant activeSince
+    @Param("currentTime")
+    Instant currentTime
   );
 
   @Query("""
@@ -56,7 +67,7 @@ public interface ProcurementNegotiationRequestRepository extends JpaRepository<P
       procurementRequest.title,
       product.publicId,
       product.name,
-      procurementNegotiationRequest.createdAt
+      procurementNegotiationRequest.expiresAt
     )
     FROM ProcurementNegotiationRequest procurementNegotiationRequest
     JOIN ProcurementRequest procurementRequest
@@ -66,7 +77,7 @@ public interface ProcurementNegotiationRequestRepository extends JpaRepository<P
     JOIN BusinessUserAccount businessUserAccount
       ON businessUserAccount.id = procurementNegotiationRequest.supplierAccountId
     WHERE businessUserAccount.identityProviderSubject = :identityProviderSubject
-      AND procurementNegotiationRequest.createdAt >= :activeSince
+      AND procurementNegotiationRequest.expiresAt > :currentTime
     ORDER BY
       procurementNegotiationRequest.createdAt DESC,
       procurementNegotiationRequest.id DESC
@@ -74,38 +85,7 @@ public interface ProcurementNegotiationRequestRepository extends JpaRepository<P
   List<SupplierSentNegotiationRequestListProjection> findActiveSentListByIdentityProviderSubject(
     @Param("identityProviderSubject")
     String identityProviderSubject,
-    @Param("activeSince")
-    Instant activeSince
-  );
-
-  @Query("""
-    SELECT COUNT(procurementNegotiationRequest)
-    FROM ProcurementNegotiationRequest procurementNegotiationRequest
-    WHERE procurementNegotiationRequest.supplierAccountId = :supplierAccountId
-      AND procurementNegotiationRequest.createdAt >= :activeSince
-    """)
-  long countActiveBySupplierAccountId(
-    @Param("supplierAccountId")
-    Long supplierAccountId,
-    @Param("activeSince")
-    Instant activeSince
-  );
-
-  @Query("""
-    SELECT COUNT(procurementNegotiationRequest) > 0
-    FROM ProcurementNegotiationRequest procurementNegotiationRequest
-    WHERE procurementNegotiationRequest.procurementRequestId =
-      :procurementRequestId
-      AND procurementNegotiationRequest.supplierAccountId =
-        :supplierAccountId
-      AND procurementNegotiationRequest.createdAt >= :activeSince
-    """)
-  boolean existsActiveByProcurementRequestIdAndSupplierAccountId(
-    @Param("procurementRequestId")
-    Long procurementRequestId,
-    @Param("supplierAccountId")
-    Long supplierAccountId,
-    @Param("activeSince")
-    Instant activeSince
+    @Param("currentTime")
+    Instant currentTime
   );
 }

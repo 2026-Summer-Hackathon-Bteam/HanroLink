@@ -15,6 +15,17 @@ import com.hanrolink.negotiationrequest.repository.projection.SupplierReceivedNe
 @Repository
 public interface ProductNegotiationRequestRepository extends JpaRepository<ProductNegotiationRequest, Long> {
 
+  long countByBuyerAccountIdAndExpiresAtAfter(
+    Long buyerAccountId,
+    Instant currentTime
+  );
+
+  boolean existsByProductIdAndBuyerAccountIdAndExpiresAtAfter(
+    Long productId,
+    Long buyerAccountId,
+    Instant currentTime
+  );
+
   @Query("""
     SELECT new com.hanrolink.negotiationrequest.repository.projection.SupplierReceivedNegotiationRequestListProjection(
       productNegotiationRequest.publicId,
@@ -22,7 +33,7 @@ public interface ProductNegotiationRequestRepository extends JpaRepository<Produ
       product.name,
       senderBusiness.publicId,
       senderBusiness.name,
-      productNegotiationRequest.createdAt
+      productNegotiationRequest.expiresAt
     )
     FROM ProductNegotiationRequest productNegotiationRequest
     JOIN Product product
@@ -34,7 +45,7 @@ public interface ProductNegotiationRequestRepository extends JpaRepository<Produ
     JOIN BusinessUserAccount recipientAccount
       ON recipientAccount.businessId = product.supplierBusinessId
     WHERE recipientAccount.identityProviderSubject = :identityProviderSubject
-      AND productNegotiationRequest.createdAt >= :activeSince
+      AND productNegotiationRequest.expiresAt > :currentTime
     ORDER BY
       productNegotiationRequest.createdAt DESC,
       productNegotiationRequest.id DESC
@@ -42,8 +53,8 @@ public interface ProductNegotiationRequestRepository extends JpaRepository<Produ
   List<SupplierReceivedNegotiationRequestListProjection> findActiveReceivedListByIdentityProviderSubject(
     @Param("identityProviderSubject")
     String identityProviderSubject,
-    @Param("activeSince")
-    Instant activeSince
+    @Param("currentTime")
+    Instant currentTime
   );
 
   @Query("""
@@ -51,7 +62,7 @@ public interface ProductNegotiationRequestRepository extends JpaRepository<Produ
       productNegotiationRequest.publicId,
       product.publicId,
       product.name,
-      productNegotiationRequest.createdAt
+      productNegotiationRequest.expiresAt
     )
     FROM ProductNegotiationRequest productNegotiationRequest
     JOIN Product product
@@ -59,7 +70,7 @@ public interface ProductNegotiationRequestRepository extends JpaRepository<Produ
     JOIN BusinessUserAccount businessUserAccount
       ON businessUserAccount.id = productNegotiationRequest.buyerAccountId
     WHERE businessUserAccount.identityProviderSubject = :identityProviderSubject
-      AND productNegotiationRequest.createdAt >= :activeSince
+      AND productNegotiationRequest.expiresAt > :currentTime
     ORDER BY
       productNegotiationRequest.createdAt DESC,
       productNegotiationRequest.id DESC
@@ -67,38 +78,7 @@ public interface ProductNegotiationRequestRepository extends JpaRepository<Produ
   List<BuyerSentNegotiationRequestListProjection> findActiveSentListByIdentityProviderSubject(
     @Param("identityProviderSubject")
     String identityProviderSubject,
-    @Param("activeSince")
-    Instant activeSince
-  );
-
-  @Query("""
-    SELECT COUNT(productNegotiationRequest)
-    FROM ProductNegotiationRequest productNegotiationRequest
-    WHERE productNegotiationRequest.buyerAccountId = :buyerAccountId
-      AND productNegotiationRequest.createdAt >= :activeSince
-    """)
-  long countActiveByBuyerAccountId(
-    @Param("buyerAccountId")
-    Long buyerAccountId,
-    @Param("activeSince")
-    Instant activeSince
-  );
-
-  @Query("""
-    SELECT COUNT(productNegotiationRequest) > 0
-    FROM ProductNegotiationRequest productNegotiationRequest
-    WHERE productNegotiationRequest.productId = :productId
-      AND productNegotiationRequest.buyerAccountId = :buyerAccountId
-      AND productNegotiationRequest.createdAt >= :activeSince
-    """)
-  boolean existsActiveByProductIdAndBuyerAccountId(
-    @Param("productId")
-    Long productId,
-
-    @Param("buyerAccountId")
-    Long buyerAccountId,
-
-    @Param("activeSince")
-    Instant activeSince
+    @Param("currentTime")
+    Instant currentTime
   );
 }

@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import com.hanrolink.negotiationrequest.policy.NegotiationRequestPolicy;
 import com.hanrolink.negotiationrequest.snapshot.ProductSnapshot;
 
 import jakarta.persistence.Column;
@@ -43,6 +44,9 @@ public class ProductNegotiationRequest {
   )
   private ProductSnapshot productSnapshot;
 
+  @Column(name = "expires_at", updatable = false, nullable = false)
+  private Instant expiresAt;
+
   @Column(name = "created_at", updatable = false, nullable = false)
   private Instant createdAt;
 
@@ -54,6 +58,7 @@ public class ProductNegotiationRequest {
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();
+    this.expiresAt = now.plus(NegotiationRequestPolicy.ACTIVE_DURATION);
     this.createdAt = now;
     this.updatedAt = now;
   }

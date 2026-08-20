@@ -3,7 +3,6 @@ package com.hanrolink.procurementrequest.service;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +22,6 @@ import com.hanrolink.account.exception.UnsupportedJwtAccountRoleException;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
 import com.hanrolink.account.repository.projection.BusinessUserAccountAccessScopeProjection;
 import com.hanrolink.business.enums.BusinessRole;
-import com.hanrolink.negotiationrequest.policy.NegotiationRequestPolicy;
 import com.hanrolink.negotiationrequest.policy.ProcurementNegotiationRequestPolicy;
 import com.hanrolink.negotiationrequest.repository.ProcurementNegotiationRequestRepository;
 import com.hanrolink.pagination.response.component.PaginationResponse;
@@ -149,17 +147,13 @@ public class ProcurementRequestReadService {
     boolean hasMyActiveNegotiationRequest = false;
 
     if (viewer.role() == ApplicationRole.SUPPLIER) {
-      Instant activeSince =
-        Instant.now().minus(
-          NegotiationRequestPolicy.ACTIVE_PERIOD_DAYS,
-          ChronoUnit.DAYS
-        );
+      Instant currentTime = Instant.now();
 
       long activeNegotiationRequestCount =
         procurementNegotiationRequestRepository
-          .countActiveBySupplierAccountId(
+          .countBySupplierAccountIdAndExpiresAtAfter(
             viewer.businessUserAccountId(),
-            activeSince
+            currentTime
           );
 
       canCreateNegotiationRequest =
@@ -167,10 +161,10 @@ public class ProcurementRequestReadService {
 
       hasMyActiveNegotiationRequest =
         procurementNegotiationRequestRepository
-          .existsActiveByProcurementRequestIdAndSupplierAccountId(
+          .existsByProcurementRequestIdAndSupplierAccountIdAndExpiresAtAfter(
             procurementRequest.id(),
             viewer.businessUserAccountId(),
-            activeSince
+            currentTime
           );
     }
 

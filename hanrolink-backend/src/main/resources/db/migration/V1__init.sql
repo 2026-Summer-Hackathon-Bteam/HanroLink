@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS btree_gist;
+
 CREATE TYPE business_role AS ENUM (
   'SUPPLIER',
   'BUYER'
@@ -356,8 +358,19 @@ CREATE TABLE procurement_negotiation_requests (
   product_id BIGINT NOT NULL,
   procurement_request_snapshot JSONB NOT NULL,
   product_snapshot JSONB NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+  CONSTRAINT chk_procurement_negotiation_requests_expiration
+    CHECK (expires_at > created_at),
+
+  CONSTRAINT ex_procurement_negotiation_requests_active_duplicate
+    EXCLUDE USING gist (
+      supplier_account_id WITH =,
+      procurement_request_id WITH =,
+      tstzrange(created_at, expires_at, '[)') WITH &&
+    ),
 
   CONSTRAINT fk_procurement_negotiation_requests_supplier_account
     FOREIGN KEY (supplier_account_id)
@@ -378,8 +391,19 @@ CREATE TABLE product_negotiation_requests (
   buyer_account_id BIGINT NOT NULL,
   product_id BIGINT NOT NULL,
   product_snapshot JSONB NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+  CONSTRAINT chk_product_negotiation_requests_expiration
+    CHECK (expires_at > created_at),
+
+  CONSTRAINT ex_product_negotiation_requests_active_duplicate
+    EXCLUDE USING gist (
+      buyer_account_id WITH =,
+      product_id WITH =,
+      tstzrange(created_at, expires_at, '[)') WITH &&
+    ),
 
   CONSTRAINT fk_product_negotiation_requests_buyer_account
     FOREIGN KEY (buyer_account_id)

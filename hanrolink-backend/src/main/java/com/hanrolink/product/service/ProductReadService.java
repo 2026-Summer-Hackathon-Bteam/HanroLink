@@ -3,7 +3,6 @@ package com.hanrolink.product.service;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +23,6 @@ import com.hanrolink.account.repository.BusinessUserAccountRepository;
 import com.hanrolink.account.repository.projection.BusinessUserAccountAccessScopeProjection;
 import com.hanrolink.business.enums.BusinessRole;
 import com.hanrolink.infrastructure.s3.S3DownloadUrlGenerator;
-import com.hanrolink.negotiationrequest.policy.NegotiationRequestPolicy;
 import com.hanrolink.negotiationrequest.policy.ProductNegotiationRequestPolicy;
 import com.hanrolink.negotiationrequest.repository.ProductNegotiationRequestRepository;
 import com.hanrolink.pagination.response.component.PaginationResponse;
@@ -156,16 +154,12 @@ public class ProductReadService {
     boolean hasMyActiveNegotiationRequest = false;
 
     if (viewer.role() == ApplicationRole.BUYER) {
-      Instant activeSince =
-        Instant.now().minus(
-          NegotiationRequestPolicy.ACTIVE_PERIOD_DAYS,
-          ChronoUnit.DAYS
-        );
+      Instant currentTime = Instant.now();
 
       long activeNegotiationRequestCount = productNegotiationRequestRepository
-        .countActiveByBuyerAccountId(
+        .countByBuyerAccountIdAndExpiresAtAfter(
           viewer.businessUserAccountId(),
-          activeSince
+          currentTime
         );
 
       canCreateNegotiationRequest =
@@ -173,10 +167,10 @@ public class ProductReadService {
 
       hasMyActiveNegotiationRequest =
         productNegotiationRequestRepository
-          .existsActiveByProductIdAndBuyerAccountId(
+          .existsByProductIdAndBuyerAccountIdAndExpiresAtAfter(
             product.id(),
             viewer.businessUserAccountId(),
-            activeSince
+            currentTime
           );
     }
 
