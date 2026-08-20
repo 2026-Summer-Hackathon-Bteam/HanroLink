@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
 import com.hanrolink.account.repository.projection.FileUploadContextProjection;
 import com.hanrolink.file.entity.PendingFileUpload;
+import com.hanrolink.file.enums.FileMimeType;
 import com.hanrolink.file.enums.FileUploadUsage;
 import com.hanrolink.file.repository.PendingFileUploadRepository;
 import com.hanrolink.infrastructure.s3.S3UploadUrlGenerator;
@@ -22,7 +23,7 @@ import com.hanrolink.product.response.SupplierProductImageUploadCreateResponse;
 @Service
 public class SupplierProductImageUploadService {
 
-  private static final String PRODUCT_IMAGE_MIME_TYPE = "image/webp";
+  private static final FileMimeType PRODUCT_IMAGE_MIME_TYPE = FileMimeType.IMAGE_WEBP;
 
   private final BusinessUserAccountRepository businessUserAccountRepository;
 
@@ -62,7 +63,7 @@ public class SupplierProductImageUploadService {
 
     String uploadUrl = s3UploadUrlGenerator.generate(
       imageStorageKey,
-      PRODUCT_IMAGE_MIME_TYPE
+      PRODUCT_IMAGE_MIME_TYPE.getValue()
     );
 
     PendingFileUpload pendingFileUpload =
@@ -70,6 +71,7 @@ public class SupplierProductImageUploadService {
         fileUploadContext.businessUserAccountId(),
         imageStorageKey,
         fileUploadUsageOf(request.usage()),
+        null,
         PRODUCT_IMAGE_MIME_TYPE,
         request.fileSizeBytes()
       );

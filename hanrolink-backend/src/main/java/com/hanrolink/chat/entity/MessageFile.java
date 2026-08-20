@@ -2,8 +2,15 @@ package com.hanrolink.chat.entity;
 
 import java.time.Instant;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import com.hanrolink.file.enums.FileMimeType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,13 +32,19 @@ public class MessageFile {
   @Column(name = "storage_key", nullable = false)
   private String storageKey;
 
-  @Column(name = "mime_type", nullable = false)
-  private String mimeType;
+  @Enumerated(EnumType.STRING)
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+  @Column(
+    name = "mime_type",
+    columnDefinition = "file_mime_type",
+    nullable = false
+  )
+  private FileMimeType mimeType;
 
-  @Column(name = "display_filename")
+  @Column(name = "display_filename", nullable = false)
   private String displayFilename;
 
-  @Column(name = "file_size_bytes")
+  @Column(name = "file_size_bytes", nullable = false)
   private Long fileSizeBytes;
 
   @Column(name = "created_at", updatable = false, nullable = false)
