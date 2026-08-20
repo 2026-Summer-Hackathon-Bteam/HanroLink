@@ -47,6 +47,12 @@
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
 
+    <!-- アプリケーションの稼働状態の監視 -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+
     <!-- 認証・認可 -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
