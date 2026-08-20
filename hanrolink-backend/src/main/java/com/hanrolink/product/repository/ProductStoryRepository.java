@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.hanrolink.product.entity.ProductStory;
 import com.hanrolink.product.repository.projection.ProductStoryProjection;
+import com.hanrolink.product.repository.projection.ProductStorySnapshotProjection;
 
 @Repository
 public interface ProductStoryRepository extends JpaRepository<ProductStory, Long> {
@@ -42,6 +43,23 @@ public interface ProductStoryRepository extends JpaRepository<ProductStory, Long
     ORDER BY productStory.position ASC
     """)
   List<ProductStoryProjection> findListByProductId(
+    @Param("productId")
+    Long productId
+  );
+
+  @Query("""
+    SELECT new com.hanrolink.product.repository.projection.ProductStorySnapshotProjection(
+      productStory.productStorySectionTemplateId,
+      productStorySectionTemplate.title,
+      productStory.body
+    )
+    FROM ProductStory productStory
+    JOIN ProductStorySectionTemplate productStorySectionTemplate
+      ON productStorySectionTemplate.id = productStory.productStorySectionTemplateId
+    WHERE productStory.productId = :productId
+    ORDER BY productStory.position ASC
+    """)
+  List<ProductStorySnapshotProjection> findSnapshotByProductId(
     @Param("productId")
     Long productId
   );

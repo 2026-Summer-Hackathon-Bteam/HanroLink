@@ -17,11 +17,14 @@ import com.hanrolink.product.entity.Product;
 import com.hanrolink.product.enums.StorageType;
 import com.hanrolink.product.repository.projection.ProductDetailProjection;
 import com.hanrolink.product.repository.projection.ProductSearchResultProjection;
+import com.hanrolink.product.repository.projection.ProductSnapshotProjection;
 import com.hanrolink.product.repository.projection.PublicProductListProjection;
 import com.hanrolink.product.repository.projection.SupplierProductListProjection;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
+
+  boolean existsByPublicIdAndHiddenAtIsNull(UUID productPublicId);
 
   @Query("""
     SELECT product
@@ -184,5 +187,40 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   List<SupplierProductListProjection> findManagementListByIdentityProviderSubject(
     @Param("identityProviderSubject")
     String identityProviderSubject
+  );
+
+  @Query("""
+    SELECT new com.hanrolink.product.repository.projection.ProductSnapshotProjection(
+      product.updatedAt,
+      product.id,
+      product.productCategoryId,
+      productCategory.name,
+      product.mainIngredientOriginPrefectureId,
+      prefecture.name,
+      product.name,
+      product.contentQuantity,
+      product.expirationType,
+      product.shelfLifeDays,
+      product.storageType,
+      product.desiredRetailPrice,
+      product.allergyInformation,
+      product.certificationInformation,
+      product.caseSize,
+      product.unitsPerCase,
+      product.minimumOrderQuantity,
+      product.shippingLeadTimeDays,
+      product.salesAreaRestriction
+    )
+    FROM Product product
+    JOIN ProductCategory productCategory
+      ON productCategory.id = product.productCategoryId
+    JOIN Prefecture prefecture
+      ON prefecture.id = product.mainIngredientOriginPrefectureId
+    WHERE product.hiddenAt IS NULL
+      AND product.publicId = :productPublicId
+    """)
+  Optional<ProductSnapshotProjection> findVisibleSnapshotByPublicId(
+    @Param("productPublicId")
+    UUID productPublicId
   );
 }

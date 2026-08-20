@@ -55,6 +55,16 @@ public class ProductNegotiationRequest {
 
   protected ProductNegotiationRequest() {}
 
+  public ProductNegotiationRequest(
+    Long buyerAccountId,
+    Long productId,
+    ProductSnapshot productSnapshot
+  ) {
+    this.buyerAccountId = buyerAccountId;
+    this.productId = productId;
+    this.productSnapshot = productSnapshot;
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();

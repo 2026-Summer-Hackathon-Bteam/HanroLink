@@ -30,18 +30,28 @@ public class BuyerSentNegotiationRequestController {
     this.buyerSentNegotiationRequestService = buyerSentNegotiationRequestService;
   }
 
-  // バイヤーのみ利用可能
+  /**
+   * 商品に対する商談希望の新規作成を受け付ける
+   * @param jwt 認証済みユーザーのJWT
+   * @param productId 商談希望の対象となる商品の公開識別子
+   * @return 作成結果
+   */
+  @RequiresApprovedBuyer
   @ApiResponse(
     responseCode = "201",
     description = "Created"
   )
   @PostMapping(BuyerNegotiationRequestApi.V1.CREATE)
   public ResponseEntity<Void> create(
+    @AuthenticationPrincipal Jwt jwt,
     @PathVariable UUID productId
   ) {
+    buyerSentNegotiationRequestService.create(
+      jwt.getSubject(),
+      productId
+    );
 
-    // TODO: バイヤーが商品に対して商談希望を登録して、201 Createdで返す
-    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
   /**

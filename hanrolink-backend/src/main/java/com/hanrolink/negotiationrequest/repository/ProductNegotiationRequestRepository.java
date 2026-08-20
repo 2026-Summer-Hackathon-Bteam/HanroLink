@@ -2,6 +2,7 @@ package com.hanrolink.negotiationrequest.repository;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,6 +24,24 @@ public interface ProductNegotiationRequestRepository extends JpaRepository<Produ
   boolean existsByProductIdAndBuyerAccountIdAndExpiresAtAfter(
     Long productId,
     Long buyerAccountId,
+    Instant currentTime
+  );
+
+  @Query("""
+    SELECT COUNT(productNegotiationRequest) > 0
+    FROM ProductNegotiationRequest productNegotiationRequest
+    JOIN Product product
+      ON product.id = productNegotiationRequest.productId
+    WHERE product.publicId = :productPublicId
+      AND productNegotiationRequest.buyerAccountId = :buyerAccountId
+      AND productNegotiationRequest.expiresAt > :currentTime
+    """)
+  boolean existsActiveByProductPublicIdAndBuyerAccountId(
+    @Param("productPublicId")
+    UUID productPublicId,
+    @Param("buyerAccountId")
+    Long buyerAccountId,
+    @Param("currentTime")
     Instant currentTime
   );
 
