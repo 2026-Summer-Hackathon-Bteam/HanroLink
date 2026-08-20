@@ -236,10 +236,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       ON productCategory.id = product.productCategoryId
     JOIN Prefecture prefecture
       ON prefecture.id = product.mainIngredientOriginPrefectureId
-    WHERE product.hiddenAt IS NULL
-      AND product.publicId = :productPublicId
+    WHERE product.publicId = :productPublicId
     """)
-  Optional<ProductSnapshotProjection> findVisibleSnapshotByPublicId(
+  Optional<ProductSnapshotProjection> findSnapshotByPublicId(
     @Param("productPublicId")
     UUID productPublicId
   );

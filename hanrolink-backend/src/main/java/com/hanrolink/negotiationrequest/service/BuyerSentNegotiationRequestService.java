@@ -110,7 +110,7 @@ public class BuyerSentNegotiationRequestService {
 
     // 申請時点の商品スナップショットを構成する情報の取得
     ProductSnapshotProjection product = productRepository
-      .findVisibleSnapshotByPublicId(productPublicId)
+      .findSnapshotByPublicId(productPublicId)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     List<MonthlySupplyCapacitySnapshot> monthlySupplyCapacities =
       monthlySupplyCapacityRepository.findLatestListByProductId(
