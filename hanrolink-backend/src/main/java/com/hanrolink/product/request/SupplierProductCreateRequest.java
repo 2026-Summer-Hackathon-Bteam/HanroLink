@@ -18,6 +18,7 @@ import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 
 public record SupplierProductCreateRequest(
@@ -31,7 +32,7 @@ public record SupplierProductCreateRequest(
 
   @NotNull
   @Positive
-  Short mainIngredientRegionId,
+  Short mainIngredientOriginPrefectureId,
 
   @NotNull
   UUID mainImagePendingFileUploadId,
@@ -43,7 +44,7 @@ public record SupplierProductCreateRequest(
   @NotNull
   ProductExpirationType expirationType,
 
-  @Positive
+  @PositiveOrZero
   Short shelfLifeDays,
 
   @NotNull
@@ -67,7 +68,7 @@ public record SupplierProductCreateRequest(
   @Positive
   Integer minimumOrderQuantity,
 
-  @Positive
+  @PositiveOrZero
   Short shippingLeadTimeDays,
 
   @Size(max = 255)

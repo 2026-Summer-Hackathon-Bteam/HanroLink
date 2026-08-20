@@ -6,7 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 public record MonthlySupplyCapacityRequest(
   @NotNull
@@ -15,6 +15,6 @@ public record MonthlySupplyCapacityRequest(
   YearMonth targetMonth,
 
   @NotNull
-  @Positive
+  @PositiveOrZero
   Integer availableQuantity
 ) {}

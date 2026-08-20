@@ -44,7 +44,7 @@ public interface MonthlySupplyCapacityRepository extends JpaRepository<MonthlySu
       monthlySupplyCapacity.productId ASC,
       monthlySupplyCapacity.targetMonth ASC
     """)
-  List<ProductSearchMonthlySupplyCapacityProjection> findSearchListByProductIds(
+  List<ProductSearchMonthlySupplyCapacityProjection> findSearchResultsByProductIds(
     @Param("productIds")
     List<Long> productIds
   );

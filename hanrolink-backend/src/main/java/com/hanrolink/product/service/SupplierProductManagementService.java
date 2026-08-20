@@ -122,7 +122,7 @@ public class SupplierProductManagementService {
     Product product = new Product(
       supplierBusinessId,
       request.productCategoryId(),
-      request.mainIngredientRegionId(),
+      request.mainIngredientOriginPrefectureId(),
       request.name(),
       mainImageUpload.getStorageKey(),
       request.contentQuantity(),
@@ -293,7 +293,7 @@ public class SupplierProductManagementService {
     // 商品の基本情報の更新
     product.update(
       request.productCategoryId(),
-      request.mainIngredientRegionId(),
+      request.mainIngredientOriginPrefectureId(),
       request.name(),
       request.contentQuantity(),
       request.expirationType(),
@@ -309,7 +309,7 @@ public class SupplierProductManagementService {
       request.salesAreaRestriction()
     );
 
-    // 月間供給可能数の対象月ごとの更新・追加・削除
+    // 月間供給可能数の対象月ごとの差分反映
     Map<YearMonth, MonthlySupplyCapacity> existingMonthlySupplyCapacitiesByTargetMonth =
       monthlySupplyCapacities
         .stream()

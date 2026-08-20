@@ -1,25 +1,25 @@
-package com.hanrolink.product.response.component;
+package com.hanrolink.region.response.component;
 
 import java.util.Objects;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record ProductMainIngredientRegionResponse(
+public record PrefectureOptionResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   Short id,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   String name
 ) {
-  public ProductMainIngredientRegionResponse {
+  public PrefectureOptionResponse {
     Objects.requireNonNull(
       id,
-      "ProductMainIngredientRegionResponse.id must not be null"
+      "PrefectureOptionResponse.id must not be null"
     );
 
     Objects.requireNonNull(
       name,
-      "ProductMainIngredientRegionResponse.name must not be null"
+      "PrefectureOptionResponse.name must not be null"
     );
   }
 }

@@ -40,6 +40,7 @@ public class PublicProductService {
       .stream()
       .map(product ->
         new PublicProductListResponse(
+          product.publicId(),
           product.name(),
           product.supplierBusinessName(),
           s3DownloadUrlGenerator.generate(product.mainImageStorageKey())

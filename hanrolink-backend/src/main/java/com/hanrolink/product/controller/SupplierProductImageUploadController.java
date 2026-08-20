@@ -31,7 +31,7 @@ public class SupplierProductImageUploadController {
   }
 
   /**
-   * 商品画像のアップロード情報を発行する
+   * 商品画像のアップロード情報を返す
    * @param jwt 認証済みユーザーのJWT
    * @param request 商品画像のアップロード情報
    * @return 発行した商品画像のアップロード情報

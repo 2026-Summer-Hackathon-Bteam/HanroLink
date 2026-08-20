@@ -8,7 +8,7 @@ import com.hanrolink.product.response.component.ProductStorySectionTemplateOptio
 import com.hanrolink.product.response.component.StorageTypeOptionResponse;
 import com.hanrolink.productcategory.response.component.ProductCategoryGroupOptionResponse;
 import com.hanrolink.productcategory.response.component.ProductCategoryOptionResponse;
-import com.hanrolink.region.response.component.RegionOptionResponse;
+import com.hanrolink.region.response.component.PrefectureOptionResponse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -20,7 +20,7 @@ public record SupplierProductFormOptionsResponse(
   List<ProductCategoryOptionResponse> productCategories,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  List<RegionOptionResponse> mainIngredientRegions,
+  List<PrefectureOptionResponse> mainIngredientOriginPrefectures,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   List<ProductExpirationTypeOptionResponse> productExpirationTypes,
@@ -43,8 +43,8 @@ public record SupplierProductFormOptionsResponse(
     );
 
     Objects.requireNonNull(
-      mainIngredientRegions,
-      "SupplierProductFormOptionsResponse.mainIngredientRegions must not be null"
+      mainIngredientOriginPrefectures,
+      "SupplierProductFormOptionsResponse.mainIngredientOriginPrefectures must not be null"
     );
 
     Objects.requireNonNull(
