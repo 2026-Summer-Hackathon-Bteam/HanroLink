@@ -12,7 +12,7 @@ import SupplierMyPage from './pages/SupplierMyPage'
 import BuyerMyPage from './pages/BuyerMyPage'
 import AuthenticatedLayout from './layouts/AuthenticatedLayout'
 import AuthenticatedPageLayout from './layouts/AuthenticatedPageLayout'
-import MyPageRayout from './layouts/MyPageLayout'
+import MyPageLayout from './layouts/MyPageLayout'
 import AdminBusinessApprovalDetailPage from './pages/AdminBusinessApprovalDetailPage'
 import ProductCreatePage from './pages/ProductCreatePage'
 import BuyerProfilePage from './pages/BuyerProfilePage'
@@ -39,7 +39,7 @@ function App() {
           <Route path="signup/confirm" element={<SignupConfirmPage />} />
           <Route path="login" element={<LoginPage />} />
           <Route
-            path="/login/new-password"
+            path="login/new-password"
             element={<AdminInitialPasswordChangePage />}
           />
         </Route>
@@ -59,39 +59,39 @@ function App() {
               path="buyer/:businessId"
               element={<BuyerProfilePage />}
             />
-            <Route path="/products" element={<ProductSearchPage />} />
+            <Route path="products" element={<ProductSearchPage />} />
             <Route path="products/new" element={<ProductCreatePage />} />
             <Route
-              path="/products/:productId"
+              path="products/:productId"
               element={<ProductDetailPage />}
             />
             <Route
-              path="/products/:productId/edit"
+              path="products/:productId/edit"
               element={<ProductEditPage />}
             />
             <Route
-              path="/procurement-requests"
+              path="procurement-requests"
               element={<ProcurementRequestSearchPage />}
             />
             <Route
-              path="/procurement-requests/new"
+              path="procurement-requests/new"
               element={<ProcurementRequestCreatePage />}
             />
             <Route
-              path="/procurement-requests/:procurementRequestId"
+              path="procurement-requests/:procurementRequestId"
               element={<ProcurementRequestDetailPage />}
             />
             <Route
-              path="/procurement-requests/:procurementRequestId/edit"
+              path="procurement-requests/:procurementRequestId/edit"
               element={<ProcurementRequestEditPage />}
             />
           </Route>
 
-          <Route element={<MyPageRayout />}>
+          <Route element={<MyPageLayout />}>
             <Route path="mypage/admin" element={<AdminMyPage />} />
             <Route path="mypage/supplier" element={<SupplierMyPage />} />
             <Route path="mypage/buyer" element={<BuyerMyPage />} />
-            <Route path="/chats/:channelId" element={<ChatPage />} />
+            <Route path="chats/:channelId" element={<ChatPage />} />
           </Route>
         </Route>
       </Routes>

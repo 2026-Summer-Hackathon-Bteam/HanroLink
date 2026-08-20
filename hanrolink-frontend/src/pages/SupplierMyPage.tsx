@@ -1,10 +1,13 @@
 import { useEffect, useState, useRef } from 'react'
-import { getSupplierMyPageData } from '../features/supplier/supplierMyPageService'
+import { Link, useNavigate } from 'react-router-dom'
+import {
+  getSupplierMyPageData,
+  acceptNegotiationRequest,
+} from '../features/supplier/supplierMyPageService'
 import type {
   SupplierMyPageData,
   ReceivedNegotiation,
 } from '../features/supplier/supplierMyPageTypes'
-import { Link } from 'react-router-dom'
 
 function SupplierMyPage() {
   const [data, setData] = useState<SupplierMyPageData | null>(null)
@@ -12,6 +15,9 @@ function SupplierMyPage() {
   const negotiationDialogRef = useRef<HTMLDialogElement>(null)
   const [selectedNegotiation, setSelectedNegotiation] =
     useState<ReceivedNegotiation | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [acceptError, setAcceptError] = useState('')
+  const navigate = useNavigate()
 
   useEffect(() => {
     let isCancelled = false
@@ -23,9 +29,13 @@ function SupplierMyPage() {
         if (!isCancelled) {
           setData(result)
         }
-      } catch {
+      } catch (error: unknown) {
         if (!isCancelled) {
-          setError('マイページの情報を取得できませんでした。')
+          setError(
+            error instanceof Error
+              ? error.message
+              : 'マイページの情報を取得できませんでした。',
+          )
         }
       }
     }
@@ -37,7 +47,28 @@ function SupplierMyPage() {
     }
   }, [])
 
+  const handleAcceptNegotiation = async () => {
+    if (!selectedNegotiation || isSubmitting) return
+
+    setIsSubmitting(true)
+    setAcceptError('')
+
+    try {
+      const result = await acceptNegotiationRequest(selectedNegotiation.id)
+
+      negotiationDialogRef.current?.close()
+      navigate(`/chats/${result.channel.id}`)
+    } catch (error: unknown) {
+      setAcceptError(
+        error instanceof Error ? error.message : '商談の開始に失敗しました。',
+      )
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   const handleOpenNegotiationDialog = (negotiation: ReceivedNegotiation) => {
+    setAcceptError('')
     setSelectedNegotiation(negotiation)
     negotiationDialogRef.current?.showModal()
   }
@@ -160,7 +191,6 @@ function SupplierMyPage() {
                 </tr>
               </thead>
               <tbody>
-                {/* ここをmapで繰り返す */}
                 {data.sentNegotiations.length === 0 ? (
                   <tr>
                     <td colSpan={3} className="py-4 text-center!">
@@ -328,24 +358,30 @@ function SupplierMyPage() {
           </>
         )}
 
+        {acceptError && (
+          <p role="alert" className="text-center pt-2 text-error">
+            {acceptError}
+          </p>
+        )}
+
         <div className="mt-6 flex justify-end gap-3">
           <button
             type="button"
             className="rounded-full border border-accent px-5 py-2"
             onClick={() => negotiationDialogRef.current?.close()}
+            disabled={isSubmitting}
           >
             キャンセル
           </button>
-
           <button
             type="button"
             className="rounded-full bg-accent px-5 py-2 text-bg"
             onClick={() => {
-              // 次の工程で商談開始APIの呼び出しに置き換える
-              negotiationDialogRef.current?.close()
+              void handleAcceptNegotiation()
             }}
+            disabled={isSubmitting || !selectedNegotiation}
           >
-            商談を開始する
+            {isSubmitting ? '商談開始中...' : '商談を開始する'}
           </button>
         </div>
       </dialog>
