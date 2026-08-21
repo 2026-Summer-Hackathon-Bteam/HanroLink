@@ -23,7 +23,7 @@ import com.hanrolink.file.enums.FileUploadUsage;
 import com.hanrolink.file.policy.PendingFileUploadPolicy;
 import com.hanrolink.file.repository.PendingFileUploadRepository;
 import com.hanrolink.file.service.PendingFileDeletionService;
-import com.hanrolink.infrastructure.s3.S3DownloadUrlGenerator;
+import com.hanrolink.infrastructure.cloudfront.CloudFrontDownloadUrlGenerator;
 import com.hanrolink.infrastructure.s3.S3UploadedFileVerifier;
 import com.hanrolink.product.entity.MonthlySupplyCapacity;
 import com.hanrolink.product.entity.Product;
@@ -40,7 +40,7 @@ import com.hanrolink.product.request.component.ProductStoryUpdateRequest;
 import com.hanrolink.product.response.SupplierProductCreateResponse;
 import com.hanrolink.product.response.SupplierProductListResponse;
 
-@Profile("s3")
+@Profile("cloudfront")
 @Service
 public class SupplierProductManagementService {
 
@@ -58,7 +58,7 @@ public class SupplierProductManagementService {
 
   private final S3UploadedFileVerifier s3UploadedFileVerifier;
 
-  private final S3DownloadUrlGenerator s3DownloadUrlGenerator;
+  private final CloudFrontDownloadUrlGenerator cloudFrontDownloadUrlGenerator;
 
   public SupplierProductManagementService(
     BusinessUserAccountRepository businessUserAccountRepository,
@@ -68,7 +68,7 @@ public class SupplierProductManagementService {
     PendingFileUploadRepository pendingFileUploadRepository,
     PendingFileDeletionService pendingFileDeletionService,
     S3UploadedFileVerifier s3UploadedFileVerifier,
-    S3DownloadUrlGenerator s3DownloadUrlGenerator
+    CloudFrontDownloadUrlGenerator cloudFrontDownloadUrlGenerator
   ) {
     this.businessUserAccountRepository = businessUserAccountRepository;
     this.productRepository = productRepository;
@@ -77,7 +77,7 @@ public class SupplierProductManagementService {
     this.pendingFileUploadRepository = pendingFileUploadRepository;
     this.pendingFileDeletionService = pendingFileDeletionService;
     this.s3UploadedFileVerifier = s3UploadedFileVerifier;
-    this.s3DownloadUrlGenerator = s3DownloadUrlGenerator;
+    this.cloudFrontDownloadUrlGenerator = cloudFrontDownloadUrlGenerator;
   }
 
   /**
@@ -200,7 +200,7 @@ public class SupplierProductManagementService {
         new SupplierProductListResponse(
           product.publicId(),
           product.name(),
-          s3DownloadUrlGenerator.generate(product.mainImageStorageKey()),
+          cloudFrontDownloadUrlGenerator.generate(product.mainImageStorageKey()),
           product.hiddenAt() != null,
           product.updatedAt()
         )
