@@ -65,10 +65,16 @@
       <artifactId>cognitoidentityprovider</artifactId>
     </dependency>
 
-    <!-- Amazon S3連携（署名付きURLの発行・ファイル情報の取得・削除） -->
+    <!-- Amazon S3連携（アップロード用署名付きURLの発行・ファイルの取得と検証） -->
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>s3</artifactId>
+    </dependency>
+
+    <!-- CloudFrontの署名付きURL生成 -->
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>cloudfront</artifactId>
     </dependency>
 
     <!-- WebP画像の読み込み・検証 -->
