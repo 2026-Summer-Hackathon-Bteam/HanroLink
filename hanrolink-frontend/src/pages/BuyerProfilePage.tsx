@@ -7,8 +7,8 @@ import type { BuyerProfile } from '../features/buyer/buyerProfileTypes'
 function BuyerProfilePage() {
   const [buyerProfile, setBuyerProfile] = useState<BuyerProfile | null>(null)
   const navigate = useNavigate()
-  const { businessUserAccountId } = useParams<{
-    businessUserAccountId: string
+  const { businessId } = useParams<{
+    businessId: string
   }>()
   const [error, setError] = useState('')
 
@@ -16,16 +16,16 @@ function BuyerProfilePage() {
     let isCancelled = false
 
     const loadBuyerProfile = async () => {
-      if (!businessUserAccountId) return
+      if (!businessId) return
       try {
-        const profile = await getBuyerProfile(businessUserAccountId)
+        const profile = await getBuyerProfile(businessId)
 
         if (!isCancelled) {
           setBuyerProfile(profile)
         }
-      } catch {
+      } catch(error) {
         if (!isCancelled) {
-          setError('バイヤー情報を取得できませんでした。')
+          setError(error instanceof Error ? error.message :'バイヤー情報を取得できませんでした。')
         }
       }
     }
@@ -35,12 +35,12 @@ function BuyerProfilePage() {
     return () => {
       isCancelled = true
     }
-  }, [businessUserAccountId])
+  }, [businessId])
 
-  if (!businessUserAccountId) {
+  if (!businessId) {
     return (
       <p role="alert" className="py-10 text-center text-error">
-        バイヤーを特定できせんでした。
+        バイヤーを特定できませんでした。
       </p>
     )
   }
