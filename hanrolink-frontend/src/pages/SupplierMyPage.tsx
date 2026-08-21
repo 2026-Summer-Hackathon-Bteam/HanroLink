@@ -120,7 +120,6 @@ function SupplierMyPage() {
                 </tr>
               </thead>
               <tbody>
-                {/* ここをmapで繰り返す */}
                 {data.receivedNegotiations.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="py-4 text-center!">
@@ -245,7 +244,6 @@ function SupplierMyPage() {
             + 商品情報を登録する
           </Link>
           <div className="min-h-0 flex-1 space-y-3 overflow-x-hidden overflow-y-auto p-1">
-            {/* ここをmapで繰り返す */}
             {data.products.length === 0 ? (
               <p className="text-center">まずは商品を登録しましょう！</p>
             ) : (

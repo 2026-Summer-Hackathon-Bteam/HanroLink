@@ -189,7 +189,6 @@ function BuyerMyPage() {
                 </tr>
               </thead>
               <tbody>
-                {/* ここをmapで繰り返す */}
                 {data.sentNegotiations.length === 0 ? (
                   <tr>
                     <td colSpan={2} className="py-4 text-center!">
