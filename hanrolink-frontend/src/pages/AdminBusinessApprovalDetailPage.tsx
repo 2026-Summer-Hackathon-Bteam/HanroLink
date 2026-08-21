@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import DataRow from '../components/DataRow'
 import type { AdminBusinessApprovalDetail } from '../features/admin/adminApprovalTypes'
-import { getAdminBusinessApprovalDetail } from '../features/admin/adminApprovalService'
+import {
+  approveBusiness,
+  getAdminBusinessApprovalDetail,
+} from '../features/admin/adminApprovalService'
 
 const roleInKana: Record<
-  AdminBusinessApprovalDetail['businessUserAccount']['role'],
+  AdminBusinessApprovalDetail['business']['role'],
   string
 > = {
   SUPPLIER: 'サプライヤー',
@@ -13,7 +16,7 @@ const roleInKana: Record<
 }
 
 const reviewStatusInJp: Record<
-  AdminBusinessApprovalDetail['businessUserAccount']['reviewStatus'],
+  AdminBusinessApprovalDetail['business']['reviewStatus'],
   string
 > = {
   PENDING: '審査待ち',
@@ -23,25 +26,30 @@ const reviewStatusInJp: Record<
 function AdminBusinessApprovalDetailPage() {
   const [data, setData] = useState<AdminBusinessApprovalDetail | null>(null)
   const [error, setError] = useState('')
-  const { businessUserAccountId } = useParams<{
-    businessUserAccountId: string
+  const { businessId } = useParams<{
+    businessId: string
   }>()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const navigate = useNavigate()
+  const [approvalError, setApprovalError] = useState('')
 
   useEffect(() => {
     let isCancelled = false
 
     const loadAdminApprovalData = async () => {
       try {
-        if (!businessUserAccountId) return
-        const result = await getAdminBusinessApprovalDetail(
-          businessUserAccountId,
-        )
+        if (!businessId) return
+        const result = await getAdminBusinessApprovalDetail(businessId)
         if (!isCancelled) {
           setData(result)
         }
-      } catch {
+      } catch (error: unknown) {
         if (!isCancelled) {
-          setError('新規登録者詳細の情報を取得できませんでした')
+          setError(
+            error instanceof Error
+              ? error.message
+              : '新規登録者詳細の情報を取得できませんでした',
+          )
         }
       }
     }
@@ -49,9 +57,33 @@ function AdminBusinessApprovalDetailPage() {
     return () => {
       isCancelled = true
     }
-  }, [businessUserAccountId])
+  }, [businessId])
 
-  if (!businessUserAccountId) {
+  const handleApprove = async () => {
+    if (!data) return
+    if (isSubmitting) return
+
+    setIsSubmitting(true)
+    setApprovalError('')
+
+    try {
+      await approveBusiness(data.business.id)
+
+      navigate('/mypage/admin', {
+        replace: true,
+      })
+    } catch (error: unknown) {
+      setApprovalError(
+        error instanceof Error
+          ? error.message
+          : '新規登録者の承認に失敗しました。',
+      )
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  if (!businessId) {
     return (
       <p role="alert" className="py-10 text-center text-error">
         新規登録者を特定できませんでした。
@@ -76,7 +108,7 @@ function AdminBusinessApprovalDetailPage() {
       <h2>新規登録者詳細</h2>
       <dl className="flex flex-col mx-auto overflow-hidden border border-border divide-y divide-border">
         <DataRow itemName="バイヤー／サプライヤー">
-          {roleInKana[data.businessUserAccount.role]}
+          {roleInKana[data.business.role]}
         </DataRow>
         <DataRow itemName="会社名">{data.business.name}</DataRow>
         <DataRow itemName="会社名フリガナ">{data.business.nameKana}</DataRow>
@@ -124,19 +156,33 @@ function AdminBusinessApprovalDetailPage() {
           {data.businessUserAccount.email}
         </DataRow>
         <DataRow itemName="審査状態">
-          {reviewStatusInJp[data.businessUserAccount.reviewStatus]}
+          {reviewStatusInJp[data.business.reviewStatus]}
         </DataRow>
         <DataRow itemName="登録日時">
-          {new Date(data.businessUserAccount.createdAt).toLocaleString('ja-JP')}
+          {new Date(data.business.createdAt).toLocaleString('ja-JP')}
         </DataRow>
       </dl>
-      <button
-        type="button"
-        className="h-9 w-45 mx-auto mt-16 rounded-full border border-accent bg-accentbg"
-      >
-        承認
-        {/* （idは承認ボタンを押した時にアクセスするAPIのパスに使う） */}
-      </button>
+      {data.business.reviewStatus === 'PENDING' ? (
+        <>
+          <button
+            type="button"
+            className="h-9 w-45 mx-auto mt-16 rounded-full border border-accent bg-accentbg disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={handleApprove}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? '承認中...' : '承認'}
+          </button>
+          {approvalError && (
+            <p role="alert" className="text-center pt-2 text-error">
+              {approvalError}
+            </p>
+          )}
+        </>
+      ) : (
+        <p className="text-center mt-16">
+          この事業者はすでに承認されています。
+        </p>
+      )}
     </div>
   )
 }

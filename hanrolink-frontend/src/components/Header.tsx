@@ -30,7 +30,7 @@ const menuItemsByName = {
   signup: { label: '新規登録', path: '/signup' },
   login: { label: 'ログイン', path: '/login' },
   products: { label: '商品を探す', path: '/products' },
-  recruitments: { label: '募集情報を探す', path: '/recruitments' },
+  recruitments: { label: '募集情報を探す', path: '/procurement-requests' },
   adminMypage: { label: 'マイページ', path: '/mypage/admin' },
   supplierMyPage: { label: 'マイページ', path: '/mypage/supplier' },
   buyerMyPage: { label: 'マイページ', path: '/mypage/buyer' },
@@ -58,7 +58,6 @@ const navMenuByRoleAndStatus = {
       BUYER: [
         menuItemsByName.buyerMyPage,
         menuItemsByName.products,
-        menuItemsByName.recruitments,
       ],
     },
   },

@@ -8,14 +8,6 @@ import {
 import DataRow from '../components/DataRow'
 import { formatTargetMonth } from '../shared/utils/yearMonth'
 
-const parsePositiveInteger = (value: string | undefined): number | null => {
-  if (!value) return null
-
-  const parsedValue = Number(value)
-
-  return Number.isInteger(parsedValue) && parsedValue > 0 ? parsedValue : null
-}
-
 function ProcurementRequestDetailPage() {
   const [procurementRequestDetailData, setProcurementRequestDetailData] =
     useState<ProcurementRequestDetailData | null>(null)
@@ -25,18 +17,16 @@ function ProcurementRequestDetailPage() {
   const [isDeleting, setIsDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState('')
   const { procurementRequestId } = useParams()
-  const parsedProcurementRequestId = parsePositiveInteger(procurementRequestId)
 
   useEffect(() => {
-    if (parsedProcurementRequestId === null) return
+    if (procurementRequestId === undefined) return
 
     let isCancelled = false
 
     const loadProcurementRequestData = async () => {
       try {
-        const result = await getProcurementRequestDetailData(
-          parsedProcurementRequestId,
-        )
+        const result =
+          await getProcurementRequestDetailData(procurementRequestId)
 
         if (!isCancelled) {
           setProcurementRequestDetailData(result)
@@ -52,21 +42,25 @@ function ProcurementRequestDetailPage() {
     return () => {
       isCancelled = true
     }
-  }, [parsedProcurementRequestId])
+  }, [procurementRequestId])
 
   const handleDelete = async () => {
     if (isDeleting || !procurementRequestDetailData) return
-    if (!parsedProcurementRequestId) return
+    if (!procurementRequestId) return
 
     setIsDeleting(true)
     setDeleteError('')
 
     try {
-      await deleteProcurementRequest(parsedProcurementRequestId)
+      await deleteProcurementRequest(procurementRequestId)
       deleteDialogRef.current?.close()
       navigate('/mypage/buyer')
-    } catch {
-      setDeleteError('募集情報の削除に失敗しました。')
+    } catch (error) {
+      setDeleteError(
+        error instanceof Error
+          ? error.message
+          : '募集情報の削除に失敗しました。',
+      )
       setIsDeleting(false)
     }
   }
@@ -79,7 +73,7 @@ function ProcurementRequestDetailPage() {
     )
   }
 
-  if (!parsedProcurementRequestId) {
+  if (!procurementRequestId) {
     return (
       <p role="alert" className="py-10 text-center text-error">
         募集情報IDが正しくありません。
@@ -108,7 +102,7 @@ function ProcurementRequestDetailPage() {
 
             <div className="flex flex-wrap gap-3">
               <Link
-                to={`/procurement-requests/${parsedProcurementRequestId}/edit`}
+                to={`/procurement-requests/${procurementRequestId}/edit`}
                 className="rounded-full bg-accent px-5 py-2 text-bg"
               >
                 編集する
@@ -129,7 +123,7 @@ function ProcurementRequestDetailPage() {
       <div className="mb-12">
         <h2 className="mb-0!">{procurementRequestDetailData.title}</h2>
         <Link
-          to={`/buyer/${procurementRequestDetailData.buyer.accountId}`}
+          to={`/buyer/${procurementRequestDetailData.buyer.businessId}`}
           className="text-other underline underline-offset-2 hover:no-underline"
         >
           {procurementRequestDetailData.buyer.businessName}
