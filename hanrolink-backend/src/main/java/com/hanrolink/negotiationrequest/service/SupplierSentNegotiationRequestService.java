@@ -14,7 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
 import com.hanrolink.negotiationrequest.entity.ProcurementNegotiationRequest;
-import com.hanrolink.negotiationrequest.policy.ProcurementNegotiationRequestPolicy;
+import com.hanrolink.negotiationrequest.policy.SupplierNegotiationRequestPolicy;
 import com.hanrolink.negotiationrequest.repository.ProcurementNegotiationRequestRepository;
 import com.hanrolink.negotiationrequest.request.SupplierSentNegotiationRequestCreateRequest;
 import com.hanrolink.negotiationrequest.response.SupplierSentNegotiationRequestListResponse;
@@ -102,7 +102,7 @@ public class SupplierSentNegotiationRequestService {
         supplierAccountId,
         currentTime
       );
-    if (activeNegotiationRequestCount >= ProcurementNegotiationRequestPolicy.MAX_ACTIVE_REQUEST_COUNT) {
+    if (activeNegotiationRequestCount >= SupplierNegotiationRequestPolicy.MAX_ACTIVE_REQUEST_COUNT) {
       throw new ResponseStatusException(
         HttpStatus.CONFLICT,
         "商談希望の送信件数が上限に達しているため、新しく送信できません"

@@ -22,7 +22,7 @@ import com.hanrolink.account.exception.UnsupportedJwtAccountRoleException;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
 import com.hanrolink.account.repository.projection.BusinessUserAccountAccessScopeProjection;
 import com.hanrolink.business.enums.BusinessRole;
-import com.hanrolink.negotiationrequest.policy.ProcurementNegotiationRequestPolicy;
+import com.hanrolink.negotiationrequest.policy.SupplierNegotiationRequestPolicy;
 import com.hanrolink.negotiationrequest.repository.ProcurementNegotiationRequestRepository;
 import com.hanrolink.pagination.response.component.PaginationResponse;
 import com.hanrolink.procurementrequest.policy.MonthlyProcurementQuantityPolicy;
@@ -157,7 +157,7 @@ public class ProcurementRequestReadService {
           );
 
       canCreateNegotiationRequest =
-        activeNegotiationRequestCount < ProcurementNegotiationRequestPolicy.MAX_ACTIVE_REQUEST_COUNT;
+        activeNegotiationRequestCount < SupplierNegotiationRequestPolicy.MAX_ACTIVE_REQUEST_COUNT;
 
       hasMyActiveNegotiationRequest =
         procurementNegotiationRequestRepository
