@@ -118,7 +118,10 @@ public class SupplierSentNegotiationRequestService {
 
     // 提示商品の所有関係と公開状態の確認
     boolean isProductAvailable = productRepository
-      .existsByPublicIdAndHiddenAtIsNull(request.productId());
+      .existsVisibleByPublicIdAndSupplierAccountId(
+        request.productId(),
+        supplierAccountId
+      );
     if (!isProductAvailable) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
