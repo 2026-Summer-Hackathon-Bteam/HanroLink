@@ -7,7 +7,7 @@ export const buyerMyPageMock = {
 
   receivedNegotiations: [
     {
-      procurementNegotiationRequestId: 1,
+      id: 1,
       procurementRequest: {
         id: 101,
         title: '国産いちごを使用した加工食品を募集',
@@ -20,7 +20,7 @@ export const buyerMyPageMock = {
       expiresAt: '2026-08-31T23:59:59+09:00',
     },
     {
-      procurementNegotiationRequestId: 2,
+      id: 2,
       procurementRequest: {
         id: 102,
         title: '常温保存できる果汁飲料を募集',
@@ -36,7 +36,7 @@ export const buyerMyPageMock = {
 
   sentNegotiations: [
     {
-      productNegotiationRequestId: 301,
+      id: 301,
       product: {
         id: 201,
         name: '濃厚いちごジャム',
@@ -44,7 +44,7 @@ export const buyerMyPageMock = {
       expiresAt: '2026-08-31T23:59:59+09:00',
     },
     {
-      productNegotiationRequestId: 302,
+      id: 302,
       product: {
         id: 203,
         name: '国産みかんゼリー',
@@ -55,17 +55,17 @@ export const buyerMyPageMock = {
 
   procurementRequests: [
     {
-      id: 101,
+      id: "101",
       title: '国産いちごを使用した加工食品を募集',
       updatedAt: '2026-08-04T10:30:00+09:00',
     },
     {
-      id: 102,
+      id: "102",
       title: '常温保存できる果汁飲料を募集',
       updatedAt: '2026-08-02T14:00:00+09:00',
     },
     {
-      id: 103,
+      id: "103",
       title: '秋冬向けの焼き菓子を募集',
       updatedAt: '2026-07-28T09:15:00+09:00',
     },
