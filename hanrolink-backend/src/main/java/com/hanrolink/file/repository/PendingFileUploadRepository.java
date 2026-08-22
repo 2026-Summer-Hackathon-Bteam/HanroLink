@@ -1,6 +1,7 @@
 package com.hanrolink.file.repository;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -10,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.hanrolink.file.entity.PendingFileUpload;
+import com.hanrolink.file.enums.FileUploadUsage;
 
 @Repository
 public interface PendingFileUploadRepository extends JpaRepository<PendingFileUpload, Long> {
@@ -28,6 +30,25 @@ public interface PendingFileUploadRepository extends JpaRepository<PendingFileUp
     UUID pendingFileUploadPublicId,
     @Param("identityProviderSubject")
     String identityProviderSubject,
+    @Param("currentTime")
+    Instant currentTime
+  );
+
+  @Query("""
+    SELECT pendingFileUpload
+    FROM PendingFileUpload pendingFileUpload
+    WHERE pendingFileUpload.publicId IN :pendingFileUploadPublicIds
+      AND pendingFileUpload.businessUserAccountId = :businessUserAccountId
+      AND pendingFileUpload.usage = :usage
+      AND pendingFileUpload.expiresAt > :currentTime
+    """)
+  List<PendingFileUpload> findAllAvailableByPublicIds(
+    @Param("pendingFileUploadPublicIds")
+    List<UUID> pendingFileUploadPublicIds,
+    @Param("businessUserAccountId")
+    Long businessUserAccountId,
+    @Param("usage")
+    FileUploadUsage usage,
     @Param("currentTime")
     Instant currentTime
   );

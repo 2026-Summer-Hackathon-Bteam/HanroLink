@@ -35,6 +35,16 @@ public class Message {
 
   protected Message() {}
 
+  public Message(
+    Long channelId,
+    Long businessUserAccountId,
+    String body
+  ) {
+    this.channelId = channelId;
+    this.businessUserAccountId = businessUserAccountId;
+    this.body = body;
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();
@@ -45,5 +55,9 @@ public class Message {
   @PreUpdate
   private void onUpdate() {
     this.updatedAt = Instant.now();
+  }
+
+  public Long getId() {
+    return id;
   }
 }

@@ -113,6 +113,10 @@ public class PendingFileUpload {
     return usage;
   }
 
+  public String getDisplayFilename() {
+    return displayFilename;
+  }
+
   public FileMimeType getMimeType() {
     return mimeType;
   }

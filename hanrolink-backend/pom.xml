@@ -84,6 +84,13 @@
       <version>3.14.0</version>
     </dependency>
 
+    <!-- PDFファイルの形式検証と解析 -->
+    <dependency>
+      <groupId>org.apache.pdfbox</groupId>
+      <artifactId>pdfbox</artifactId>
+      <version>3.0.8</version>
+    </dependency>
+
     <!-- 入力値バリデーション（Bean Validation） -->
     <dependency>
       <groupId>org.springframework.boot</groupId>

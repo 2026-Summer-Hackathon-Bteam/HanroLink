@@ -10,6 +10,8 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -48,22 +50,47 @@ public class S3UploadedFileVerifier {
   ) {
     try {
       HeadObjectResponse metadata = getMetadata(storageKey);
-
       if (!Objects.equals(metadata.contentType(), FileMimeType.IMAGE_WEBP.getValue())) {
         return false;
       }
-
       if (!Objects.equals(metadata.contentLength(), expectedFileSizeBytes)) {
         return false;
       }
 
-      byte[] imageBytes = getImageBytes(storageKey);
-
+      byte[] imageBytes = getFileBytes(storageKey);
       if (!hasWebpSignature(imageBytes)) {
         return false;
       }
 
       return canDecodeWebp(imageBytes);
+    } catch (S3Exception exception) {
+      if (exception.statusCode() == 404) {
+        return false;
+      }
+
+      throw exception;
+    }
+  }
+
+  public boolean isValidPdf(
+    String storageKey,
+    Long expectedFileSizeBytes
+  ) {
+    try {
+      HeadObjectResponse metadata = getMetadata(storageKey);
+      if (!Objects.equals(metadata.contentType(), FileMimeType.APPLICATION_PDF.getValue())) {
+        return false;
+      }
+      if (!Objects.equals(metadata.contentLength(), expectedFileSizeBytes)) {
+        return false;
+      }
+
+      byte[] fileBytes = getFileBytes(storageKey);
+      if (!hasPdfSignature(fileBytes)) {
+        return false;
+      }
+
+      return canParsePdf(fileBytes);
     } catch (S3Exception exception) {
       if (exception.statusCode() == 404) {
         return false;
@@ -86,7 +113,7 @@ public class S3UploadedFileVerifier {
     return s3Client.headObject(request);
   }
 
-  private byte[] getImageBytes(
+  private byte[] getFileBytes(
     String storageKey
   ) {
     GetObjectRequest request =
@@ -116,6 +143,17 @@ public class S3UploadedFileVerifier {
       && imageBytes[11] == 'P';
   }
 
+  private boolean hasPdfSignature(
+    byte[] fileBytes
+  ) {
+    return fileBytes.length >= 5
+      && fileBytes[0] == '%'
+      && fileBytes[1] == 'P'
+      && fileBytes[2] == 'D'
+      && fileBytes[3] == 'F'
+      && fileBytes[4] == '-';
+  }
+
   private boolean canDecodeWebp(
     byte[] imageBytes
   ) {
@@ -131,7 +169,6 @@ public class S3UploadedFileVerifier {
       }
 
       Iterator<ImageReader> readers = ImageIO.getImageReaders(imageStream);
-
       if (!readers.hasNext()) {
         return false;
       }
@@ -158,6 +195,22 @@ public class S3UploadedFileVerifier {
       } finally {
         reader.dispose();
       }
+    } catch (IOException | RuntimeException exception) {
+      return false;
+    }
+  }
+
+  private boolean canParsePdf(
+    byte[] fileBytes
+  ) {
+    try (
+      PDDocument document = Loader.loadPDF(fileBytes)
+    ) {
+      if (document.isEncrypted()) {
+        return false;
+      }
+
+      return document.getNumberOfPages() > 0;
     } catch (IOException | RuntimeException exception) {
       return false;
     }

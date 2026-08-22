@@ -471,7 +471,7 @@ public class SupplierProductManagementService {
     if (!isValidWebp) {
       throw new ResponseStatusException(
         HttpStatus.BAD_REQUEST,
-        "アップロードされたファイルを確認できません"
+        "ファイルがアップロード条件を満たしていません"
       );
     }
 
