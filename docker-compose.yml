@@ -28,11 +28,14 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-      SPRING_PROFILES_ACTIVE: "dev,cognito"
+      SPRING_PROFILES_ACTIVE: "dev,cognito,cloudfront,s3"
       JAVA_TOOL_OPTIONS: "-Duser.timezone=UTC"
 
     env_file:
       - ./hanrolink-backend/.env
+
+    volumes:
+      - ./hanrolink-backend/.secrets/cloudfront-private-key.pem:/run/secrets/cloudfront-private-key.pem:ro
 
     container_name: hanrolink-backend
 
