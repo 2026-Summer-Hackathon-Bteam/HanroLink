@@ -8,6 +8,7 @@ import org.hibernate.type.SqlTypes;
 
 import com.hanrolink.file.enums.FileMimeType;
 import com.hanrolink.file.enums.FileUploadUsage;
+import com.hanrolink.file.policy.PendingFileUploadPolicy;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -60,6 +61,9 @@ public class PendingFileUpload {
   @Column(name = "file_size_bytes", nullable = false)
   private Long fileSizeBytes;
 
+  @Column(name = "expires_at", updatable = false, nullable = false)
+  private Instant expiresAt;
+
   @Column(name = "created_at", updatable = false, nullable = false)
   private Instant createdAt;
 
@@ -87,6 +91,7 @@ public class PendingFileUpload {
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();
+    this.expiresAt = now.plus(PendingFileUploadPolicy.VALID_DURATION);
     this.createdAt = now;
     this.updatedAt = now;
   }
@@ -114,9 +119,5 @@ public class PendingFileUpload {
 
   public Long getFileSizeBytes() {
     return fileSizeBytes;
-  }
-
-  public Instant getCreatedAt() {
-    return createdAt;
   }
 }

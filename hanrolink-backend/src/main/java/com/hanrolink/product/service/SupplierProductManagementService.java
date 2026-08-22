@@ -20,7 +20,6 @@ import org.springframework.web.server.ResponseStatusException;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
 import com.hanrolink.file.entity.PendingFileUpload;
 import com.hanrolink.file.enums.FileUploadUsage;
-import com.hanrolink.file.policy.PendingFileUploadPolicy;
 import com.hanrolink.file.repository.PendingFileUploadRepository;
 import com.hanrolink.file.service.PendingFileDeletionService;
 import com.hanrolink.infrastructure.cloudfront.CloudFrontDownloadUrlGenerator;
@@ -455,19 +454,12 @@ public class SupplierProductManagementService {
     PendingFileUpload pendingFileUpload = pendingFileUploadRepository
       .findByPublicIdAndIdentityProviderSubject(
         pendingFileUploadId,
-        identityProviderSubject
+        identityProviderSubject,
+        Instant.now()
       )
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     if (pendingFileUpload.getUsage() != expectedUsage) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-    }
-
-    Instant expiresAt = pendingFileUpload
-      .getCreatedAt()
-      .plus(PendingFileUploadPolicy.VALID_DURATION);
-
-    if (!expiresAt.isAfter(Instant.now())) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 

@@ -1,5 +1,6 @@
 package com.hanrolink.file.repository;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,11 +21,14 @@ public interface PendingFileUploadRepository extends JpaRepository<PendingFileUp
       ON businessUserAccount.id = pendingFileUpload.businessUserAccountId
     WHERE pendingFileUpload.publicId = :pendingFileUploadPublicId
       AND businessUserAccount.identityProviderSubject = :identityProviderSubject
+      AND pendingFileUpload.expiresAt > :currentTime
     """)
   Optional<PendingFileUpload> findByPublicIdAndIdentityProviderSubject(
     @Param("pendingFileUploadPublicId")
     UUID pendingFileUploadPublicId,
     @Param("identityProviderSubject")
-    String identityProviderSubject
+    String identityProviderSubject,
+    @Param("currentTime")
+    Instant currentTime
   );
 }

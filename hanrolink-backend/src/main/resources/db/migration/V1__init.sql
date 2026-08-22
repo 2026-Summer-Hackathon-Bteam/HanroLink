@@ -322,6 +322,7 @@ CREATE TABLE pending_file_uploads (
   display_filename VARCHAR(255),
   mime_type file_mime_type NOT NULL,
   file_size_bytes BIGINT NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
