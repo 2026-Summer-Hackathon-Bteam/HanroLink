@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS btree_gist;
+
 CREATE TYPE business_role AS ENUM (
   'SUPPLIER',
   'BUYER'
@@ -350,15 +352,25 @@ CREATE TABLE pending_file_deletions (
 
 CREATE TABLE procurement_negotiation_requests (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  public_id UUID UNIQUE NOT NULL,
   supplier_account_id BIGINT NOT NULL,
-  procurement_request_id BIGINT,
-  product_id BIGINT,
+  procurement_request_id BIGINT NOT NULL,
+  product_id BIGINT NOT NULL,
   procurement_request_snapshot JSONB NOT NULL,
   product_snapshot JSONB NOT NULL,
-  product_main_image_storage_key VARCHAR(255) UNIQUE NOT NULL,
-  accepted_at TIMESTAMPTZ,
+  expires_at TIMESTAMPTZ NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+  CONSTRAINT chk_procurement_negotiation_requests_expiration
+    CHECK (expires_at > created_at),
+
+  CONSTRAINT ex_procurement_negotiation_requests_active_duplicate
+    EXCLUDE USING gist (
+      supplier_account_id WITH =,
+      procurement_request_id WITH =,
+      tstzrange(created_at, expires_at, '[)') WITH &&
+    ),
 
   CONSTRAINT fk_procurement_negotiation_requests_supplier_account
     FOREIGN KEY (supplier_account_id)
@@ -366,22 +378,32 @@ CREATE TABLE procurement_negotiation_requests (
   CONSTRAINT fk_procurement_negotiation_requests_procurement_request
     FOREIGN KEY (procurement_request_id)
     REFERENCES procurement_requests(id)
-    ON DELETE SET NULL,
+    ON DELETE CASCADE,
   CONSTRAINT fk_procurement_negotiation_requests_product
     FOREIGN KEY (product_id)
     REFERENCES products(id)
-    ON DELETE SET NULL
+    ON DELETE CASCADE
 );
 
 CREATE TABLE product_negotiation_requests (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  public_id UUID UNIQUE NOT NULL,
   buyer_account_id BIGINT NOT NULL,
-  product_id BIGINT,
+  product_id BIGINT NOT NULL,
   product_snapshot JSONB NOT NULL,
-  product_main_image_storage_key VARCHAR(255) UNIQUE NOT NULL,
-  accepted_at TIMESTAMPTZ,
+  expires_at TIMESTAMPTZ NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+  CONSTRAINT chk_product_negotiation_requests_expiration
+    CHECK (expires_at > created_at),
+
+  CONSTRAINT ex_product_negotiation_requests_active_duplicate
+    EXCLUDE USING gist (
+      buyer_account_id WITH =,
+      product_id WITH =,
+      tstzrange(created_at, expires_at, '[)') WITH &&
+    ),
 
   CONSTRAINT fk_product_negotiation_requests_buyer_account
     FOREIGN KEY (buyer_account_id)
@@ -389,7 +411,12 @@ CREATE TABLE product_negotiation_requests (
   CONSTRAINT fk_product_negotiation_requests_product
     FOREIGN KEY (product_id)
     REFERENCES products(id)
-    ON DELETE SET NULL
+    ON DELETE CASCADE
+);
+
+CREATE TYPE negotiation_target_type AS ENUM (
+  'PRODUCT',
+  'PROCUREMENT_REQUEST'
 );
 
 CREATE TABLE channels (
@@ -397,24 +424,35 @@ CREATE TABLE channels (
   public_id UUID UNIQUE NOT NULL,
   supplier_account_id BIGINT NOT NULL,
   buyer_account_id BIGINT NOT NULL,
-  product_negotiation_request_id BIGINT,
-  procurement_negotiation_request_id BIGINT,
   name VARCHAR(255) NOT NULL,
+  negotiation_target_type negotiation_target_type NOT NULL,
+  requested_product_snapshot JSONB NOT NULL,
+  accepted_product_snapshot JSONB NOT NULL,
+  requested_procurement_request_snapshot JSONB,
+  accepted_procurement_request_snapshot JSONB,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+  CONSTRAINT chk_channels_procurement_request_snapshots
+    CHECK (
+      (
+        negotiation_target_type = 'PRODUCT'
+        AND requested_procurement_request_snapshot IS NULL
+        AND accepted_procurement_request_snapshot IS NULL
+      )
+      OR (
+        negotiation_target_type = 'PROCUREMENT_REQUEST'
+        AND requested_procurement_request_snapshot IS NOT NULL
+        AND accepted_procurement_request_snapshot IS NOT NULL
+      )
+    ),
 
   CONSTRAINT fk_channels_supplier_account
     FOREIGN KEY (supplier_account_id)
     REFERENCES business_user_accounts(id),
   CONSTRAINT fk_channels_buyer_account
     FOREIGN KEY (buyer_account_id)
-    REFERENCES business_user_accounts(id),
-  CONSTRAINT fk_channels_product_negotiation_request
-    FOREIGN KEY (product_negotiation_request_id)
-    REFERENCES product_negotiation_requests(id),
-  CONSTRAINT fk_channels_procurement_negotiation_request
-    FOREIGN KEY (procurement_negotiation_request_id)
-    REFERENCES procurement_negotiation_requests(id)
+    REFERENCES business_user_accounts(id)
 );
 
 CREATE TABLE messages (

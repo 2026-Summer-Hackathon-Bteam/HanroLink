@@ -9,6 +9,8 @@ public final class SupplierNegotiationRequestApi {
     private static final String MINE = ApiPath.API_V1 + "/me/supplier";
     public static final String CREATE =
       ApiPath.API_V1 + "/procurement-requests/{procurementRequestId}/negotiation-requests";
+    public static final String SELECTABLE_PRODUCTS =
+      ApiPath.API_V1 + "/procurement-negotiation-requests/selectable-products";
     public static final String MINE_PROCUREMENT_NEGOTIATION_REQUESTS =
       MINE + "/procurement-negotiation-requests";
     public static final String MINE_PRODUCT_NEGOTIATION_REQUESTS =

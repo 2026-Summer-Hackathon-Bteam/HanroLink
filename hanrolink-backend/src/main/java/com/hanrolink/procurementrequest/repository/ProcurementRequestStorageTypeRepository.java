@@ -21,6 +21,8 @@ public interface ProcurementRequestStorageTypeRepository extends JpaRepository<P
     FROM ProcurementRequestStorageType procurementRequestStorageType
     WHERE procurementRequestStorageType.procurementRequestId =
       :procurementRequestId
+    ORDER BY
+      procurementRequestStorageType.storageType ASC
     """)
   List<StorageType> findStorageTypesByProcurementRequestId(
     @Param("procurementRequestId")

@@ -120,4 +120,16 @@ public interface BusinessUserAccountRepository extends JpaRepository<BusinessUse
     @Param("identityProviderSubject")
     String identityProviderSubject
   );
+
+  @Query("""
+    SELECT business.name
+    FROM BusinessUserAccount businessUserAccount
+    JOIN Business business
+      ON business.id = businessUserAccount.businessId
+    WHERE businessUserAccount.id = :businessUserAccountId
+    """)
+  Optional<String> findBusinessNameById(
+    @Param("businessUserAccountId")
+    Long businessUserAccountId
+  );
 }

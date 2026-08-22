@@ -17,11 +17,31 @@ import com.hanrolink.product.entity.Product;
 import com.hanrolink.product.enums.StorageType;
 import com.hanrolink.product.repository.projection.ProductDetailProjection;
 import com.hanrolink.product.repository.projection.ProductSearchResultProjection;
+import com.hanrolink.product.repository.projection.ProductSnapshotProjection;
 import com.hanrolink.product.repository.projection.PublicProductListProjection;
+import com.hanrolink.product.repository.projection.SupplierNegotiationRequestSelectableProductProjection;
 import com.hanrolink.product.repository.projection.SupplierProductListProjection;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
+
+  boolean existsByPublicIdAndHiddenAtIsNull(UUID productPublicId);
+
+  @Query("""
+    SELECT COUNT(product) > 0
+    FROM Product product
+    JOIN BusinessUserAccount businessUserAccount
+      ON businessUserAccount.businessId = product.supplierBusinessId
+    WHERE product.publicId = :productPublicId
+      AND businessUserAccount.id = :supplierAccountId
+      AND product.hiddenAt IS NULL
+    """)
+  boolean existsVisibleByPublicIdAndSupplierAccountId(
+    @Param("productPublicId")
+    UUID productPublicId,
+    @Param("supplierAccountId")
+    Long supplierAccountId
+  );
 
   @Query("""
     SELECT product
@@ -184,5 +204,92 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   List<SupplierProductListProjection> findManagementListByIdentityProviderSubject(
     @Param("identityProviderSubject")
     String identityProviderSubject
+  );
+
+  @Query("""
+    SELECT new com.hanrolink.product.repository.projection.SupplierNegotiationRequestSelectableProductProjection(
+      product.publicId,
+      product.name,
+      product.mainImageStorageKey
+    )
+    FROM Product product
+    JOIN BusinessUserAccount businessUserAccount
+      ON businessUserAccount.businessId = product.supplierBusinessId
+    WHERE businessUserAccount.identityProviderSubject = :identityProviderSubject
+      AND product.hiddenAt IS NULL
+    ORDER BY product.updatedAt DESC
+    """)
+  List<SupplierNegotiationRequestSelectableProductProjection>
+    findSelectableProductsForNegotiationRequest(
+      @Param("identityProviderSubject")
+      String identityProviderSubject
+    );
+
+  @Query("""
+    SELECT new com.hanrolink.product.repository.projection.ProductSnapshotProjection(
+      product.updatedAt,
+      product.id,
+      product.productCategoryId,
+      productCategory.name,
+      product.mainIngredientOriginPrefectureId,
+      prefecture.name,
+      product.name,
+      product.contentQuantity,
+      product.expirationType,
+      product.shelfLifeDays,
+      product.storageType,
+      product.desiredRetailPrice,
+      product.allergyInformation,
+      product.certificationInformation,
+      product.caseSize,
+      product.unitsPerCase,
+      product.minimumOrderQuantity,
+      product.shippingLeadTimeDays,
+      product.salesAreaRestriction
+    )
+    FROM Product product
+    JOIN ProductCategory productCategory
+      ON productCategory.id = product.productCategoryId
+    JOIN Prefecture prefecture
+      ON prefecture.id = product.mainIngredientOriginPrefectureId
+    WHERE product.id = :productId
+    """)
+  Optional<ProductSnapshotProjection> findSnapshotById(
+    @Param("productId")
+    Long productId
+  );
+
+  @Query("""
+    SELECT new com.hanrolink.product.repository.projection.ProductSnapshotProjection(
+      product.updatedAt,
+      product.id,
+      product.productCategoryId,
+      productCategory.name,
+      product.mainIngredientOriginPrefectureId,
+      prefecture.name,
+      product.name,
+      product.contentQuantity,
+      product.expirationType,
+      product.shelfLifeDays,
+      product.storageType,
+      product.desiredRetailPrice,
+      product.allergyInformation,
+      product.certificationInformation,
+      product.caseSize,
+      product.unitsPerCase,
+      product.minimumOrderQuantity,
+      product.shippingLeadTimeDays,
+      product.salesAreaRestriction
+    )
+    FROM Product product
+    JOIN ProductCategory productCategory
+      ON productCategory.id = product.productCategoryId
+    JOIN Prefecture prefecture
+      ON prefecture.id = product.mainIngredientOriginPrefectureId
+    WHERE product.publicId = :productPublicId
+    """)
+  Optional<ProductSnapshotProjection> findSnapshotByPublicId(
+    @Param("productPublicId")
+    UUID productPublicId
   );
 }

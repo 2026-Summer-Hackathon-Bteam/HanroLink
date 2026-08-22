@@ -1,25 +1,26 @@
 package com.hanrolink.negotiationrequest.response.component;
 
 import java.util.Objects;
+import java.util.UUID;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record ProductSnapshotSummaryResponse(
+public record NegotiationRequestProcurementRequestResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  Long id,
+  UUID id,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  String name
+  String title
 ) {
-  public ProductSnapshotSummaryResponse {
+  public NegotiationRequestProcurementRequestResponse {
     Objects.requireNonNull(
       id,
-      "ProductSnapshotSummaryResponse.id must not be null"
+      "NegotiationRequestProcurementRequestResponse.id must not be null"
     );
 
     Objects.requireNonNull(
-      name,
-      "ProductSnapshotSummaryResponse.name must not be null"
+      title,
+      "NegotiationRequestProcurementRequestResponse.title must not be null"
     );
   }
 }

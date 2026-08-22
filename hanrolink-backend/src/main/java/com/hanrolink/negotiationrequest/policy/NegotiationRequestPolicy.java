@@ -1,8 +1,10 @@
 package com.hanrolink.negotiationrequest.policy;
 
+import java.time.Duration;
+
 public final class NegotiationRequestPolicy {
 
-  public static final int ACTIVE_PERIOD_DAYS = 7;
+  public static final Duration ACTIVE_DURATION = Duration.ofDays(7);
 
   private NegotiationRequestPolicy() {}
 }
