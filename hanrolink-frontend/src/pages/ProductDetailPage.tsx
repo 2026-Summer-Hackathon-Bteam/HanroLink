@@ -178,7 +178,7 @@ function ProductDetailPage() {
         <p>{productDetailData.supplier.businessName}</p>
         <p>
           カテゴリー：{productDetailData.productCategory.name}&nbsp;
-          &#47;&emsp;地域：{productDetailData.mainIngredientRegion.name}&nbsp;
+          &#47;&emsp;地域：{productDetailData.mainIngredientOriginPrefecture.name}&nbsp;
           &#47;&emsp;提供時期：{availableMonths}
         </p>
       </div>
@@ -200,7 +200,7 @@ function ProductDetailPage() {
           <h3 className="text-2xl text-left mb-3">{productDetailData.name}</h3>
           <div className="flex gap-2 mb-3">
             <span className="px-3 py-1 rounded-full bg-badgearea">
-              {productDetailData.mainIngredientRegion.name}
+              {productDetailData.mainIngredientOriginPrefecture.name}
             </span>
             <span className="px-3 py-1 rounded-full bg-badgesto">
               {productDetailData.storageType.label}
@@ -303,7 +303,7 @@ function ProductDetailPage() {
             </DataRow>
 
             <DataRow itemName="主原料産地">
-              {productDetailData.mainIngredientRegion.name}
+              {productDetailData.mainIngredientOriginPrefecture.name}
             </DataRow>
 
             <DataRow itemName="内容量">

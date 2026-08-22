@@ -8,7 +8,7 @@ export function getProductDetailData(
   return Promise.resolve(productDetailMock)
 }
 
-export function deleteProduct(productId: number): Promise<void> {
+export function deleteProduct(productId: string): Promise<void> {
   if (productId !== productDetailMock.id) {
     return Promise.reject(new Error('対象の商品が見つかりません。'))
   }
@@ -17,7 +17,7 @@ export function deleteProduct(productId: number): Promise<void> {
 }
 
 export function updateProductVisibility(
-  productId: number,
+  productId: string,
   hidden: boolean,
 ): Promise<void> {
   if (productId !== productDetailMock.id) {

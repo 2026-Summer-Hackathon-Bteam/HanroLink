@@ -205,7 +205,7 @@ function ProductForm({ mode, initialValues, onSubmit, onCancel }: ProductFormPro
               >
                 <option value="">選択してください</option>
                 {[...productFormOptions.productCategoryGroups]
-                  .sort((a, b) => a.sortOrder - b.sortOrder)
+                  .sort((a, b) => a.id - b.id)
                   .map((option) => (
                     <option key={option.id} value={option.id}>
                       {option.name}
@@ -246,7 +246,7 @@ function ProductForm({ mode, initialValues, onSubmit, onCancel }: ProductFormPro
                       option.productCategoryGroupId ===
                       selectedProductCategoryGroupId,
                   )
-                  .sort((a, b) => a.sortOrder - b.sortOrder)
+                  .sort((a, b) => a.id - b.id)
                   .map((option) => (
                     <option key={option.id} value={option.id}>
                       {option.name}
@@ -319,24 +319,24 @@ function ProductForm({ mode, initialValues, onSubmit, onCancel }: ProductFormPro
           </div>
         </FormRow>
 
-        <FormRow label="主原料産地" htmlFor="mainIngredientRegionId">
+        <FormRow label="主原料産地" htmlFor="mainIngredientOriginPrefectureId">
           <select
-            id="mainIngredientRegionId"
-            name="mainIngredientRegionId"
-            value={productInformations.mainIngredientRegionId}
+            id="mainIngredientOriginPrefectureId"
+            name="mainIngredientOriginPrefectureId"
+            value={productInformations.mainIngredientOriginPrefectureId}
             onChange={(e) => {
               const value = e.target.value
               setProductInformations((prev) => ({
                 ...prev,
-                mainIngredientRegionId: value === '' ? '' : Number(value),
+                mainIngredientOriginPrefectureId: value === '' ? '' : Number(value),
               }))
             }}
             required
             className="h-11 w-full md:w-1/3 rounded-lg border-[0.5px] border-text px-3 shadow-sm"
           >
             <option value="">選択してください</option>
-            {[...productFormOptions.mainIngredientRegions]
-              .sort((a, b) => a.sortOrder - b.sortOrder)
+            {[...productFormOptions.mainIngredientOriginPrefectures]
+              .sort((a, b) => a.id - b.id)
               .map((option) => (
                 <option key={option.id} value={option.id}>
                   {option.name}

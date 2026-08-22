@@ -8,7 +8,7 @@ const createProductInitialValues = (): ProductFormValues => {
     productInformations: {
       name: '',
       productCategoryId: '',
-      mainIngredientRegionId: '',
+      mainIngredientOriginPrefectureId: '',
       mainImageFile: null,
       contentQuantity: '',
       expirationType: '',

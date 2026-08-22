@@ -24,7 +24,7 @@ const convertToInitialValues = (
     productInformations: {
       name: detail.name,
       productCategoryId: detail.productCategory.id,
-      mainIngredientRegionId: detail.mainIngredientRegion.id,
+      mainIngredientOriginPrefectureId: detail.mainIngredientOriginPrefecture.id,
       mainImageFile: null,
       contentQuantity: detail.contentQuantity,
       expirationType: detail.productExpirationType.value,
