@@ -89,12 +89,19 @@ public class SupplierProductImageUploadService {
     ProductImageUsage usage,
     UUID businessPublicId
   ) {
-    return switch (usage) {
-      case MAIN_IMAGE ->
-        "products/" + businessPublicId + "/main-images/" + UUID.randomUUID() + ".webp";
-      case STORY_IMAGE ->
-        "products/" + businessPublicId + "/story-images/" + UUID.randomUUID() + ".webp";
-    };
+    String imageDirectory =
+      switch (usage) {
+        case MAIN_IMAGE -> "main-images";
+        case STORY_IMAGE -> "story-images";
+      };
+    return "products/"
+      + businessPublicId
+      + "/"
+      + imageDirectory
+      + "/"
+      + UUID.randomUUID()
+      + "."
+      + PRODUCT_IMAGE_MIME_TYPE.getExtension();
   }
 
   private FileUploadUsage fileUploadUsageOf(
