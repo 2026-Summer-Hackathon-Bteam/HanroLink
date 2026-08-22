@@ -69,6 +69,7 @@ public class SupplierProductImageUploadService {
     PendingFileUpload pendingFileUpload =
       new PendingFileUpload(
         fileUploadContext.businessUserAccountId(),
+        null,
         imageStorageKey,
         fileUploadUsageOf(request.usage()),
         null,

@@ -35,6 +35,9 @@ public class PendingFileUpload {
   @Column(name = "business_user_account_id", nullable = false)
   private Long businessUserAccountId;
 
+  @Column(name = "channel_id")
+  private Long channelId;
+
   @Column(name = "storage_key", nullable = false)
   private String storageKey;
 
@@ -74,6 +77,7 @@ public class PendingFileUpload {
 
   public PendingFileUpload(
     Long businessUserAccountId,
+    Long channelId,
     String storageKey,
     FileUploadUsage usage,
     String displayFilename,
@@ -81,6 +85,7 @@ public class PendingFileUpload {
     Long fileSizeBytes
   ) {
     this.businessUserAccountId = businessUserAccountId;
+    this.channelId = channelId;
     this.storageKey = storageKey;
     this.usage = usage;
     this.displayFilename = displayFilename;
