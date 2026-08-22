@@ -11,14 +11,14 @@ import org.springframework.stereotype.Repository;
 
 import com.hanrolink.chat.entity.Channel;
 import com.hanrolink.chat.repository.projection.MyChatListProjection;
-import com.hanrolink.chat.repository.projection.MyChatMessageCreateContextProjection;
+import com.hanrolink.chat.repository.projection.MyChatParticipantContextProjection;
 import com.hanrolink.chat.repository.projection.MyChatOverviewProjection;
 
 @Repository
 public interface ChannelRepository extends JpaRepository<Channel, Long> {
 
   @Query("""
-    SELECT new com.hanrolink.chat.repository.projection.MyChatMessageCreateContextProjection(
+    SELECT new com.hanrolink.chat.repository.projection.MyChatParticipantContextProjection(
       channel.id,
       viewerAccount.id
     )
@@ -31,8 +31,8 @@ public interface ChannelRepository extends JpaRepository<Channel, Long> {
     WHERE channel.publicId = :channelPublicId
       AND viewerAccount.identityProviderSubject = :identityProviderSubject
     """)
-  Optional<MyChatMessageCreateContextProjection>
-    findMessageCreateContextByPublicIdAndIdentityProviderSubject(
+  Optional<MyChatParticipantContextProjection>
+    findParticipantContextByPublicIdAndIdentityProviderSubject(
       @Param("channelPublicId")
       UUID channelPublicId,
       @Param("identityProviderSubject")

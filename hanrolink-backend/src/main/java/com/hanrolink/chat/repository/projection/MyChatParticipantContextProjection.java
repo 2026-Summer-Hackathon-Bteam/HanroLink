@@ -1,6 +1,6 @@
 package com.hanrolink.chat.repository.projection;
 
-public record MyChatMessageCreateContextProjection(
+public record MyChatParticipantContextProjection(
   Long channelId,
   Long businessUserAccountId
 ) {}

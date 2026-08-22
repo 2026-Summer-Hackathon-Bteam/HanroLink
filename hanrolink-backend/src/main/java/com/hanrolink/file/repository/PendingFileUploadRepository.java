@@ -39,6 +39,7 @@ public interface PendingFileUploadRepository extends JpaRepository<PendingFileUp
     FROM PendingFileUpload pendingFileUpload
     WHERE pendingFileUpload.publicId IN :pendingFileUploadPublicIds
       AND pendingFileUpload.businessUserAccountId = :businessUserAccountId
+      AND pendingFileUpload.channelId = :channelId
       AND pendingFileUpload.usage = :usage
       AND pendingFileUpload.expiresAt > :currentTime
     """)
@@ -47,6 +48,8 @@ public interface PendingFileUploadRepository extends JpaRepository<PendingFileUp
     List<UUID> pendingFileUploadPublicIds,
     @Param("businessUserAccountId")
     Long businessUserAccountId,
+    @Param("channelId")
+    Long channelId,
     @Param("usage")
     FileUploadUsage usage,
     @Param("currentTime")

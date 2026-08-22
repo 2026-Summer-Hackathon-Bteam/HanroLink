@@ -14,7 +14,7 @@ import com.hanrolink.chat.entity.MessageFile;
 import com.hanrolink.chat.repository.ChannelRepository;
 import com.hanrolink.chat.repository.MessageFileRepository;
 import com.hanrolink.chat.repository.MessageRepository;
-import com.hanrolink.chat.repository.projection.MyChatMessageCreateContextProjection;
+import com.hanrolink.chat.repository.projection.MyChatParticipantContextProjection;
 import com.hanrolink.chat.request.MyChatMessageCreateRequest;
 import com.hanrolink.file.entity.PendingFileUpload;
 import com.hanrolink.file.enums.FileUploadUsage;
@@ -61,8 +61,8 @@ public class MyChatMessageService {
     MyChatMessageCreateRequest request
   ) {
     // メッセージ作成対象チャンネルの当事者確認と必要な主キーの取得
-    MyChatMessageCreateContextProjection messageCreateContext = channelRepository
-      .findMessageCreateContextByPublicIdAndIdentityProviderSubject(
+    MyChatParticipantContextProjection channelParticipantContext = channelRepository
+      .findParticipantContextByPublicIdAndIdentityProviderSubject(
         channelPublicId,
         identityProviderSubject
       )
@@ -75,14 +75,15 @@ public class MyChatMessageService {
     ) {
       pendingFileUploads = findUsableFileUploads(
         request.pendingFileUploadIds(),
-        messageCreateContext.businessUserAccountId()
+        channelParticipantContext.channelId(),
+        channelParticipantContext.businessUserAccountId()
       );
     }
 
     // メッセージの作成と保存
     Message message = new Message(
-      messageCreateContext.channelId(),
-      messageCreateContext.businessUserAccountId(),
+      channelParticipantContext.channelId(),
+      channelParticipantContext.businessUserAccountId(),
       request.body()
     );
     Message savedMessage = messageRepository.save(message);
@@ -108,13 +109,15 @@ public class MyChatMessageService {
 
   private List<PendingFileUpload> findUsableFileUploads(
     List<UUID> pendingFileUploadIds,
+    Long channelId,
     Long businessUserAccountId
   ) {
-    // 指定されたすべてのアップロード待ち情報について、所有者・用途・有効期限の確認
+    // 指定されたすべてのアップロード待ち情報について、所有者・対象チャンネル・用途・有効期限の確認
     List<PendingFileUpload> pendingFileUploads = pendingFileUploadRepository
       .findAllAvailableByPublicIds(
         pendingFileUploadIds,
         businessUserAccountId,
+        channelId,
         FileUploadUsage.MESSAGE_ATTACHMENT,
         Instant.now()
       );
