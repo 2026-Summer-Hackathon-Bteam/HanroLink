@@ -1,5 +1,6 @@
 package com.hanrolink.chat.service;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.hanrolink.chat.repository.ChannelRepository;
 import com.hanrolink.chat.repository.projection.MyChatOverviewProjection;
+import com.hanrolink.chat.response.MyChatListResponse;
 import com.hanrolink.chat.response.MyChatOverviewResponse;
 
 @Service
@@ -20,6 +22,29 @@ public class MyChatService {
     ChannelRepository channelRepository
   ) {
     this.channelRepository = channelRepository;
+  }
+
+  /**
+   * 自身に紐づくチャット一覧を取得する
+   * @param identityProviderSubject 認証プロバイダーのユーザー識別子
+   * @return チャット一覧
+   */
+  @Transactional(readOnly = true)
+  public List<MyChatListResponse> list(
+    String identityProviderSubject
+  ) {
+    return channelRepository.findAllByParticipantIdentityProviderSubject(
+      identityProviderSubject
+    )
+    .stream()
+    .map(channel ->
+      new MyChatListResponse(
+        channel.publicId(),
+        channel.name(),
+        channel.lastActivityAt()
+      )
+    )
+    .toList();
   }
 
   /**

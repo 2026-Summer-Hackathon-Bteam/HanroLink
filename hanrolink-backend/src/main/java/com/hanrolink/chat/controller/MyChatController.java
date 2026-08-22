@@ -3,7 +3,6 @@ package com.hanrolink.chat.controller;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -28,12 +27,19 @@ public class MyChatController {
     this.myChatService = myChatService;
   }
 
-  // バイヤー、サプライヤー利用可能
+  /**
+   * 自身に紐づくチャット一覧を返す
+   * @param jwt 認証済みユーザーのJWT
+   * @return チャット一覧
+   */
+  @RequiresApprovedBusiness
   @GetMapping(ChatApi.V1.MINE)
-  public ResponseEntity<List<MyChatListResponse>> list() {
-
-    // TODO: 現在のユーザーに紐づくチャンネル一覧を取得して、ResponseEntity.ok(response)で返す
-    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+  public ResponseEntity<List<MyChatListResponse>> list(
+    @AuthenticationPrincipal Jwt jwt
+  ) {
+    return ResponseEntity.ok(
+      myChatService.list(jwt.getSubject())
+    );
   }
 
   /**
