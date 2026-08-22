@@ -2,7 +2,7 @@ import mainVisual from '../../assets/mainvisual.png'
 import type { ProductDetail } from './productDetailTypes'
 
 export const productDetailMock = {
-  id: 1,
+  id: "1",
   name: '青森県産りんごの手作りジャム',
   hidden: false,
 
@@ -11,7 +11,7 @@ export const productDetailMock = {
     name: 'ジャム・はちみつ',
   },
 
-  mainIngredientRegion: {
+  mainIngredientOriginPrefecture: {
     id: 2,
     name: '青森県',
   },

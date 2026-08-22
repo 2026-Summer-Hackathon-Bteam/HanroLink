@@ -21,11 +21,11 @@ type SupplierProductCreateRequest =
 
 export type ProductInformationFormData = Omit<
   SupplierProductCreateRequest,
-  | 'mainImageFile'
+  | 'mainImagePendingFileUploadId'
   | 'monthlySupplyCapacities'
   | 'productStories'
   | 'productCategoryId'
-  | 'mainIngredientRegionId'
+  | 'mainIngredientOriginPrefectureId'
   | 'expirationType'
   | 'shelfLifeDays'
   | 'storageType'
@@ -36,7 +36,7 @@ export type ProductInformationFormData = Omit<
 > & {
   mainImageFile: File | null
   productCategoryId: number | ''
-  mainIngredientRegionId: number | ''
+  mainIngredientOriginPrefectureId: number | ''
   expirationType: SupplierProductCreateRequest['expirationType'] | ''
   shelfLifeDays: number | ''
   storageType: SupplierProductCreateRequest['storageType'] | ''
@@ -77,3 +77,11 @@ export type ProductFormProps = {
   onSubmit: (values: ProductFormValues) => void | Promise<void>
   onCancel?: () => void
 }
+
+export type ProductImageUploadRequest =
+  components['schemas']['SupplierProductImageUploadCreateRequest']
+
+export type ProductImageUploadResponse =
+  components['schemas']['SupplierProductImageUploadCreateResponse']
+
+export type ProductImageUsage = ProductImageUploadRequest['usage']

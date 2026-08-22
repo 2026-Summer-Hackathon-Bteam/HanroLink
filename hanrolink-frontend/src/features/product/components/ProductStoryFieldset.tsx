@@ -50,7 +50,7 @@ function ProductStoryFieldset({
           >
             <option value="">選択してください</option>
             {[...templates]
-              .sort((a, b) => a.sortOrder - b.sortOrder)
+              .sort((a, b) => a.id - b.id)
               .map((temp) => {
                 return (
                   <option key={temp.id} value={temp.id}>
