@@ -8,6 +8,12 @@ import type {
   ProductFormValues,
 } from '../features/product/productFormTypes'
 import { createTargetMonths } from '../shared/utils/yearMonth'
+import {
+  updateProduct,
+  uploadPreparedProductImage,
+} from '../features/product/productFormService'
+import { convertImageToWebp } from '../shared/utils/imageConversion'
+import type { SupplierProductUpdateRequest } from '../features/product/productFormTypes'
 
 const convertToInitialValues = (
   detail: ProductDetail,
@@ -24,7 +30,8 @@ const convertToInitialValues = (
     productInformations: {
       name: detail.name,
       productCategoryId: detail.productCategory.id,
-      mainIngredientOriginPrefectureId: detail.mainIngredientOriginPrefecture.id,
+      mainIngredientOriginPrefectureId:
+        detail.mainIngredientOriginPrefecture.id,
       mainImageFile: null,
       contentQuantity: detail.contentQuantity,
       expirationType: detail.productExpirationType.value,
@@ -58,20 +65,24 @@ const convertToInitialValues = (
   }
 }
 
+const waitForNextPaint = (): Promise<void> => {
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => resolve())
+  })
+}
+
 function ProductEditPage() {
   const { productId } = useParams<{ productId: string }>()
   const [initialValues, setInitialValues] =
     useState<ProductFormInitialValues | null>(null)
   const [error, setError] = useState('')
-  const parsedProductId = Number(productId)
-  const isValidProductId =
-    productId !== undefined &&
-    Number.isInteger(parsedProductId) &&
-    parsedProductId > 0
   const navigate = useNavigate()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitProgress, setSubmitProgress] = useState('')
+  const [submitError, setSubmitError] = useState('')
 
   useEffect(() => {
-    if (!isValidProductId) {
+    if (!productId) {
       return
     }
 
@@ -79,7 +90,7 @@ function ProductEditPage() {
 
     const loadProduct = async () => {
       try {
-        const detail = await getProductDetailData(parsedProductId)
+        const detail = await getProductDetailData(productId)
 
         if (!isCancelled) {
           if (!detail.permissions.canManage) {
@@ -100,23 +111,212 @@ function ProductEditPage() {
     return () => {
       isCancelled = true
     }
-  }, [isValidProductId, parsedProductId])
+  }, [productId])
 
   const handleCancel = () => {
     navigate(-1)
   }
 
-  const handleUpdate = (values: ProductFormValues) => {
-    void values
-    // TODO: 商品更新APIを呼ぶ
-  }
-
-  if (!isValidProductId) {
+  if (!productId) {
     return (
       <p role="alert" className="py-10 text-center text-error">
-        商品IDが正しくありません。
+        商品IDが取得できませんでした。
       </p>
     )
+  }
+
+  const handleUpdate = async (values: ProductFormValues) => {
+    if (isSubmitting) return
+
+    setIsSubmitting(true)
+    setSubmitError('')
+
+    try {
+      const information = values.productInformations
+
+      const {
+        name,
+        productCategoryId,
+        mainIngredientOriginPrefectureId,
+        mainImageFile,
+        contentQuantity,
+        expirationType,
+        shelfLifeDays,
+        storageType,
+        desiredRetailPrice,
+      } = information
+      // 必須入力に漏れがないかチェック
+      if (
+        !name.trim() ||
+        productCategoryId === '' ||
+        mainIngredientOriginPrefectureId === '' ||
+        !contentQuantity.trim() ||
+        expirationType === '' ||
+        storageType === '' ||
+        desiredRetailPrice === ''
+      ) {
+        throw new Error('必須項目を入力してください。')
+      }
+
+      let normalizedShelfLifeDays: number | undefined
+
+      if (expirationType === 'NOT_APPLICABLE') {
+        normalizedShelfLifeDays = undefined
+      } else {
+        if (shelfLifeDays === '') {
+          throw new Error('賞味期限または消費期限の日数を入力してください。')
+        }
+
+        normalizedShelfLifeDays = shelfLifeDays
+      }
+
+      const preparedStories = values.stories.map((story) => {
+        if (story.id === undefined) {
+          throw new Error('更新対象のストーリーIDが取得できません。')
+        }
+        if (story.productStorySectionTemplateId === '' || !story.body.trim()) {
+          throw new Error('4つのストーリーを全て入力してください。')
+        }
+
+        return {
+          id: story.id,
+          position: story.position,
+          productStorySectionTemplateId: story.productStorySectionTemplateId,
+          imageFile: story.imageFile,
+          body: story.body.trim(),
+        }
+      })
+
+      const monthlySupplyCapacities = values.monthlySupplyCapacities.map(
+        (capacity) => {
+          if (capacity.availableQuantity === '') {
+            throw new Error('6ヶ月分の提供可能数量を入力してください。')
+          }
+
+          return {
+            targetMonth: capacity.targetMonth,
+            availableQuantity: capacity.availableQuantity,
+          }
+        },
+      )
+
+      const changedImageCount =
+        (mainImageFile ? 1 : 0) +
+        preparedStories.filter((story) => story.imageFile).length
+
+      let uploadedImageCount = 0
+      let mainImagePendingFileUploadId: string | undefined
+
+      // メイン画像が変更された場合だけアップロード
+      if (mainImageFile) {
+        const current = uploadedImageCount + 1
+
+        setSubmitProgress(
+          `商品メイン画像を変換中...（${current}/${changedImageCount}）`,
+        )
+        await waitForNextPaint()
+
+        const mainImageBlob = await convertImageToWebp(mainImageFile)
+
+        setSubmitProgress(
+          `商品メイン画像をアップロード中...（${current}/${changedImageCount}）`,
+        )
+        await waitForNextPaint()
+
+        mainImagePendingFileUploadId = await uploadPreparedProductImage(
+          mainImageBlob,
+          'MAIN_IMAGE',
+        )
+
+        uploadedImageCount += 1
+      }
+
+      const productStories: SupplierProductUpdateRequest['productStories'] = []
+
+      // 変更されたストーリー画像だけを1枚ずつアップロード
+      for (const [index, story] of preparedStories.entries()) {
+        let pendingFileUploadId: string | undefined
+
+        if (story.imageFile) {
+          const current = uploadedImageCount + 1
+
+          setSubmitProgress(
+            `ストーリー画像${index + 1}枚目を変換中...（${current}/${changedImageCount}）`,
+          )
+          await waitForNextPaint()
+
+          const imageBlob = await convertImageToWebp(story.imageFile)
+
+          setSubmitProgress(
+            `ストーリー画像${index + 1}枚目をアップロード中...（${current}/${changedImageCount}）`,
+          )
+          await waitForNextPaint()
+
+          pendingFileUploadId = await uploadPreparedProductImage(
+            imageBlob,
+            'STORY_IMAGE',
+          )
+
+          uploadedImageCount += 1
+        }
+
+        productStories.push({
+          id: story.id,
+          position: story.position,
+          productStorySectionTemplateId: story.productStorySectionTemplateId,
+          body: story.body,
+          ...(pendingFileUploadId ? { pendingFileUploadId } : {}),
+        })
+      }
+
+      const request: SupplierProductUpdateRequest = {
+        name: name.trim(),
+        productCategoryId,
+        mainIngredientOriginPrefectureId,
+        ...(mainImagePendingFileUploadId
+          ? { mainImagePendingFileUploadId }
+          : {}),
+        contentQuantity: contentQuantity.trim(),
+        expirationType,
+        shelfLifeDays: normalizedShelfLifeDays,
+        storageType,
+        desiredRetailPrice,
+        allergyInformation: information.allergyInformation?.trim() || undefined,
+        certificationInformation:
+          information.certificationInformation?.trim() || undefined,
+        caseSize: information.caseSize?.trim() || undefined,
+        unitsPerCase:
+          information.unitsPerCase === ''
+            ? undefined
+            : information.unitsPerCase,
+        minimumOrderQuantity:
+          information.minimumOrderQuantity === ''
+            ? undefined
+            : information.minimumOrderQuantity,
+        shippingLeadTimeDays:
+          information.shippingLeadTimeDays === ''
+            ? undefined
+            : information.shippingLeadTimeDays,
+        salesAreaRestriction:
+          information.salesAreaRestriction?.trim() || undefined,
+        monthlySupplyCapacities,
+        productStories,
+      }
+
+      setSubmitProgress('商品情報を更新中...')
+      await waitForNextPaint()
+
+      await updateProduct(productId, request)
+
+      navigate(`/products/${productId}`)
+    } catch (error: unknown) {
+      setSubmitError(
+        error instanceof Error ? error.message : '商品の更新に失敗しました。',
+      )
+    } finally {
+      setIsSubmitting(false)
+      setSubmitProgress('')
+    }
   }
 
   if (error) {
@@ -140,6 +340,9 @@ function ProductEditPage() {
         initialValues={initialValues}
         onSubmit={handleUpdate}
         onCancel={handleCancel}
+        isSubmitting={isSubmitting}
+        submitProgress={submitProgress}
+        submitError={submitError}
       />
     </div>
   )

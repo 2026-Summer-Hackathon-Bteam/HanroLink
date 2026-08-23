@@ -76,10 +76,9 @@ export type ProductFormProps = {
   initialValues: ProductFormInitialValues
   onSubmit: (values: ProductFormValues) => void | Promise<void>
   onCancel?: () => void
-  // ProductEditPage.tsxの下３つのprops対応が終わったら任意を外す
-  isSubmitting?: boolean
-  submitProgress?: string
-  submitError?: string
+  isSubmitting: boolean
+  submitProgress: string
+  submitError: string
 }
 
 export type ProductImageUploadRequest =
@@ -92,3 +91,6 @@ export type ProductImageUsage = ProductImageUploadRequest['usage']
 
 export type SupplierProductCreateResponse =
   components['schemas']['SupplierProductCreateResponse']
+
+export type SupplierProductUpdateRequest =
+  components['schemas']['SupplierProductUpdateRequest']

@@ -6,6 +6,7 @@ import type {
   SupplierProductCreateRequest,
   SupplierProductCreateResponse,
   ProductImageUsage,
+  SupplierProductUpdateRequest,
 } from './productFormTypes'
 import { authenticatedApi } from '../../lib/api'
 
@@ -82,4 +83,25 @@ export async function uploadPreparedProductImage(
   await uploadProductImage(uploadUrl, imageBlob)
 
   return pendingFileUploadId
+}
+
+export async function updateProduct(
+  productId: string,
+  request: SupplierProductUpdateRequest,
+): Promise<void> {
+  const { response } = await authenticatedApi.PUT(
+    '/api/v1/products/{productId}',
+    {
+      params: {
+        path: {
+          productId,
+        },
+      },
+      body: request,
+    },
+  )
+
+  if (!response.ok || response.status !== 204) {
+    throw new Error('商品の更新に失敗しました。')
+  }
 }
