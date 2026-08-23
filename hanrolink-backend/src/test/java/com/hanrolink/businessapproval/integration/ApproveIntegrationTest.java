@@ -22,7 +22,11 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import com.hanrolink.businessapproval.api.BusinessApprovalApi;
 
-@SpringBootTest
+@SpringBootTest(
+  properties = {
+    "app.security.cors.allowed-origin=http://localhost:5173"
+  }
+)
 @AutoConfigureMockMvc
 @Testcontainers
 @Sql({
