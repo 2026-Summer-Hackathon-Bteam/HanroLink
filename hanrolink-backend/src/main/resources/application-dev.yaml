@@ -17,3 +17,8 @@ springdoc:
     enabled: true
   swagger-ui:
     enabled: true
+
+app:
+  security:
+    cors:
+      allowed-origin: ${CORS_ALLOWED_ORIGIN:http://localhost:5173}

@@ -11,7 +11,7 @@ import com.hanrolink.product.api.ProductApi;
 import com.hanrolink.product.response.PublicProductListResponse;
 import com.hanrolink.product.service.PublicProductService;
 
-@Profile("s3")
+@Profile("cloudfront")
 @RestController
 public class PublicProductController {
 

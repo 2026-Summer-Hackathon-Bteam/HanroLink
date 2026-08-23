@@ -39,7 +39,7 @@ import com.hanrolink.product.request.component.ProductStoryUpdateRequest;
 import com.hanrolink.product.response.SupplierProductCreateResponse;
 import com.hanrolink.product.response.SupplierProductListResponse;
 
-@Profile("cloudfront")
+@Profile("s3 & cloudfront")
 @Service
 public class SupplierProductManagementService {
 
