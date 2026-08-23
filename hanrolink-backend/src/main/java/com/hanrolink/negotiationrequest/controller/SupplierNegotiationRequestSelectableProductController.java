@@ -14,7 +14,7 @@ import com.hanrolink.negotiationrequest.response.SupplierNegotiationRequestSelec
 import com.hanrolink.negotiationrequest.service.SupplierNegotiationRequestSelectableProductService;
 import com.hanrolink.security.authorization.policy.RequiresApprovedSupplier;
 
-@Profile("s3")
+@Profile("cloudfront")
 @RestController
 public class SupplierNegotiationRequestSelectableProductController {
 

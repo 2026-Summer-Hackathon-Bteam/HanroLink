@@ -33,7 +33,7 @@ import jakarta.validation.Valid;
  * 認証中のSupplierが自社の商品情報を管理するためのController。
  * 他のSupplierが登録した商品情報は操作対象に含まない。
  */
-@Profile("s3")
+@Profile("s3 & cloudfront")
 @RestController
 public class SupplierProductManagementController {
 
