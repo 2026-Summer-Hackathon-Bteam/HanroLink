@@ -2,6 +2,13 @@ spring:
   application:
     name: hanrolink-backend
 
+  profiles:
+    group:
+      prod:
+        - cognito
+        - s3
+        - cloudfront
+
   flyway:
     enabled: true
 
