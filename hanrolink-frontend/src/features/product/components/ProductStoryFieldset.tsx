@@ -90,7 +90,7 @@ function ProductStoryFieldset({
               id={`image-${story.position}`}
               name="imageFile"
               type="file"
-              accept="image/png,image/jpeg,image/webp"
+              accept="image/png,image/jpeg,image/webp,image/heic,image/heif"
               className="file:text-bg file:rounded-full file:bg-border file:px-4 file:py-2 min-w-0"
               onChange={(e) => {
                 onChange(story.position, {

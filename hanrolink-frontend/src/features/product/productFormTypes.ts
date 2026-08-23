@@ -16,7 +16,7 @@ export type StoryFormChanges = Partial<
   Omit<StoryFormData, 'id' | 'position' | 'existingImageUrl'>
 >
 
-type SupplierProductCreateRequest =
+export type SupplierProductCreateRequest =
   components['schemas']['SupplierProductCreateRequest']
 
 export type ProductInformationFormData = Omit<
@@ -76,6 +76,10 @@ export type ProductFormProps = {
   initialValues: ProductFormInitialValues
   onSubmit: (values: ProductFormValues) => void | Promise<void>
   onCancel?: () => void
+  // ProductEditPage.tsxの下３つのprops対応が終わったら任意を外す
+  isSubmitting?: boolean
+  submitProgress?: string
+  submitError?: string
 }
 
 export type ProductImageUploadRequest =
@@ -85,3 +89,6 @@ export type ProductImageUploadResponse =
   components['schemas']['SupplierProductImageUploadCreateResponse']
 
 export type ProductImageUsage = ProductImageUploadRequest['usage']
+
+export type SupplierProductCreateResponse =
+  components['schemas']['SupplierProductCreateResponse']
