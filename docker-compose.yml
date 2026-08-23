@@ -30,12 +30,14 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       SPRING_PROFILES_ACTIVE: "dev,cognito,cloudfront,s3"
       JAVA_TOOL_OPTIONS: "-Duser.timezone=UTC"
+      AWS_PROFILE: hanrolink-app
 
     env_file:
       - ./hanrolink-backend/.env
 
     volumes:
       - ./hanrolink-backend/.secrets/cloudfront-private-key.pem:/run/secrets/cloudfront-private-key.pem:ro
+      - ${HOME}/.aws:/root/.aws:ro
 
     container_name: hanrolink-backend
 
