@@ -272,9 +272,13 @@ function ProcurementRequestDetailPage() {
 
         <p className="mt-2 text-sm text-error">
           削除した募集情報は復元できません。
+          <br />
+          募集情報を削除すると、関連する商談希望も取り消されます。
+          <br />
+          この操作は元に戻せません。
         </p>
 
-        <div className="mt-6 flex justify-end gap-3">
+        <div className="mt-6 flex justify-center gap-3">
           <button
             type="button"
             onClick={() => deleteDialogRef.current?.close()}
