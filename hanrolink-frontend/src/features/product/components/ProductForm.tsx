@@ -17,10 +17,9 @@ function ProductForm({
   initialValues,
   onSubmit,
   onCancel,
-  // ProductEditPageの下３つの対応が終わったら初期値を外す
-  isSubmitting = false,
-  submitProgress = '',
-  submitError = '',
+  isSubmitting,
+  submitProgress,
+  submitError,
 }: ProductFormProps) {
   const [stories, setStories] = useState<StoryFormData[]>(initialValues.stories)
   const [productInformations, setProductInformations] =
