@@ -437,7 +437,7 @@ function ProductDetailPage() {
           この操作は元に戻せません。
         </p>
 
-        <div className="mt-6 flex justify-end gap-3">
+        <div className="mt-6 flex justify-center gap-3">
           <button
             type="button"
             onClick={() => deleteDialogRef.current?.close()}
