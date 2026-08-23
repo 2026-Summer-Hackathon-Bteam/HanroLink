@@ -53,10 +53,12 @@ function ProductForm({
             selectedCategory?.productCategoryGroupId ?? '',
           )
         }
-      } catch {
+      } catch (error: unknown) {
         if (!isCancelled) {
           setFormOptionsError(
-            'ストーリーのテンプレートおよびフォーム選択肢の取得に失敗しました。',
+            error instanceof Error
+              ? error.message
+              : 'ストーリーのテンプレートおよびフォーム選択肢の取得に失敗しました。',
           )
         }
       }

@@ -1,4 +1,3 @@
-import { productFormOptionsMock } from './productFormOptionMock'
 import type {
   SupplierProductFormOptions,
   ProductImageUploadRequest,
@@ -10,8 +9,18 @@ import type {
 } from './productFormTypes'
 import { authenticatedApi } from '../../lib/api'
 
-export function getProductFormOptions(): Promise<SupplierProductFormOptions> {
-  return Promise.resolve(productFormOptionsMock)
+export async function getProductFormOptions(): Promise<SupplierProductFormOptions> {
+  const { data, response } = await authenticatedApi.GET(
+    '/api/v1/products/form-options',
+  )
+
+  if (!response.ok || !data) {
+    throw new Error(
+      'ストーリーのテンプレートおよびフォーム選択肢の取得に失敗しました。',
+    )
+  }
+
+  return data
 }
 
 export async function createProductImageUploadInformation({
