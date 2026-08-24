@@ -2,8 +2,13 @@ package com.hanrolink.chat.service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,13 +19,20 @@ import com.hanrolink.chat.entity.MessageFile;
 import com.hanrolink.chat.repository.ChannelRepository;
 import com.hanrolink.chat.repository.MessageFileRepository;
 import com.hanrolink.chat.repository.MessageRepository;
+import com.hanrolink.chat.repository.projection.ChatMessageFileProjection;
+import com.hanrolink.chat.repository.projection.MyChatMessageListProjection;
 import com.hanrolink.chat.repository.projection.MyChatParticipantContextProjection;
 import com.hanrolink.chat.request.MyChatMessageCreateRequest;
+import com.hanrolink.chat.request.MyChatMessageListRequest;
+import com.hanrolink.chat.response.MyChatMessageListResponse;
+import com.hanrolink.chat.response.component.ChatMessageFileResponse;
 import com.hanrolink.file.entity.PendingFileUpload;
 import com.hanrolink.file.enums.FileUploadUsage;
 import com.hanrolink.file.repository.PendingFileUploadRepository;
+import com.hanrolink.infrastructure.cloudfront.CloudFrontResourceUrlGenerator;
 import com.hanrolink.infrastructure.s3.S3UploadedFileVerifier;
 
+@Profile("s3 & cloudfront")
 @Service
 public class MyChatMessageService {
 
@@ -34,18 +46,22 @@ public class MyChatMessageService {
 
   private final S3UploadedFileVerifier s3UploadedFileVerifier;
 
+  private final CloudFrontResourceUrlGenerator cloudFrontResourceUrlGenerator;
+
   public MyChatMessageService(
     ChannelRepository channelRepository,
     MessageRepository messageRepository,
     MessageFileRepository messageFileRepository,
     PendingFileUploadRepository pendingFileUploadRepository,
-    S3UploadedFileVerifier s3UploadedFileVerifier
+    S3UploadedFileVerifier s3UploadedFileVerifier,
+    CloudFrontResourceUrlGenerator cloudFrontResourceUrlGenerator
   ) {
     this.channelRepository = channelRepository;
     this.messageRepository = messageRepository;
     this.messageFileRepository = messageFileRepository;
     this.pendingFileUploadRepository = pendingFileUploadRepository;
     this.s3UploadedFileVerifier = s3UploadedFileVerifier;
+    this.cloudFrontResourceUrlGenerator = cloudFrontResourceUrlGenerator;
   }
 
   /**
@@ -105,6 +121,95 @@ public class MyChatMessageService {
 
     // 使用済みアップロード待ち情報の削除
     pendingFileUploadRepository.deleteAll(pendingFileUploads);
+  }
+
+  /**
+   * 指定されたチャンネルのメッセージ一覧を取得する
+   * @param identityProviderSubject 認証プロバイダーのユーザー識別子
+   * @param channelPublicId 取得対象のチャンネル公開識別子
+   * @param request メッセージ一覧の取得条件
+   * @return 添付ファイル情報を含むメッセージ一覧
+   */
+  @Transactional(readOnly = true)
+  public List<MyChatMessageListResponse> list(
+    String identityProviderSubject,
+    UUID channelPublicId,
+    MyChatMessageListRequest request
+  ) {
+    // 対象チャンネルの当事者確認
+    MyChatParticipantContextProjection channelParticipantContext = channelRepository
+      .findParticipantContextByPublicIdAndIdentityProviderSubject(
+        channelPublicId,
+        identityProviderSubject
+      )
+      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+    // メッセージと添付ファイル情報の取得およびレスポンス用の分類
+    Pageable pageable = PageRequest.of(0, request.limit());
+    List<MyChatMessageListProjection> messages;
+    if (request.afterMessageId() != null) {
+      messages = messageRepository.findAfterByChannelId(
+        channelParticipantContext.channelId(),
+        channelParticipantContext.businessUserAccountId(),
+        request.afterMessageId(),
+        pageable
+      );
+    } else {
+      messages = messageRepository.findLatestOrBeforeByChannelId(
+        channelParticipantContext.channelId(),
+        channelParticipantContext.businessUserAccountId(),
+        request.beforeMessageId(),
+        pageable
+      );
+    }
+
+    List<Long> messageIds = messages
+      .stream()
+      .map(message -> message.id())
+      .toList();
+    List<ChatMessageFileProjection> messageFiles = List.of();
+    if (!messageIds.isEmpty()) {
+      messageFiles = messageFileRepository
+        .findAllByMessageIds(messageIds);
+    }
+    Map<Long, List<ChatMessageFileResponse>> messageFilesByMessageId =
+      messageFiles
+        .stream()
+        .collect(
+          Collectors.groupingBy(
+            messageFile -> messageFile.messageId(),
+            Collectors.mapping(
+              messageFile ->
+                new ChatMessageFileResponse(
+                  messageFile.displayFilename(),
+                  cloudFrontResourceUrlGenerator.generate(
+                    messageFile.storageKey()
+                  ),
+                  messageFile.fileSizeBytes()
+                ),
+              Collectors.toList()
+            )
+          )
+        );
+
+    // 添付ファイル情報を含むメッセージ一覧の生成
+    return messages
+      .stream()
+      .map(message ->
+        new MyChatMessageListResponse(
+          message.id(),
+          message.senderBusinessName(),
+          message.isMine(),
+          message.body(),
+          message.createdAt(),
+          messageFilesByMessageId
+            .getOrDefault(
+              message.id(),
+              List.of()
+            )
+        )
+      )
+      .toList();
   }
 
   private List<PendingFileUpload> findUsableFileUploads(
