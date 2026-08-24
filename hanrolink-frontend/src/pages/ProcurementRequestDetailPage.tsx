@@ -328,7 +328,7 @@ function ProcurementRequestDetailPage() {
           商談希望を送る
         </button>
         {procurementRequestDetailData.hasMyActiveNegotiationRequest ? (
-          <p className="pt-2">すでに有効な商談希望があります。</p>
+          <p className="pt-2">この募集情報には商談希望を送信済みです。</p>
         ) : !procurementRequestDetailData.permissions
             .canCreateNegotiationRequest ? (
           <p className="pt-2">
@@ -349,16 +349,26 @@ function ProcurementRequestDetailPage() {
       <dialog
         ref={negotiationDialogRef}
         aria-labelledby="create-negotiation-request-title"
+        aria-describedby="create-negotiation-request-description"
         className="m-auto w-[min(90vw,40rem)] rounded-lg border-0 bg-bg p-6 shadow-xl backdrop:bg-black/50"
       >
         {negotiationSucceeded ? (
           // 送信成功時
           <>
-            <h3 className="text-lg font-bold">商談希望を送信しました</h3>
+            <h3
+              id="create-negotiation-request-title"
+              className="text-lg font-bold"
+            >
+              商談希望を送信しました
+            </h3>
 
-            <p role="status" className="mt-4">
-              {procurementRequestDetailData.buyer.businessName}
-              へ商談希望を送信しました。
+            <p
+              id="create-negotiation-request-description"
+              role="status"
+              className="mt-4"
+            >
+              {procurementRequestDetailData.buyer.businessName}の「
+              {procurementRequestDetailData.title}」への商談希望を送信しました。
             </p>
 
             <div className="mt-6 flex justify-center">
@@ -399,11 +409,7 @@ function ProcurementRequestDetailPage() {
 
             {isLoadingSelectableProducts ? (
               <p className="py-8 text-center">商品を読み込み中...</p>
-            ) : selectableProducts.length === 0 && !negotiationError ? (
-              <p className="py-8 text-center">
-                商談希望に使用できる商品がありません。
-              </p>
-            ) : (
+            ) : selectableProducts.length > 0 ? (
               <fieldset
                 className="mt-4 max-h-80 overflow-y-auto border-0"
                 disabled={isSubmittingNegotiation}
@@ -444,7 +450,13 @@ function ProcurementRequestDetailPage() {
                   ))}
                 </ul>
               </fieldset>
-            )}
+            ) : !negotiationError ? (
+              <p className="py-8 text-center">
+                商談希望に使用できる公開中の商品がありません。
+                <br />
+                商品を登録するか、非表示の商品を公開してください。
+              </p>
+            ) : null}
 
             {negotiationError && (
               <p role="alert" className="mt-4 text-center text-error">
