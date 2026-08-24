@@ -48,6 +48,7 @@ public class MyChatNegotiationSnapshotService {
     String identityProviderSubject,
     UUID channelPublicId
   ) {
+    // 対象チャンネルの当事者確認とスナップショットの取得
     MyChatNegotiationSnapshotProjection negotiationSnapshot =
       channelRepository
         .findNegotiationSnapshotByPublicIdAndIdentityProviderSubject(
@@ -56,6 +57,7 @@ public class MyChatNegotiationSnapshotService {
         )
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
+    // 商品スナップショットの変更項目の特定とレスポンスへの変換
     Set<ProductSnapshotField> productChangedFields = compareProductSnapshots(
       negotiationSnapshot.requestedProductSnapshot(),
       negotiationSnapshot.acceptedProductSnapshot()
@@ -64,12 +66,12 @@ public class MyChatNegotiationSnapshotService {
       toProductSnapshotResponse(
         negotiationSnapshot.requestedProductSnapshot()
       );
-
     ProductSnapshotResponse acceptedProductSnapshot =
       toProductSnapshotResponse(
         negotiationSnapshot.acceptedProductSnapshot()
       );
 
+    // 募集を起点とする商談の場合、募集スナップショットを比較してレスポンスへ変換
     Set<ProcurementRequestSnapshotField> procurementRequestChangedFields =
       Set.of();
     ProcurementRequestSnapshotResponse requestedProcurementRequestSnapshot = null;
@@ -394,7 +396,6 @@ public class MyChatNegotiationSnapshotService {
           storageType.displayName()
         )
         .toList();
-
     List<MonthlyProcurementQuantitySnapshotResponse>
       monthlyProcurementQuantities =
         snapshot.monthlyProcurementQuantities()
