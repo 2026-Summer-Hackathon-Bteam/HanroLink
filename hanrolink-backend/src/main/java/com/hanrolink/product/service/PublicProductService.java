@@ -7,11 +7,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.hanrolink.infrastructure.s3.S3DownloadUrlGenerator;
+import com.hanrolink.infrastructure.cloudfront.CloudFrontDownloadUrlGenerator;
 import com.hanrolink.product.repository.ProductRepository;
 import com.hanrolink.product.response.PublicProductListResponse;
 
-@Profile("s3")
+@Profile("cloudfront")
 @Service
 public class PublicProductService {
 
@@ -19,14 +19,14 @@ public class PublicProductService {
 
   private final ProductRepository productRepository;
 
-  private final S3DownloadUrlGenerator s3DownloadUrlGenerator;
+  private final CloudFrontDownloadUrlGenerator cloudFrontDownloadUrlGenerator;
 
   public PublicProductService(
     ProductRepository productRepository,
-    S3DownloadUrlGenerator s3DownloadUrlGenerator
+    CloudFrontDownloadUrlGenerator cloudFrontDownloadUrlGenerator
   ) {
     this.productRepository = productRepository;
-    this.s3DownloadUrlGenerator = s3DownloadUrlGenerator;
+    this.cloudFrontDownloadUrlGenerator = cloudFrontDownloadUrlGenerator;
   }
 
   /**
@@ -43,7 +43,7 @@ public class PublicProductService {
           product.publicId(),
           product.name(),
           product.supplierBusinessName(),
-          s3DownloadUrlGenerator.generate(product.mainImageStorageKey())
+          cloudFrontDownloadUrlGenerator.generate(product.mainImageStorageKey())
         )
       )
       .toList();
