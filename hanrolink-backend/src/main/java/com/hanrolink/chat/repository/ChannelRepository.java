@@ -11,11 +11,37 @@ import org.springframework.stereotype.Repository;
 
 import com.hanrolink.chat.entity.Channel;
 import com.hanrolink.chat.repository.projection.MyChatListProjection;
+import com.hanrolink.chat.repository.projection.MyChatNegotiationSnapshotProjection;
 import com.hanrolink.chat.repository.projection.MyChatParticipantContextProjection;
 import com.hanrolink.chat.repository.projection.MyChatOverviewProjection;
 
 @Repository
 public interface ChannelRepository extends JpaRepository<Channel, Long> {
+
+  @Query("""
+    SELECT new com.hanrolink.chat.repository.projection.MyChatNegotiationSnapshotProjection(
+      channel.negotiationTargetType,
+      channel.requestedProductSnapshot,
+      channel.acceptedProductSnapshot,
+      channel.requestedProcurementRequestSnapshot,
+      channel.acceptedProcurementRequestSnapshot
+    )
+    FROM Channel channel
+    JOIN BusinessUserAccount viewerAccount
+      ON (
+        viewerAccount.id = channel.supplierAccountId
+        OR viewerAccount.id = channel.buyerAccountId
+      )
+    WHERE channel.publicId = :channelPublicId
+      AND viewerAccount.identityProviderSubject = :identityProviderSubject
+    """)
+  Optional<MyChatNegotiationSnapshotProjection>
+    findNegotiationSnapshotByPublicIdAndIdentityProviderSubject(
+      @Param("channelPublicId")
+      UUID channelPublicId,
+      @Param("identityProviderSubject")
+      String identityProviderSubject
+    );
 
   @Query("""
     SELECT COUNT(channel.id) > 0
