@@ -3,29 +3,53 @@ import type {
   ProductSearchOptions,
   ProductSearchConditions,
 } from './productSearchTypes'
-import {
-  productSearchMock,
-  productSearchOptionsMock,
-} from './productSearchMock'
+import { authenticatedApi } from '../../lib/api'
 
-export function getProductSearchData(
+export async function getProductSearchData(
   searchConditions: ProductSearchConditions,
   page = 1,
   pageSize = 20,
 ): Promise<ProductSearchResult> {
-  // 実API実装時にクエリパラメーターとして使用する
-  void searchConditions
-  
-  return Promise.resolve({
-    ...productSearchMock,
-    pagination: {
-      ...productSearchMock.pagination,
-      page,
-      pageSize,
+  const { data, response } = await authenticatedApi.GET('/api/v1/products', {
+    params: {
+      query: {
+        availableSupplyMonths:
+          searchConditions.targetMonths.length > 0
+            ? searchConditions.targetMonths
+            : undefined,
+        mainIngredientOriginRegionIds:
+          searchConditions.mainIngredientRegionIds.length > 0
+            ? searchConditions.mainIngredientRegionIds
+            : undefined,
+        productCategoryIds:
+          searchConditions.productCategoryIds.length > 0
+            ? searchConditions.productCategoryIds
+            : undefined,
+        storageTypes:
+          searchConditions.storageTypes.length > 0
+            ? searchConditions.storageTypes
+            : undefined,
+        page,
+        pageSize,
+      },
     },
   })
+
+  if (!response.ok || !data) {
+    throw new Error('商品一覧の取得に失敗しました。')
+  }
+
+  return data
 }
 
-export function getProductSearchOptions(): Promise<ProductSearchOptions> {
-  return Promise.resolve(productSearchOptionsMock)
+export async function getProductSearchOptions(): Promise<ProductSearchOptions> {
+  const { data, response } = await authenticatedApi.GET(
+    '/api/v1/products/search-options',
+  )
+
+  if (!response.ok || !data) {
+    throw new Error('商品検索条件の取得に失敗しました。')
+  }
+
+  return data
 }
