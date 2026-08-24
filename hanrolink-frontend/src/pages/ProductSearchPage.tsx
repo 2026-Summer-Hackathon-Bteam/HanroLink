@@ -30,7 +30,7 @@ const initialSearchConditions: ProductSearchConditions = {
   mainIngredientRegionIds: [],
 }
 
-const PAGE_SIZE = 6
+const PAGE_SIZE = 20
 
 function ProductSearchPage() {
   const [searchConditions, setSearchConditions] =
