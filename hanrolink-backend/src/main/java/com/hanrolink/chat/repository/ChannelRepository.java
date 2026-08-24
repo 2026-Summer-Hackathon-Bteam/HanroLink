@@ -18,6 +18,24 @@ import com.hanrolink.chat.repository.projection.MyChatOverviewProjection;
 public interface ChannelRepository extends JpaRepository<Channel, Long> {
 
   @Query("""
+    SELECT COUNT(channel.id) > 0
+    FROM Channel channel
+    JOIN BusinessUserAccount viewerAccount
+      ON (
+        viewerAccount.id = channel.supplierAccountId
+        OR viewerAccount.id = channel.buyerAccountId
+      )
+    WHERE channel.publicId = :channelPublicId
+      AND viewerAccount.identityProviderSubject = :identityProviderSubject
+    """)
+  boolean existsByPublicIdAndIdentityProviderSubject(
+    @Param("channelPublicId")
+    UUID channelPublicId,
+    @Param("identityProviderSubject")
+    String identityProviderSubject
+  );
+
+  @Query("""
     SELECT new com.hanrolink.chat.repository.projection.MyChatParticipantContextProjection(
       channel.id,
       viewerAccount.id
