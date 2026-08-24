@@ -8,7 +8,13 @@ import {
 } from 'react'
 import { useParams } from 'react-router-dom'
 import type { ChatDetail, ChatMessages } from '../features/chat/ChatTypes'
-import { getChatDetail, getChatMessages } from '../features/chat/ChatService'
+import {
+  getChatDetail,
+  getChatMessages,
+  createChatMessage,
+  uploadPreparedChatFile,
+} from '../features/chat/ChatService'
+import { convertImageToWebp } from '../shared/utils/imageConversion'
 
 const formatChatDateTime = (createdAt: string) =>
   new Date(createdAt).toLocaleString('ja-JP', {
@@ -20,7 +26,7 @@ const formatChatDateTime = (createdAt: string) =>
     hour12: false,
   })
 
-function formatFileSize(bytes: number): string {
+const formatFileSize = (bytes: number): string => {
   if (bytes === 0) {
     return '0 B'
   }
@@ -37,6 +43,16 @@ function formatFileSize(bytes: number): string {
   }).format(value)} ${units[unitIndex]}`
 }
 
+const createWebpFilename = (filename: string): string => {
+  const extension = '.webp'
+  const baseName = filename.replace(/\.[^/.]+$/, '') || 'image'
+  const maxBaseNameLength = 255 - extension.length
+
+  return `${baseName.slice(0, maxBaseNameLength)}${extension}`
+}
+
+const MAX_PDF_FILE_SIZE_BYTES = 10 * 1024 * 1024
+
 function ChatPage() {
   const [sendMessage, setSendMessage] = useState('')
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
@@ -47,6 +63,9 @@ function ChatPage() {
   const [error, setError] = useState('')
   const messageInputRef = useRef<HTMLTextAreaElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
+  const [isSending, setIsSending] = useState(false)
+  const [sendError, setSendError] = useState('')
+  const [submitProgress, setSubmitProgress] = useState('')
 
   const handleMessageInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const textarea = e.currentTarget
@@ -121,11 +140,93 @@ function ChatPage() {
     setSelectedFiles((prev) => prev.filter((file) => file !== targetFile))
   }
 
-  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    if (!canSend) return
-    //送信処理を書く
+    if (!canSend || isSending || !channelId) return
+
+    const messageBody = sendMessage.trim()
+    const pendingFileUploadIds: string[] = []
+
+    setSendError('')
+    setIsSending(true)
+
+    try {
+      for (const [index, file] of selectedFiles.entries()) {
+        setSubmitProgress(
+          `${index + 1}/${selectedFiles.length}件目のファイルを処理しています...`,
+        )
+
+        if (file.type === 'application/pdf') {
+          if (!file.name.toLowerCase().endsWith('.pdf')) {
+            throw new Error('PDFファイルの拡張子を確認してください。')
+          }
+
+          if (file.name.length > 255) {
+            throw new Error('PDFファイルの名前を255文字以内にしてください。')
+          }
+
+          if (file.size > MAX_PDF_FILE_SIZE_BYTES) {
+            throw new Error('PDFファイルは10MB以内にしてください。')
+          }
+
+          if (file.size === 0) {
+            throw new Error('空のPDFファイルは送信できません。')
+          }
+
+          const pendingFileUploadId = await uploadPreparedChatFile(
+            file,
+            file.name,
+            'application/pdf',
+          )
+
+          pendingFileUploadIds.push(pendingFileUploadId)
+          continue
+        }
+
+        const webpBlob = await convertImageToWebp(file)
+        const webpFilename = createWebpFilename(file.name)
+
+        const pendingFileUploadId = await uploadPreparedChatFile(
+          webpBlob,
+          webpFilename,
+          'image/webp',
+        )
+
+        pendingFileUploadIds.push(pendingFileUploadId)
+      }
+
+      setSubmitProgress('メッセージを送信しています...')
+
+      await createChatMessage(channelId, {
+        body: messageBody || undefined,
+        pendingFileUploadIds:
+          pendingFileUploadIds.length > 0 ? pendingFileUploadIds : undefined,
+      })
+
+      setSendMessage('')
+      setSelectedFiles([])
+
+      if (messageInputRef.current) {
+        messageInputRef.current.style.height = 'auto'
+      }
+
+      try {
+        const updatedMessages = await getChatMessages(channelId)
+        setMessages(updatedMessages)
+      } catch {
+        setSendError('メッセージは送信されましたが、表示の更新に失敗しました。')
+      }
+    } catch (sendFailure) {
+      setSendError(
+        sendFailure instanceof Error
+          ? sendFailure.message
+          : 'メッセージの送信に失敗しました。',
+      )
+    } finally {
+      setSubmitProgress('')
+      setIsSending(false)
+    }
   }
 
   const canSend = sendMessage.trim().length > 0 || selectedFiles.length > 0
@@ -241,8 +342,25 @@ function ChatPage() {
 
         <form
           onSubmit={handleSubmit}
+          aria-busy={isSending}
           className="border-t border-border/30 bg-bg p-3"
         >
+          {/* エラー・進捗表示 */}
+          {sendError && (
+            <p role="alert" className="mb-2 text-sm text-error">
+              {sendError}
+            </p>
+          )}
+
+          {submitProgress && (
+            <p
+              role="status"
+              aria-live="polite"
+              className="mb-2 text-sm text-other"
+            >
+              {submitProgress}
+            </p>
+          )}
           {/* 添付・入力欄・送信 */}
           <div
             className="flex flex-col gap-2 rounded-xl border border-text/30 bg-bg p-2
@@ -260,6 +378,7 @@ function ChatPage() {
               }}
               value={sendMessage}
               ref={messageInputRef}
+              disabled={isSending}
             />
             <div className="flex w-full items-center">
               <label
@@ -273,6 +392,8 @@ function ChatPage() {
                   multiple
                   className="sr-only"
                   onChange={handleFileChange}
+                  accept="image/png,image/jpeg,image/webp,image/heic,image/heif,application/pdf"
+                  disabled={isSending}
                 />
               </label>
               {/* 添付したファイルの表示 */}
@@ -290,8 +411,9 @@ function ChatPage() {
                       <button
                         type="button"
                         aria-label={`${file.name}を削除`}
-                        className="shrink-0"
+                        className="shrink-0 disabled:cursor-not-allowed disabled:opacity-50"
                         onClick={() => handleFileRemove(file)}
+                        disabled={isSending}
                       >
                         ×
                       </button>
@@ -303,9 +425,9 @@ function ChatPage() {
               <button
                 type="submit"
                 className="shrink-0 ml-auto rounded-full bg-border px-4 py-2 text-bg disabled:cursor-not-allowed disabled:opacity-50"
-                disabled={!canSend}
+                disabled={!canSend || isSending}
               >
-                送信
+                {isSending ? '送信中...' : '送信'}
               </button>
             </div>
           </div>
