@@ -111,9 +111,9 @@ public interface BusinessUserAccountRepository extends JpaRepository<BusinessUse
 
   @Query("""
     SELECT business.name
-    FROM Business business
-    JOIN BusinessUserAccount businessUserAccount
-      ON businessUserAccount.businessId = business.id
+    FROM BusinessUserAccount businessUserAccount
+    JOIN Business business
+      ON business.id = businessUserAccount.businessId
     WHERE businessUserAccount.identityProviderSubject = :identityProviderSubject
     """)
   Optional<String> findBusinessNameByIdentityProviderSubject(
