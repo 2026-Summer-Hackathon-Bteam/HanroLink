@@ -52,12 +52,8 @@ public record MyChatFileUploadCreateRequest(
     }
 
     String normalizedFilename = displayFilename.toLowerCase(Locale.ROOT);
+    String expectedExtension = "." + mimeType.getExtension();
 
-    return switch (mimeType) {
-      case IMAGE_WEBP ->
-        normalizedFilename.endsWith(".webp");
-      case APPLICATION_PDF ->
-        normalizedFilename.endsWith(".pdf");
-    };
+    return normalizedFilename.endsWith(expectedExtension);
   }
 }

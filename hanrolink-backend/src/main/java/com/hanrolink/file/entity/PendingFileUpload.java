@@ -8,6 +8,7 @@ import org.hibernate.type.SqlTypes;
 
 import com.hanrolink.file.enums.FileMimeType;
 import com.hanrolink.file.enums.FileUploadUsage;
+import com.hanrolink.file.policy.PendingFileUploadPolicy;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,21 +32,25 @@ public class PendingFileUpload {
   @Column(name = "public_id", updatable = false, nullable = false)
   private UUID publicId = UUID.randomUUID();
 
-  @Column(name = "business_user_account_id", nullable = false)
+  @Column(name = "business_user_account_id", updatable = false, nullable = false)
   private Long businessUserAccountId;
 
-  @Column(name = "storage_key", nullable = false)
+  @Column(name = "channel_id", updatable = false)
+  private Long channelId;
+
+  @Column(name = "storage_key", updatable = false, nullable = false)
   private String storageKey;
 
   @Enumerated(EnumType.STRING)
   @JdbcTypeCode(SqlTypes.NAMED_ENUM)
   @Column(
     columnDefinition = "file_upload_usage",
+    updatable = false,
     nullable = false
   )
   private FileUploadUsage usage;
 
-  @Column(name = "display_filename")
+  @Column(name = "display_filename", updatable = false)
   private String displayFilename;
 
   @Enumerated(EnumType.STRING)
@@ -53,12 +58,16 @@ public class PendingFileUpload {
   @Column(
     name = "mime_type",
     columnDefinition = "file_mime_type",
+    updatable = false,
     nullable = false
   )
   private FileMimeType mimeType;
 
-  @Column(name = "file_size_bytes", nullable = false)
+  @Column(name = "file_size_bytes", updatable = false, nullable = false)
   private Long fileSizeBytes;
+
+  @Column(name = "expires_at", updatable = false, nullable = false)
+  private Instant expiresAt;
 
   @Column(name = "created_at", updatable = false, nullable = false)
   private Instant createdAt;
@@ -70,6 +79,7 @@ public class PendingFileUpload {
 
   public PendingFileUpload(
     Long businessUserAccountId,
+    Long channelId,
     String storageKey,
     FileUploadUsage usage,
     String displayFilename,
@@ -77,6 +87,7 @@ public class PendingFileUpload {
     Long fileSizeBytes
   ) {
     this.businessUserAccountId = businessUserAccountId;
+    this.channelId = channelId;
     this.storageKey = storageKey;
     this.usage = usage;
     this.displayFilename = displayFilename;
@@ -87,6 +98,7 @@ public class PendingFileUpload {
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();
+    this.expiresAt = now.plus(PendingFileUploadPolicy.VALID_DURATION);
     this.createdAt = now;
     this.updatedAt = now;
   }
@@ -108,15 +120,15 @@ public class PendingFileUpload {
     return usage;
   }
 
+  public String getDisplayFilename() {
+    return displayFilename;
+  }
+
   public FileMimeType getMimeType() {
     return mimeType;
   }
 
   public Long getFileSizeBytes() {
     return fileSizeBytes;
-  }
-
-  public Instant getCreatedAt() {
-    return createdAt;
   }
 }
