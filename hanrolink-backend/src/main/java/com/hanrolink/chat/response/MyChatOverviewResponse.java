@@ -4,22 +4,22 @@ import java.util.Objects;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record MyChatDetailResponse(
+public record MyChatOverviewResponse(
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-  String name,
+  String channelName,
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   String counterpartyBusinessName
 ) {
-  public MyChatDetailResponse {
+  public MyChatOverviewResponse {
     Objects.requireNonNull(
-      name,
-      "MyChatDetailResponse.name must not be null"
+      channelName,
+      "MyChatOverviewResponse.channelName must not be null"
     );
 
     Objects.requireNonNull(
       counterpartyBusinessName,
-      "MyChatDetailResponse.counterpartyBusinessName must not be null"
+      "MyChatOverviewResponse.counterpartyBusinessName must not be null"
     );
   }
 }

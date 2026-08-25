@@ -55,6 +55,20 @@ public class MessageFile {
 
   protected MessageFile() {}
 
+  public MessageFile(
+    Long messageId,
+    String storageKey,
+    FileMimeType mimeType,
+    String displayFilename,
+    Long fileSizeBytes
+  ) {
+    this.messageId = messageId;
+    this.storageKey = storageKey;
+    this.mimeType = mimeType;
+    this.displayFilename = displayFilename;
+    this.fileSizeBytes = fileSizeBytes;
+  }
+
   @PrePersist
   private void onCreate() {
     Instant now = Instant.now();

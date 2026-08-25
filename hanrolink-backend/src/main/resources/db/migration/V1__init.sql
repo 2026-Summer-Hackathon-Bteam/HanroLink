@@ -317,11 +317,13 @@ CREATE TABLE pending_file_uploads (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   public_id UUID UNIQUE NOT NULL,
   business_user_account_id BIGINT NOT NULL,
+  channel_id BIGINT,
   storage_key VARCHAR(255) UNIQUE NOT NULL,
   usage file_upload_usage NOT NULL,
   display_filename VARCHAR(255),
   mime_type file_mime_type NOT NULL,
   file_size_bytes BIGINT NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
@@ -337,10 +339,24 @@ CREATE TABLE pending_file_uploads (
         AND display_filename IS NULL
       )
     ),
+  CONSTRAINT chk_pending_file_uploads_channel
+    CHECK (
+      (
+        usage = 'MESSAGE_ATTACHMENT'
+        AND channel_id IS NOT NULL
+      )
+      OR (
+        usage <> 'MESSAGE_ATTACHMENT'
+        AND channel_id IS NULL
+      )
+    ),
 
   CONSTRAINT fk_pending_file_uploads_business_user_account
     FOREIGN KEY (business_user_account_id)
-    REFERENCES business_user_accounts(id)
+    REFERENCES business_user_accounts(id),
+  CONSTRAINT fk_pending_file_uploads_channel
+    FOREIGN KEY (channel_id)
+    REFERENCES channels(id)
 );
 
 CREATE TABLE pending_file_deletions (
