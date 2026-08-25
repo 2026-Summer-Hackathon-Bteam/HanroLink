@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
 import com.hanrolink.account.repository.projection.BusinessProfileAccessProjection;
 import com.hanrolink.business.entity.Business;
+import com.hanrolink.business.enums.BusinessReviewStatus;
 import com.hanrolink.business.enums.BusinessRole;
 import com.hanrolink.business.repository.BusinessRepository;
 import com.hanrolink.business.response.BuyerProfileGetResponse;
@@ -46,9 +47,10 @@ public class BuyerBusinessService {
 
     Business targetBusiness =
       businessRepository
-        .findApprovedByPublicIdAndRole(
+        .findByPublicIdAndRoleAndReviewStatus(
           businessPublicId,
-          BusinessRole.BUYER
+          BusinessRole.BUYER,
+          BusinessReviewStatus.APPROVED
         )
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
