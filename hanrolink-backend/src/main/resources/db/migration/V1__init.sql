@@ -302,70 +302,6 @@ CREATE TABLE monthly_procurement_quantities (
     ON DELETE CASCADE
 );
 
-CREATE TYPE file_upload_usage AS ENUM (
-  'PRODUCT_MAIN_IMAGE',
-  'PRODUCT_STORY_IMAGE',
-  'MESSAGE_ATTACHMENT'
-);
-
-CREATE TYPE file_mime_type AS ENUM (
-  'IMAGE_WEBP',
-  'APPLICATION_PDF'
-);
-
-CREATE TABLE pending_file_uploads (
-  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  public_id UUID UNIQUE NOT NULL,
-  business_user_account_id BIGINT NOT NULL,
-  channel_id BIGINT,
-  storage_key VARCHAR(255) UNIQUE NOT NULL,
-  usage file_upload_usage NOT NULL,
-  display_filename VARCHAR(255),
-  mime_type file_mime_type NOT NULL,
-  file_size_bytes BIGINT NOT NULL,
-  expires_at TIMESTAMPTZ NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-
-  CONSTRAINT chk_pending_file_uploads_display_filename
-    CHECK (
-      (
-        usage = 'MESSAGE_ATTACHMENT'
-        AND display_filename IS NOT NULL
-        AND BTRIM(display_filename) <> ''
-      )
-      OR (
-        usage <> 'MESSAGE_ATTACHMENT'
-        AND display_filename IS NULL
-      )
-    ),
-  CONSTRAINT chk_pending_file_uploads_channel
-    CHECK (
-      (
-        usage = 'MESSAGE_ATTACHMENT'
-        AND channel_id IS NOT NULL
-      )
-      OR (
-        usage <> 'MESSAGE_ATTACHMENT'
-        AND channel_id IS NULL
-      )
-    ),
-
-  CONSTRAINT fk_pending_file_uploads_business_user_account
-    FOREIGN KEY (business_user_account_id)
-    REFERENCES business_user_accounts(id),
-  CONSTRAINT fk_pending_file_uploads_channel
-    FOREIGN KEY (channel_id)
-    REFERENCES channels(id)
-);
-
-CREATE TABLE pending_file_deletions (
-  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  storage_key VARCHAR(255) UNIQUE NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
-
 CREATE TABLE procurement_negotiation_requests (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   public_id UUID UNIQUE NOT NULL,
@@ -487,6 +423,11 @@ CREATE TABLE messages (
     REFERENCES business_user_accounts(id)
 );
 
+CREATE TYPE file_mime_type AS ENUM (
+  'IMAGE_WEBP',
+  'APPLICATION_PDF'
+);
+
 CREATE TABLE message_files (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   message_id BIGINT NOT NULL,
@@ -500,4 +441,63 @@ CREATE TABLE message_files (
   CONSTRAINT fk_message_files_message_id
     FOREIGN KEY (message_id)
     REFERENCES messages(id)
+);
+
+CREATE TYPE file_upload_usage AS ENUM (
+  'PRODUCT_MAIN_IMAGE',
+  'PRODUCT_STORY_IMAGE',
+  'MESSAGE_ATTACHMENT'
+);
+
+CREATE TABLE pending_file_uploads (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  public_id UUID UNIQUE NOT NULL,
+  business_user_account_id BIGINT NOT NULL,
+  channel_id BIGINT,
+  storage_key VARCHAR(255) UNIQUE NOT NULL,
+  usage file_upload_usage NOT NULL,
+  display_filename VARCHAR(255),
+  mime_type file_mime_type NOT NULL,
+  file_size_bytes BIGINT NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+  CONSTRAINT chk_pending_file_uploads_display_filename
+    CHECK (
+      (
+        usage = 'MESSAGE_ATTACHMENT'
+        AND display_filename IS NOT NULL
+        AND BTRIM(display_filename) <> ''
+      )
+      OR (
+        usage <> 'MESSAGE_ATTACHMENT'
+        AND display_filename IS NULL
+      )
+    ),
+  CONSTRAINT chk_pending_file_uploads_channel
+    CHECK (
+      (
+        usage = 'MESSAGE_ATTACHMENT'
+        AND channel_id IS NOT NULL
+      )
+      OR (
+        usage <> 'MESSAGE_ATTACHMENT'
+        AND channel_id IS NULL
+      )
+    ),
+
+  CONSTRAINT fk_pending_file_uploads_business_user_account
+    FOREIGN KEY (business_user_account_id)
+    REFERENCES business_user_accounts(id),
+  CONSTRAINT fk_pending_file_uploads_channel
+    FOREIGN KEY (channel_id)
+    REFERENCES channels(id)
+);
+
+CREATE TABLE pending_file_deletions (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  storage_key VARCHAR(255) UNIQUE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
