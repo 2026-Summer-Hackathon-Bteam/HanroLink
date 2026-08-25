@@ -88,7 +88,7 @@ export async function getBuyerMyPageData(): Promise<BuyerMyPageData> {
 }
 
 export async function acceptNegotiationRequest(
-  procurementNegotiationRequestId: number,
+  procurementNegotiationRequestId: string,
 ): Promise<BuyerAcceptNegotiationResponse> {
   const { data, response } = await authenticatedApi.POST(
     '/api/v1/me/buyer/procurement-negotiation-requests/{procurementNegotiationRequestId}/accept',

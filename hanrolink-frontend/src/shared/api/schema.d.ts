@@ -180,7 +180,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/chats/file-uploads": {
+    "/api/v1/chats/{channelId}/file-uploads": {
         parameters: {
             query?: never;
             header?: never;
@@ -190,6 +190,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["create_7"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/chats/{channelId}/file-access": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["create_8"];
         delete?: never;
         options?: never;
         head?: never;
@@ -475,7 +491,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["getDetail_2"];
+        get: operations["getOverview"];
         put?: never;
         post?: never;
         delete?: never;
@@ -484,7 +500,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/buyer/{businessId}": {
+    "/api/v1/chats/{channelId}/negotiation-snapshots": {
         parameters: {
             query?: never;
             header?: never;
@@ -500,6 +516,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/buyer/{businessId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_8"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/business-registrations/{businessId}": {
         parameters: {
             query?: never;
@@ -507,7 +539,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["getDetail_3"];
+        get: operations["getDetail_2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1041,9 +1073,69 @@ export interface components {
         CurrentBusinessGetResponse: {
             businessName: string;
         };
-        MyChatDetailResponse: {
-            name: string;
+        MyChatOverviewResponse: {
+            channelName: string;
             counterpartyBusinessName: string;
+        };
+        MonthlyProcurementQuantitySnapshotResponse: {
+            targetMonth: string;
+            /** Format: int32 */
+            desiredQuantity: number;
+        };
+        MonthlySupplyCapacitySnapshotResponse: {
+            targetMonth: string;
+            /** Format: int32 */
+            availableQuantity: number;
+        };
+        MyChatNegotiationSnapshotResponse: {
+            /** @enum {string} */
+            negotiationTargetType: "PRODUCT" | "PROCUREMENT_REQUEST";
+            productChangedFields: ("PRODUCT_CATEGORY" | "MAIN_INGREDIENT_ORIGIN_PREFECTURE" | "NAME" | "CONTENT_QUANTITY" | "EXPIRATION_TYPE" | "SHELF_LIFE_DAYS" | "STORAGE_TYPE" | "DESIRED_RETAIL_PRICE" | "ALLERGY_INFORMATION" | "CERTIFICATION_INFORMATION" | "CASE_SIZE" | "UNITS_PER_CASE" | "MINIMUM_ORDER_QUANTITY" | "SHIPPING_LEAD_TIME_DAYS" | "SALES_AREA_RESTRICTION" | "MONTHLY_SUPPLY_CAPACITIES" | "PRODUCT_STORIES")[];
+            requestedProductSnapshot: components["schemas"]["ProductSnapshotResponse"];
+            acceptedProductSnapshot: components["schemas"]["ProductSnapshotResponse"];
+            procurementRequestChangedFields?: ("PRODUCT_CATEGORY" | "TITLE" | "DESCRIPTION" | "REQUIRED_TRADE_TERMS" | "DESIRED_UNIT_PRICE" | "DELIVERY_SHELF_LIFE_DAYS" | "STORAGE_TYPES" | "MONTHLY_PROCUREMENT_QUANTITIES")[];
+            requestedProcurementRequestSnapshot?: components["schemas"]["ProcurementRequestSnapshotResponse"];
+            acceptedProcurementRequestSnapshot?: components["schemas"]["ProcurementRequestSnapshotResponse"];
+        };
+        ProcurementRequestSnapshotResponse: {
+            productCategoryName: string;
+            title: string;
+            description: string;
+            requiredTradeTerms?: string;
+            /** Format: int32 */
+            desiredUnitPrice?: number;
+            /** Format: int32 */
+            deliveryShelfLifeDays?: number;
+            storageTypeNames: string[];
+            monthlyProcurementQuantities: components["schemas"]["MonthlyProcurementQuantitySnapshotResponse"][];
+        };
+        ProductSnapshotResponse: {
+            productCategoryName: string;
+            mainIngredientOriginPrefectureName: string;
+            name: string;
+            contentQuantity: string;
+            expirationTypeName: string;
+            /** Format: int32 */
+            shelfLifeDays?: number;
+            storageTypeName: string;
+            /** Format: int32 */
+            desiredRetailPrice: number;
+            allergyInformation?: string;
+            certificationInformation?: string;
+            caseSize?: string;
+            /** Format: int32 */
+            unitsPerCase?: number;
+            /** Format: int32 */
+            minimumOrderQuantity?: number;
+            /** Format: int32 */
+            shippingLeadTimeDays?: number;
+            salesAreaRestriction?: string;
+            monthlySupplyCapacities: components["schemas"]["MonthlySupplyCapacitySnapshotResponse"][];
+            productStories: components["schemas"]["ProductStorySnapshotResponse"][];
+        };
+        ProductStorySnapshotResponse: {
+            sectionTitle: string;
+            body: string;
         };
         ChatMessageFileResponse: {
             displayFilename: string;
@@ -1506,7 +1598,11 @@ export interface operations {
     };
     list: {
         parameters: {
-            query?: never;
+            query?: {
+                limit?: number;
+                beforeMessageId?: number;
+                afterMessageId?: number;
+            };
             header?: never;
             path: {
                 channelId: string;
@@ -1554,7 +1650,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                channelId: string;
+            };
             cookie?: never;
         };
         requestBody: {
@@ -1571,6 +1669,26 @@ export interface operations {
                 content: {
                     "*/*": components["schemas"]["MyChatFileUploadCreateResponse"];
                 };
+            };
+        };
+    };
+    create_8: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                channelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -1918,7 +2036,7 @@ export interface operations {
             };
         };
     };
-    getDetail_2: {
+    getOverview: {
         parameters: {
             query?: never;
             header?: never;
@@ -1935,12 +2053,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MyChatDetailResponse"];
+                    "*/*": components["schemas"]["MyChatOverviewResponse"];
                 };
             };
         };
     };
     get_7: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                channelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MyChatNegotiationSnapshotResponse"];
+                };
+            };
+        };
+    };
+    get_8: {
         parameters: {
             query?: never;
             header?: never;
@@ -1962,7 +2102,7 @@ export interface operations {
             };
         };
     };
-    getDetail_3: {
+    getDetail_2: {
         parameters: {
             query?: never;
             header?: never;
