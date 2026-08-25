@@ -67,7 +67,9 @@ function BuyerMyPage() {
     }
   }
 
-  const handleOpenNegotiationDialog = (negotiation: BuyerReceivedNegotiation) => {
+  const handleOpenNegotiationDialog = (
+    negotiation: BuyerReceivedNegotiation,
+  ) => {
     setAcceptError('')
     setSelectedNegotiation(negotiation)
     negotiationDialogRef.current?.showModal()
@@ -158,9 +160,11 @@ function BuyerMyPage() {
                         <td>
                           <button
                             type="button"
-                            className="border border-accent bg-accentbg rounded-full px-2"
+                            className="button-base button-form rounded-full px-2"
                             aria-label={`${negotiation.product.businessName}から届いた${negotiation.procurementRequest.title}に関する商談を開始する`}
-                            onClick={() => handleOpenNegotiationDialog(negotiation)}
+                            onClick={() =>
+                              handleOpenNegotiationDialog(negotiation)
+                            }
                           >
                             商談開始
                           </button>
@@ -231,7 +235,7 @@ function BuyerMyPage() {
           </div>
           <Link
             to={'/procurement-requests/new'}
-            className="bg-border text-bg rounded-lg mb-2 mx-1"
+            className="button-base button-search rounded-lg mb-2 mx-1 hover:bg-border/80"
           >
             + 募集情報を登録する
           </Link>
@@ -321,7 +325,8 @@ function BuyerMyPage() {
             <p id="start-negotiation-description" className="mt-4">
               「{selectedNegotiation.procurementRequest.title}」について、
               {selectedNegotiation.product.name}
-              を提供する{selectedNegotiation.product.businessName}との商談を開始します。
+              を提供する{selectedNegotiation.product.businessName}
+              との商談を開始します。
             </p>
 
             <ul className="mt-4 list-disc space-y-2 pl-5 text-left text-sm">
@@ -345,7 +350,7 @@ function BuyerMyPage() {
         <div className="mt-6 flex justify-end gap-3">
           <button
             type="button"
-            className="rounded-full border border-accent px-5 py-2"
+            className="rounded-full px-5 py-2 button-base button-secondary"
             onClick={() => negotiationDialogRef.current?.close()}
             disabled={isSubmitting}
           >
@@ -353,7 +358,7 @@ function BuyerMyPage() {
           </button>
           <button
             type="button"
-            className="rounded-full bg-accent px-5 py-2 text-bg"
+            className="rounded-full button-base button-primary px-5 py-2 text-bg"
             onClick={() => {
               void handleAcceptNegotiation()
             }}

@@ -22,7 +22,7 @@ function SearchPagination({
         type="button"
         disabled={currentPage === 1 || isLoading}
         onClick={() => void onPageChange(currentPage - 1)}
-        className="rounded-full border border-border px-3 py-2 disabled:cursor-not-allowed disabled:opacity-40"
+        className="rounded-full border border-border px-3 py-2 disabled:cursor-not-allowed disabled:opacity-50"
       >
         前へ
       </button>
@@ -40,7 +40,7 @@ function SearchPagination({
               className={
                 isCurrentPage
                   ? 'size-10 rounded-full bg-border font-bold text-bg'
-                  : 'size-10 rounded-full border border-border hover:bg-textbg disabled:cursor-not-allowed disabled:opacity-40'
+                  : 'size-10 rounded-full border border-border hover:bg-textbg disabled:cursor-not-allowed disabled:opacity-50'
               }
               disabled={isLoading || isCurrentPage}
             >
@@ -54,7 +54,7 @@ function SearchPagination({
         type="button"
         disabled={currentPage === totalPages || isLoading}
         onClick={() => void onPageChange(currentPage + 1)}
-        className="rounded-full border border-border px-3 py-2 disabled:cursor-not-allowed disabled:opacity-40"
+        className="rounded-full border border-border px-3 py-2 disabled:cursor-not-allowed disabled:opacity-50"
       >
         次へ
       </button>

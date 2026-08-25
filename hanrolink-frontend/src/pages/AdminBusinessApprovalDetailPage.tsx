@@ -166,7 +166,7 @@ function AdminBusinessApprovalDetailPage() {
         <>
           <button
             type="button"
-            className="h-9 w-45 mx-auto mt-16 rounded-full border border-accent bg-accentbg disabled:cursor-not-allowed disabled:opacity-50"
+            className="h-9 w-45 mx-auto mt-16 rounded-full button-base button-form"
             onClick={handleApprove}
             disabled={isSubmitting}
           >

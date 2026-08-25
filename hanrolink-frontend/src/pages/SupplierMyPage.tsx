@@ -156,7 +156,7 @@ function SupplierMyPage() {
                         <td>
                           <button
                             type="button"
-                            className="border border-accent bg-accentbg rounded-full px-2"
+                            className="button-base button-form rounded-full px-2"
                             aria-label={`${negotiation.buyer.businessName}と${negotiation.product.name}に関する商談を開始する`}
                             onClick={() =>
                               handleOpenNegotiationDialog(negotiation)
@@ -239,7 +239,7 @@ function SupplierMyPage() {
           </div>
           <Link
             to={'/products/new'}
-            className="bg-border text-bg rounded-lg mb-2 mx-1 text-center py-1"
+            className="button-base button-search rounded-lg mb-2 mx-1 text-center py-1 hover:bg-border/80"
           >
             + 商品情報を登録する
           </Link>
@@ -365,7 +365,7 @@ function SupplierMyPage() {
         <div className="mt-6 flex justify-end gap-3">
           <button
             type="button"
-            className="rounded-full border border-accent px-5 py-2"
+            className="rounded-full px-5 py-2 button-base button-secondary"
             onClick={() => negotiationDialogRef.current?.close()}
             disabled={isSubmitting}
           >
@@ -373,7 +373,7 @@ function SupplierMyPage() {
           </button>
           <button
             type="button"
-            className="rounded-full bg-accent px-5 py-2 text-bg"
+            className="rounded-full button-base button-primary px-5 py-2 text-bg"
             onClick={() => {
               void handleAcceptNegotiation()
             }}

@@ -383,7 +383,7 @@ function ChatPage() {
             <div className="flex w-full items-center">
               <label
                 htmlFor="chat-file"
-                className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-border text-bg textaccent hover:bg-border/70"
+                className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full button-base button-search textaccent hover:bg-border/70"
               >
                 ＋
                 <input
@@ -424,7 +424,7 @@ function ChatPage() {
 
               <button
                 type="submit"
-                className="shrink-0 ml-auto rounded-full bg-border px-4 py-2 text-bg disabled:cursor-not-allowed disabled:opacity-50"
+                className="shrink-0 ml-auto rounded-full button-search px-4 py-2 text-bg button-base"
                 disabled={!canSend || isSending}
               >
                 {isSending ? '送信中...' : '送信'}

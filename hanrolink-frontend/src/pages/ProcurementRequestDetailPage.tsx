@@ -190,14 +190,14 @@ function ProcurementRequestDetailPage() {
             <div className="flex flex-wrap gap-3">
               <Link
                 to={`/procurement-requests/${procurementRequestId}/edit`}
-                className="rounded-full bg-accent px-5 py-2 text-bg"
+                className="rounded-full button-base button-primary px-5 py-2 text-bg hover:bg-accent/80"
               >
                 編集する
               </Link>
 
               <button
                 type="button"
-                className="rounded-full border border-error px-5 py-2 text-error"
+                className="rounded-full button-base button-danger-outline px-5 py-2 text-error"
                 onClick={() => deleteDialogRef.current?.showModal()}
               >
                 削除する
@@ -317,7 +317,7 @@ function ProcurementRequestDetailPage() {
       <div>
         <button
           type="button"
-          className="h-9 w-45 block mx-auto mt-8 rounded-full bg-accent text-bg textaccent disabled:cursor-not-allowed disabled:opacity-50"
+          className="h-9 w-45 block mx-auto mt-8 rounded-full button-base button-primary textaccent"
           disabled={
             procurementRequestDetailData.hasMyActiveNegotiationRequest ||
             !procurementRequestDetailData.permissions
@@ -340,7 +340,7 @@ function ProcurementRequestDetailPage() {
       <button
         type="button"
         onClick={() => navigate(-1)}
-        className="mx-auto mt-16 h-9 w-45 rounded-full border border-accent bg-accentbg"
+        className="mx-auto mt-16 h-9 w-45 rounded-full button-base button-form"
       >
         前のページに戻る
       </button>
@@ -374,7 +374,7 @@ function ProcurementRequestDetailPage() {
             <div className="mt-6 flex justify-center">
               <button
                 type="button"
-                className="rounded-full bg-accent px-5 py-2 text-bg"
+                className="rounded-full button-base button-primary px-5 py-2 text-bg"
                 onClick={() => negotiationDialogRef.current?.close()}
               >
                 閉じる
@@ -467,7 +467,7 @@ function ProcurementRequestDetailPage() {
             <div className="mt-6 flex justify-center gap-3">
               <button
                 type="button"
-                className="rounded-full border border-accent px-5 py-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-full button-base button-secondary px-5 py-2"
                 onClick={() => negotiationDialogRef.current?.close()}
                 disabled={isSubmittingNegotiation}
               >
@@ -476,7 +476,7 @@ function ProcurementRequestDetailPage() {
 
               <button
                 type="button"
-                className="rounded-full bg-accent px-5 py-2 text-bg disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-full button-base button-primary px-5 py-2 text-bg"
                 onClick={() => void handleCreateNegotiationRequest()}
                 disabled={
                   isLoadingSelectableProducts ||
@@ -517,7 +517,7 @@ function ProcurementRequestDetailPage() {
           <button
             type="button"
             onClick={() => deleteDialogRef.current?.close()}
-            className="rounded-full border border-accent px-5 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="rounded-full button-base button-secondary px-5 py-2"
             disabled={isDeleting}
           >
             キャンセル
@@ -525,7 +525,7 @@ function ProcurementRequestDetailPage() {
 
           <button
             type="button"
-            className="rounded-full bg-error px-5 py-2 text-bg  disabled:opacity-50 disabled:cursor-not-allowed"
+            className="rounded-full px-5 py-2 button-base button-danger"
             onClick={handleDelete}
             disabled={isDeleting}
           >

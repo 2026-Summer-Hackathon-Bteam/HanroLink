@@ -89,7 +89,7 @@ function BuyerProfilePage() {
       <button
         type="button"
         onClick={() => navigate(-1)}
-        className="mx-auto mt-16 h-9 w-45 rounded-full border border-accent bg-accentbg"
+        className="mx-auto mt-16 h-9 w-45 rounded-full button-base button-form"
       >
         前のページに戻る
       </button>
