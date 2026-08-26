@@ -1,31 +1,63 @@
 import type { ProductDetail } from './productDetailTypes'
-import { productDetailMock } from './productDetailMock'
+import { authenticatedApi } from '../../lib/api'
 
-export function getProductDetailData(
-  productId: number,
+export async function getProductDetailData(
+  productId: string,
 ): Promise<ProductDetail> {
-  if (productId !== 1) return Promise.reject('データがありません。')
-  return Promise.resolve(productDetailMock)
-}
+  const { data, response } = await authenticatedApi.GET(
+    '/api/v1/products/{productId}',
+    {
+      params: {
+        path: {
+          productId,
+        },
+      },
+    },
+  )
 
-export function deleteProduct(productId: number): Promise<void> {
-  if (productId !== productDetailMock.id) {
-    return Promise.reject(new Error('対象の商品が見つかりません。'))
+  if (!response.ok || !data) {
+    throw new Error('商品詳細情報の取得に失敗しました。')
   }
 
-  return Promise.resolve()
+  return data
 }
 
-export function updateProductVisibility(
-  productId: number,
+export async function deleteProduct(productId: string): Promise<void> {
+  const { response } = await authenticatedApi.DELETE(
+    '/api/v1/products/{productId}',
+    {
+      params: {
+        path: {
+          productId,
+        },
+      },
+    },
+  )
+
+  if (!response.ok || response.status !== 204) {
+    throw new Error('商品情報の削除に失敗しました。')
+  }
+}
+
+export async function updateProductVisibility(
+  productId: string,
   hidden: boolean,
 ): Promise<void> {
-  if (productId !== productDetailMock.id) {
-    return Promise.reject(new Error('対象の商品が見つかりません。'))
+  const { response } = await authenticatedApi.PATCH(
+    '/api/v1/products/{productId}/visibility',
+    {
+      params: {
+        path: {
+          productId,
+        },
+      },
+      body: {
+        hidden,
+      },
+    },
+  )
+
+  if (!response.ok || response.status !== 204) {
+    throw new Error('商品の非表示設定の切り替えに失敗しました。')
   }
-
-  // Mockではデータ自体を書き換えないため、現時点では値を使用しない
-  void hidden
-
-  return Promise.resolve()
 }

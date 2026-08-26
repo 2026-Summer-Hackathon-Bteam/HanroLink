@@ -16,16 +16,16 @@ export type StoryFormChanges = Partial<
   Omit<StoryFormData, 'id' | 'position' | 'existingImageUrl'>
 >
 
-type SupplierProductCreateRequest =
+export type SupplierProductCreateRequest =
   components['schemas']['SupplierProductCreateRequest']
 
 export type ProductInformationFormData = Omit<
   SupplierProductCreateRequest,
-  | 'mainImageFile'
+  | 'mainImagePendingFileUploadId'
   | 'monthlySupplyCapacities'
   | 'productStories'
   | 'productCategoryId'
-  | 'mainIngredientRegionId'
+  | 'mainIngredientOriginPrefectureId'
   | 'expirationType'
   | 'shelfLifeDays'
   | 'storageType'
@@ -36,7 +36,7 @@ export type ProductInformationFormData = Omit<
 > & {
   mainImageFile: File | null
   productCategoryId: number | ''
-  mainIngredientRegionId: number | ''
+  mainIngredientOriginPrefectureId: number | ''
   expirationType: SupplierProductCreateRequest['expirationType'] | ''
   shelfLifeDays: number | ''
   storageType: SupplierProductCreateRequest['storageType'] | ''
@@ -76,4 +76,21 @@ export type ProductFormProps = {
   initialValues: ProductFormInitialValues
   onSubmit: (values: ProductFormValues) => void | Promise<void>
   onCancel?: () => void
+  isSubmitting: boolean
+  submitProgress: string
+  submitError: string
 }
+
+export type ProductImageUploadRequest =
+  components['schemas']['SupplierProductImageUploadCreateRequest']
+
+export type ProductImageUploadResponse =
+  components['schemas']['SupplierProductImageUploadCreateResponse']
+
+export type ProductImageUsage = ProductImageUploadRequest['usage']
+
+export type SupplierProductCreateResponse =
+  components['schemas']['SupplierProductCreateResponse']
+
+export type SupplierProductUpdateRequest =
+  components['schemas']['SupplierProductUpdateRequest']

@@ -180,6 +180,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/chats/file-uploads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["create_7"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/products/{productId}/visibility": {
         parameters: {
             query?: never;
@@ -525,7 +541,7 @@ export interface components {
             /** Format: int32 */
             productCategoryId: number;
             /** Format: int32 */
-            mainIngredientRegionId: number;
+            mainIngredientOriginPrefectureId: number;
             /** Format: uuid */
             mainImagePendingFileUploadId?: string;
             contentQuantity: string;
@@ -582,7 +598,7 @@ export interface components {
             /** Format: int32 */
             productCategoryId: number;
             /** Format: int32 */
-            mainIngredientRegionId: number;
+            mainIngredientOriginPrefectureId: number;
             /** Format: uuid */
             mainImagePendingFileUploadId: string;
             contentQuantity: string;
@@ -683,14 +699,28 @@ export interface components {
         };
         MyChatMessageCreateRequest: {
             body?: string;
-            file?: string[];
-            displayFilename?: string;
+            pendingFileUploadIds?: string[];
             contentPresent?: boolean;
+        };
+        MyChatFileUploadCreateRequest: {
+            /** @enum {string} */
+            mimeType: "image/webp" | "application/pdf";
+            displayFilename: string;
+            /** Format: int64 */
+            fileSizeBytes: number;
+            fileSizeWithinLimit?: boolean;
+        };
+        MyChatFileUploadCreateResponse: {
+            uploadUrl: string;
+            /** Format: uuid */
+            pendingFileUploadId: string;
         };
         SupplierProductUpdateVisibilityRequest: {
             hidden: boolean;
         };
         PublicProductListResponse: {
+            /** Format: uuid */
+            id: string;
             name: string;
             supplierBusinessName: string;
             mainImageUrl: string;
@@ -720,7 +750,7 @@ export interface components {
             name: string;
             businessName: string;
             productCategoryName: string;
-            mainIngredientRegionName: string;
+            mainIngredientOriginPrefectureName: string;
             storageTypeLabel: string;
             monthlySupplyCapacities: components["schemas"]["MonthlySupplyCapacityResponse"][];
             mainImageUrl: string;
@@ -736,7 +766,7 @@ export interface components {
             name: string;
             hidden: boolean;
             productCategory: components["schemas"]["ProductCategoryResponse"];
-            mainIngredientRegion: components["schemas"]["ProductMainIngredientRegionResponse"];
+            mainIngredientOriginPrefecture: components["schemas"]["ProductMainIngredientOriginPrefectureResponse"];
             contentQuantity: string;
             productExpirationType: components["schemas"]["ProductExpirationTypeResponse"];
             /** Format: int32 */
@@ -766,7 +796,7 @@ export interface components {
             value: "BEST_BEFORE" | "USE_BY" | "NOT_APPLICABLE";
             label: string;
         };
-        ProductMainIngredientRegionResponse: {
+        ProductMainIngredientOriginPrefectureResponse: {
             /** Format: int32 */
             id: number;
             name: string;
@@ -813,7 +843,7 @@ export interface components {
         ProductSearchOptionsResponse: {
             productCategoryGroups: components["schemas"]["ProductCategoryGroupOptionResponse"][];
             productCategories: components["schemas"]["ProductCategoryOptionResponse"][];
-            mainIngredientRegions: components["schemas"]["RegionOptionResponse"][];
+            mainIngredientOriginRegions: components["schemas"]["RegionOptionResponse"][];
             storageTypes: components["schemas"]["StorageTypeOptionResponse"][];
         };
         RegionOptionResponse: {
@@ -825,6 +855,11 @@ export interface components {
             /** @enum {string} */
             value: "AMBIENT" | "REFRIGERATED" | "FROZEN";
             label: string;
+        };
+        PrefectureOptionResponse: {
+            /** Format: int32 */
+            id: number;
+            name: string;
         };
         ProductExpirationTypeOptionResponse: {
             /** @enum {string} */
@@ -842,7 +877,7 @@ export interface components {
         SupplierProductFormOptionsResponse: {
             productCategoryGroups: components["schemas"]["ProductCategoryGroupOptionResponse"][];
             productCategories: components["schemas"]["ProductCategoryOptionResponse"][];
-            mainIngredientRegions: components["schemas"]["RegionOptionResponse"][];
+            mainIngredientOriginPrefectures: components["schemas"]["PrefectureOptionResponse"][];
             productExpirationTypes: components["schemas"]["ProductExpirationTypeOptionResponse"][];
             storageTypes: components["schemas"]["StorageTypeOptionResponse"][];
             productStorySectionTemplates: components["schemas"]["ProductStorySectionTemplateOptionResponse"][];
@@ -994,11 +1029,10 @@ export interface components {
             counterpartyBusinessName: string;
         };
         ChatMessageFileResponse: {
-            displayFilename?: string;
+            displayFilename: string;
             url: string;
-            mimeType: string;
             /** Format: int64 */
-            fileSizeBytes?: number;
+            fileSizeBytes: number;
         };
         MyChatMessageListResponse: {
             /** Format: int64 */
@@ -1199,7 +1233,7 @@ export interface operations {
         parameters: {
             query?: {
                 availableSupplyMonths?: string[];
-                mainIngredientRegionIds?: number[];
+                mainIngredientOriginRegionIds?: number[];
                 productCategoryIds?: number[];
                 storageTypes?: ("AMBIENT" | "REFRIGERATED" | "FROZEN")[];
                 page?: number;
@@ -1486,7 +1520,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "multipart/form-data": components["schemas"]["MyChatMessageCreateRequest"];
+                "application/json": components["schemas"]["MyChatMessageCreateRequest"];
             };
         };
         responses: {
@@ -1496,6 +1530,30 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    create_7: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MyChatFileUploadCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MyChatFileUploadCreateResponse"];
+                };
             };
         };
     };
