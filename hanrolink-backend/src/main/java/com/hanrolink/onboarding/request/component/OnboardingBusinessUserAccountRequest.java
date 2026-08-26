@@ -23,4 +23,4 @@ public record OnboardingBusinessUserAccountRequest(
   @NotBlank
   @Size(max = 20)
   String phoneNumber
-  ) {}
+) {}
