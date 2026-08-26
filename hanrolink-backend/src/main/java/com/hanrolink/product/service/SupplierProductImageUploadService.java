@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
-import com.hanrolink.account.repository.projection.FileUploadContextProjection;
+import com.hanrolink.account.repository.projection.ProductImageUploadContextProjection;
 import com.hanrolink.file.entity.PendingFileUpload;
 import com.hanrolink.file.enums.FileMimeType;
 import com.hanrolink.file.enums.FileUploadUsage;
@@ -52,13 +52,13 @@ public class SupplierProductImageUploadService {
     String identityProviderSubject,
     SupplierProductImageUploadCreateRequest request
   ) {
-    FileUploadContextProjection fileUploadContext = businessUserAccountRepository
-      .findFileUploadContextByIdentityProviderSubject(identityProviderSubject)
+    ProductImageUploadContextProjection productImageUploadContext = businessUserAccountRepository
+      .findProductImageUploadContextByIdentityProviderSubject(identityProviderSubject)
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     String imageStorageKey = createStorageKey(
       request.usage(),
-      fileUploadContext.businessPublicId()
+      productImageUploadContext.businessPublicId()
     );
 
     String uploadUrl = s3UploadUrlGenerator.generate(
@@ -68,7 +68,7 @@ public class SupplierProductImageUploadService {
 
     PendingFileUpload pendingFileUpload =
       new PendingFileUpload(
-        fileUploadContext.businessUserAccountId(),
+        productImageUploadContext.businessUserAccountId(),
         null,
         imageStorageKey,
         fileUploadUsageOf(request.usage()),

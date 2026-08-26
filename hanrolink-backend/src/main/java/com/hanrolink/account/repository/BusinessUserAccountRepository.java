@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.hanrolink.account.entity.BusinessUserAccount;
 import com.hanrolink.account.repository.projection.BusinessUserAccountAccessScopeProjection;
-import com.hanrolink.account.repository.projection.FileUploadContextProjection;
+import com.hanrolink.account.repository.projection.ProductImageUploadContextProjection;
 import com.hanrolink.account.repository.projection.BusinessProfileAccessProjection;
 import com.hanrolink.account.repository.projection.BusinessUserAccountAuthorizationProjection;
 
@@ -93,7 +93,7 @@ public interface BusinessUserAccountRepository extends JpaRepository<BusinessUse
     );
 
   @Query("""
-    SELECT new com.hanrolink.account.repository.projection.FileUploadContextProjection(
+    SELECT new com.hanrolink.account.repository.projection.ProductImageUploadContextProjection(
       businessUserAccount.id,
       business.publicId
     )
@@ -103,8 +103,8 @@ public interface BusinessUserAccountRepository extends JpaRepository<BusinessUse
     WHERE businessUserAccount.identityProviderSubject
       = :identityProviderSubject
     """)
-  Optional<FileUploadContextProjection>
-    findFileUploadContextByIdentityProviderSubject(
+  Optional<ProductImageUploadContextProjection>
+    findProductImageUploadContextByIdentityProviderSubject(
       @Param("identityProviderSubject")
       String identityProviderSubject
     );
