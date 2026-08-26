@@ -2,7 +2,7 @@ name: Deploy Frontend to S3/CloudFront
 
 on:
   push:
-    branches: [main, 'chore/kyon/prod_AWS_ecr_setup_and_ci/cd_2'] # Todo:のちにmainブランチのみに変更する
+    branches: [main]
     paths:
       - 'hanrolink-frontend/**'
       - '.github/workflows/deploy-frontend.yml'

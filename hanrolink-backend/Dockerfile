@@ -13,7 +13,6 @@ RUN ./mvnw dependency:go-offline
 COPY src src
 RUN ./mvnw clean package -DskipTests
 
-
 # ---- 実行ステージ: build からコピーするパターン ----
 FROM eclipse-temurin:25-jre AS runtime-from-build
 WORKDIR /app
