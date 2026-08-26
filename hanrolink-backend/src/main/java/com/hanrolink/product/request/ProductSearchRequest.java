@@ -60,7 +60,7 @@ public record ProductSearchRequest(
     )
   )
   @Min(1)
-  @Max(100)
+  @Max(50)
   Integer pageSize
 ) {
   public ProductSearchRequest {
