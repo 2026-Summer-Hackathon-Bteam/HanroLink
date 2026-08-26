@@ -22,8 +22,8 @@ import com.hanrolink.account.exception.UnsupportedJwtAccountRoleException;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
 import com.hanrolink.account.repository.projection.BusinessUserAccountAccessScopeProjection;
 import com.hanrolink.business.enums.BusinessRole;
-import com.hanrolink.infrastructure.s3.S3DownloadUrlGenerator;
 import com.hanrolink.negotiationrequest.policy.BuyerNegotiationRequestPolicy;
+import com.hanrolink.infrastructure.cloudfront.CloudFrontDownloadUrlGenerator;
 import com.hanrolink.negotiationrequest.repository.ProductNegotiationRequestRepository;
 import com.hanrolink.pagination.response.component.PaginationResponse;
 import com.hanrolink.product.policy.MonthlySupplyCapacityPolicy;
@@ -48,7 +48,7 @@ import com.hanrolink.productcategory.response.component.ProductCategoryResponse;
 import com.hanrolink.security.authorization.enums.ApplicationRole;
 import com.hanrolink.security.authorization.enums.JwtAccountRole;
 
-@Profile("s3")
+@Profile("cloudfront")
 @Service
 public class ProductReadService {
 
@@ -62,7 +62,7 @@ public class ProductReadService {
 
   private final BusinessUserAccountRepository businessUserAccountRepository;
 
-  private final S3DownloadUrlGenerator s3DownloadUrlGenerator;
+  private final CloudFrontDownloadUrlGenerator cloudFrontDownloadUrlGenerator;
 
   public ProductReadService(
     ProductRepository productRepository,
@@ -70,14 +70,14 @@ public class ProductReadService {
     ProductStoryRepository productStoryRepository,
     ProductNegotiationRequestRepository productNegotiationRequestRepository,
     BusinessUserAccountRepository businessUserAccountRepository,
-    S3DownloadUrlGenerator s3DownloadUrlGenerator
+    CloudFrontDownloadUrlGenerator cloudFrontDownloadUrlGenerator
   ) {
     this.productRepository = productRepository;
     this.monthlySupplyCapacityRepository = monthlySupplyCapacityRepository;
     this.productStoryRepository = productStoryRepository;
     this.productNegotiationRequestRepository = productNegotiationRequestRepository;
     this.businessUserAccountRepository = businessUserAccountRepository;
-    this.s3DownloadUrlGenerator = s3DownloadUrlGenerator;
+    this.cloudFrontDownloadUrlGenerator = cloudFrontDownloadUrlGenerator;
   }
 
   /**
@@ -140,7 +140,7 @@ public class ProductReadService {
           productStory.position(),
           productStory.sectionTitle(),
           productStory.body(),
-          s3DownloadUrlGenerator.generate(productStory.imageStorageKey())
+          cloudFrontDownloadUrlGenerator.generate(productStory.imageStorageKey())
         )
       )
       .toList();
@@ -204,7 +204,7 @@ public class ProductReadService {
       product.minimumOrderQuantity(),
       product.shippingLeadTimeDays(),
       product.salesAreaRestriction(),
-      s3DownloadUrlGenerator.generate(product.mainImageStorageKey()),
+      cloudFrontDownloadUrlGenerator.generate(product.mainImageStorageKey()),
       monthlySupplyCapacities,
       productStories,
       new ProductSupplierResponse(
@@ -302,7 +302,7 @@ public class ProductReadService {
                   List.of()
                 )
             ),
-            s3DownloadUrlGenerator.generate(product.mainImageStorageKey())
+            cloudFrontDownloadUrlGenerator.generate(product.mainImageStorageKey())
           )
         )
         .toList();

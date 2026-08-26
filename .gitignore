@@ -76,3 +76,5 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+# 秘密鍵などが入っているディレクトリごと除外
+.secrets/

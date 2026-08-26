@@ -1,20 +1,15 @@
-import type { components } from "../../shared/api/schema"
+import type { components } from '../../shared/api/schema'
+
+type StorageType = components['schemas']['StorageTypeOptionResponse']['value']
 
 export type ProductSearchConditions = {
   targetMonths: string[]
   productCategoryIds: number[]
-  storageTypes: ('AMBIENT' | 'REFRIGERATED' | 'FROZEN')[]
+  storageTypes: StorageType[]
   mainIngredientRegionIds: number[]
 }
 
-export type ProductSearchOptions = components['schemas']['ProductSearchOptionsResponse']
+export type ProductSearchOptions =
+  components['schemas']['ProductSearchOptionsResponse']
 
-type Pagination = components['schemas']['PaginationResponse']
-
-type ProductSearchItem = Omit<components['schemas']['ProductSearchListResponse'], 'pagination'>
-
-export type ProductSearchResult = {
-    products:ProductSearchItem[]
-    pagination: Pagination
-}
-
+export type ProductSearchResult = components['schemas']['ProductSearchResponse']

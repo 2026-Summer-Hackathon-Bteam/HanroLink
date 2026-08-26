@@ -308,6 +308,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/procurement-negotiation-requests/selectable-products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me": {
         parameters: {
             query?: never;
@@ -331,7 +347,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_2"];
+        get: operations["list_3"];
         put?: never;
         post?: never;
         delete?: never;
@@ -347,7 +363,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_3"];
+        get: operations["list_4"];
         put?: never;
         post?: never;
         delete?: never;
@@ -363,7 +379,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_4"];
+        get: operations["list_5"];
         put?: never;
         post?: never;
         delete?: never;
@@ -379,7 +395,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_5"];
+        get: operations["list_6"];
         put?: never;
         post?: never;
         delete?: never;
@@ -395,7 +411,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_6"];
+        get: operations["list_7"];
         put?: never;
         post?: never;
         delete?: never;
@@ -411,7 +427,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_7"];
+        get: operations["list_8"];
         put?: never;
         post?: never;
         delete?: never;
@@ -427,7 +443,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_8"];
+        get: operations["list_9"];
         put?: never;
         post?: never;
         delete?: never;
@@ -655,7 +671,7 @@ export interface components {
             /** Format: uuid */
             id: string;
         };
-        SupplierProcurementNegotiationRequestCreateRequest: {
+        SupplierSentNegotiationRequestCreateRequest: {
             /** Format: uuid */
             productId: string;
         };
@@ -937,6 +953,12 @@ export interface components {
             productCategories: components["schemas"]["ProductCategoryOptionResponse"][];
             storageTypes: components["schemas"]["StorageTypeOptionResponse"][];
         };
+        SupplierNegotiationRequestSelectableProductResponse: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            mainImageUrl: string;
+        };
         OnboardingGetResponse: {
             email: string;
         };
@@ -946,34 +968,34 @@ export interface components {
             /** @enum {string|null} */
             businessUserAccountRegistrationStatus: "NOT_SUBMITTED" | "PENDING" | "APPROVED" | null;
         };
-        ProductSnapshotSummaryResponse: {
-            /** Format: int64 */
-            id: number;
+        NegotiationRequestProductResponse: {
+            /** Format: uuid */
+            id: string;
             name: string;
         };
-        SupplierProductNegotiationRequestBuyerResponse: {
+        NegotiationRequestSenderBusinessResponse: {
             /** Format: uuid */
-            accountId: string;
-            businessName: string;
+            id: string;
+            name: string;
         };
-        SupplierProductNegotiationRequestListResponse: {
-            /** Format: int64 */
-            id: number;
-            product: components["schemas"]["ProductSnapshotSummaryResponse"];
-            buyer: components["schemas"]["SupplierProductNegotiationRequestBuyerResponse"];
+        SupplierReceivedNegotiationRequestListResponse: {
+            /** Format: uuid */
+            id: string;
+            product: components["schemas"]["NegotiationRequestProductResponse"];
+            senderBusiness: components["schemas"]["NegotiationRequestSenderBusinessResponse"];
             /** Format: date-time */
             expiresAt: string;
         };
-        ProcurementRequestSnapshotSummaryResponse: {
-            /** Format: int64 */
-            id: number;
+        NegotiationRequestProcurementRequestResponse: {
+            /** Format: uuid */
+            id: string;
             title: string;
         };
-        SupplierProcurementNegotiationRequestListResponse: {
-            /** Format: int64 */
-            id: number;
-            procurementRequest: components["schemas"]["ProcurementRequestSnapshotSummaryResponse"];
-            product: components["schemas"]["ProductSnapshotSummaryResponse"];
+        SupplierSentNegotiationRequestListResponse: {
+            /** Format: uuid */
+            id: string;
+            procurementRequest: components["schemas"]["NegotiationRequestProcurementRequestResponse"];
+            product: components["schemas"]["NegotiationRequestProductResponse"];
             /** Format: date-time */
             expiresAt: string;
         };
@@ -1000,24 +1022,19 @@ export interface components {
             /** Format: date-time */
             lastActivityAt: string;
         };
-        BuyerProductNegotiationRequestListResponse: {
-            /** Format: int64 */
-            id: number;
-            product: components["schemas"]["ProductSnapshotSummaryResponse"];
+        BuyerSentNegotiationRequestListResponse: {
+            /** Format: uuid */
+            id: string;
+            product: components["schemas"]["NegotiationRequestProductResponse"];
             /** Format: date-time */
             expiresAt: string;
         };
-        BuyerProcurementNegotiationProductSnapshotSummaryResponse: {
-            /** Format: int64 */
-            id: number;
-            name: string;
-            businessName: string;
-        };
-        BuyerProcurementNegotiationRequestListResponse: {
-            /** Format: int64 */
-            id: number;
-            procurementRequest: components["schemas"]["ProcurementRequestSnapshotSummaryResponse"];
-            product: components["schemas"]["BuyerProcurementNegotiationProductSnapshotSummaryResponse"];
+        BuyerReceivedNegotiationRequestListResponse: {
+            /** Format: uuid */
+            id: string;
+            procurementRequest: components["schemas"]["NegotiationRequestProcurementRequestResponse"];
+            product: components["schemas"]["NegotiationRequestProductResponse"];
+            senderBusinessName: string;
             /** Format: date-time */
             expiresAt: string;
         };
@@ -1386,7 +1403,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["SupplierProcurementNegotiationRequestCreateRequest"];
+                "application/json": components["schemas"]["SupplierSentNegotiationRequestCreateRequest"];
             };
         };
         responses: {
@@ -1448,7 +1465,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                productNegotiationRequestId: number;
+                productNegotiationRequestId: string;
             };
             cookie?: never;
         };
@@ -1470,7 +1487,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                procurementNegotiationRequestId: number;
+                procurementNegotiationRequestId: string;
             };
             cookie?: never;
         };
@@ -1701,6 +1718,26 @@ export interface operations {
             };
         };
     };
+    list_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SupplierNegotiationRequestSelectableProductResponse"][];
+                };
+            };
+        };
+    };
     get_5: {
         parameters: {
             query?: never;
@@ -1721,26 +1758,6 @@ export interface operations {
             };
         };
     };
-    list_2: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["SupplierProductNegotiationRequestListResponse"][];
-                };
-            };
-        };
-    };
     list_3: {
         parameters: {
             query?: never;
@@ -1756,7 +1773,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["SupplierProcurementNegotiationRequestListResponse"][];
+                    "*/*": components["schemas"]["SupplierReceivedNegotiationRequestListResponse"][];
                 };
             };
         };
@@ -1776,7 +1793,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["SupplierProductListResponse"][];
+                    "*/*": components["schemas"]["SupplierSentNegotiationRequestListResponse"][];
                 };
             };
         };
@@ -1796,7 +1813,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["BuyerProcurementRequestListResponse"][];
+                    "*/*": components["schemas"]["SupplierProductListResponse"][];
                 };
             };
         };
@@ -1816,7 +1833,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MyChatListResponse"][];
+                    "*/*": components["schemas"]["BuyerProcurementRequestListResponse"][];
                 };
             };
         };
@@ -1836,7 +1853,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["BuyerProductNegotiationRequestListResponse"][];
+                    "*/*": components["schemas"]["MyChatListResponse"][];
                 };
             };
         };
@@ -1856,7 +1873,27 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["BuyerProcurementNegotiationRequestListResponse"][];
+                    "*/*": components["schemas"]["BuyerSentNegotiationRequestListResponse"][];
+                };
+            };
+        };
+    };
+    list_9: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BuyerReceivedNegotiationRequestListResponse"][];
                 };
             };
         };

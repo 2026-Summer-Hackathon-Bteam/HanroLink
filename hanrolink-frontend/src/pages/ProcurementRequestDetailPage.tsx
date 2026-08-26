@@ -7,6 +7,11 @@ import {
 } from '../features/procurementRequest/procurementRequestDetailService'
 import DataRow from '../components/DataRow'
 import { formatTargetMonth } from '../shared/utils/yearMonth'
+import type { NegotiationSelectableProduct } from '../features/negotiation/negotiationRequestTypes'
+import {
+  createProcurementNegotiationRequest,
+  getNegotiationSelectableProducts,
+} from '../features/negotiation/negotiationRequestService'
 
 function ProcurementRequestDetailPage() {
   const [procurementRequestDetailData, setProcurementRequestDetailData] =
@@ -17,6 +22,16 @@ function ProcurementRequestDetailPage() {
   const [isDeleting, setIsDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState('')
   const { procurementRequestId } = useParams()
+  const negotiationDialogRef = useRef<HTMLDialogElement>(null)
+  const [selectableProducts, setSelectableProducts] = useState<
+    NegotiationSelectableProduct[]
+  >([])
+  const [selectedProductId, setSelectedProductId] = useState('')
+  const [isLoadingSelectableProducts, setIsLoadingSelectableProducts] =
+    useState(false)
+  const [isSubmittingNegotiation, setIsSubmittingNegotiation] = useState(false)
+  const [negotiationError, setNegotiationError] = useState('')
+  const [negotiationSucceeded, setNegotiationSucceeded] = useState(false)
 
   useEffect(() => {
     if (procurementRequestId === undefined) return
@@ -62,6 +77,78 @@ function ProcurementRequestDetailPage() {
           : '募集情報の削除に失敗しました。',
       )
       setIsDeleting(false)
+    }
+  }
+
+  const handleOpenNegotiationDialog = async () => {
+    if (
+      !procurementRequestDetailData ||
+      !procurementRequestDetailData.permissions.canCreateNegotiationRequest ||
+      procurementRequestDetailData.hasMyActiveNegotiationRequest ||
+      isLoadingSelectableProducts
+    ) {
+      return
+    }
+
+    const dialog = negotiationDialogRef.current
+    if (!dialog) return
+
+    setSelectableProducts([])
+    setSelectedProductId('')
+    setNegotiationError('')
+    setIsLoadingSelectableProducts(true)
+    setNegotiationSucceeded(false)
+    dialog.showModal()
+
+    try {
+      const products = await getNegotiationSelectableProducts()
+      setSelectableProducts(products)
+    } catch (error: unknown) {
+      setNegotiationError(
+        error instanceof Error
+          ? error.message
+          : '選択可能な商品の取得に失敗しました。',
+      )
+    } finally {
+      setIsLoadingSelectableProducts(false)
+    }
+  }
+
+  const handleCreateNegotiationRequest = async () => {
+    if (
+      isSubmittingNegotiation ||
+      isLoadingSelectableProducts ||
+      !procurementRequestDetailData ||
+      !procurementRequestId ||
+      !selectedProductId ||
+      !procurementRequestDetailData.permissions.canCreateNegotiationRequest ||
+      procurementRequestDetailData.hasMyActiveNegotiationRequest
+    ) {
+      return
+    }
+
+    setIsSubmittingNegotiation(true)
+    setNegotiationError('')
+
+    try {
+      await createProcurementNegotiationRequest(
+        procurementRequestId,
+        selectedProductId,
+      )
+
+      setProcurementRequestDetailData((current) =>
+        current ? { ...current, hasMyActiveNegotiationRequest: true } : current,
+      )
+
+      setNegotiationSucceeded(true)
+    } catch (error: unknown) {
+      setNegotiationError(
+        error instanceof Error
+          ? error.message
+          : '商談希望の送信に失敗しました。',
+      )
+    } finally {
+      setIsSubmittingNegotiation(false)
     }
   }
 
@@ -236,11 +323,12 @@ function ProcurementRequestDetailPage() {
             !procurementRequestDetailData.permissions
               .canCreateNegotiationRequest
           }
+          onClick={() => void handleOpenNegotiationDialog()}
         >
           商談希望を送る
         </button>
         {procurementRequestDetailData.hasMyActiveNegotiationRequest ? (
-          <p className="pt-2">すでに有効な商談希望があります。</p>
+          <p className="pt-2">この募集情報には商談希望を送信済みです。</p>
         ) : !procurementRequestDetailData.permissions
             .canCreateNegotiationRequest ? (
           <p className="pt-2">
@@ -257,6 +345,153 @@ function ProcurementRequestDetailPage() {
         前のページに戻る
       </button>
 
+      {/* 商談希望確認モーダル */}
+      <dialog
+        ref={negotiationDialogRef}
+        aria-labelledby="create-negotiation-request-title"
+        aria-describedby="create-negotiation-request-description"
+        className="m-auto w-[min(90vw,40rem)] rounded-lg border-0 bg-bg p-6 shadow-xl backdrop:bg-black/50"
+      >
+        {negotiationSucceeded ? (
+          // 送信成功時
+          <>
+            <h3
+              id="create-negotiation-request-title"
+              className="text-lg font-bold"
+            >
+              商談希望を送信しました
+            </h3>
+
+            <p
+              id="create-negotiation-request-description"
+              role="status"
+              className="mt-4"
+            >
+              {procurementRequestDetailData.buyer.businessName}の「
+              {procurementRequestDetailData.title}」への商談希望を送信しました。
+            </p>
+
+            <div className="mt-6 flex justify-center">
+              <button
+                type="button"
+                className="rounded-full bg-accent px-5 py-2 text-bg"
+                onClick={() => negotiationDialogRef.current?.close()}
+              >
+                閉じる
+              </button>
+            </div>
+          </>
+        ) : (
+          // 送信前
+          <>
+            <h3
+              id="create-negotiation-request-title"
+              className="text-lg font-bold"
+            >
+              商談希望を送りますか？
+            </h3>
+
+            <p id="create-negotiation-request-description" className="mt-4">
+              {procurementRequestDetailData.buyer.businessName}の「
+              {procurementRequestDetailData.title}」に商談希望を送ります。
+              提案する自社商品を1つ選択してください。
+            </p>
+
+            <ul className="mt-4 list-disc space-y-2 pl-5 text-left text-sm">
+              <li>商談希望を送ると、相手のマイページに表示されます。</li>
+              <li>
+                相手が商談を開始すると、メッセージをやり取りするためのチャットが作成されます。
+              </li>
+              <li>
+                商談希望の送信は、取引条件への同意または契約成立を意味するものではありません。
+              </li>
+            </ul>
+
+            {isLoadingSelectableProducts ? (
+              <p className="py-8 text-center">商品を読み込み中...</p>
+            ) : selectableProducts.length > 0 ? (
+              <fieldset
+                className="mt-4 max-h-80 overflow-y-auto border-0"
+                disabled={isSubmittingNegotiation}
+              >
+                <legend className="sr-only">提案する自社商品</legend>
+
+                <ul className="space-y-3">
+                  {selectableProducts.map((product) => (
+                    <li key={product.id}>
+                      <label
+                        className={`flex cursor-pointer items-center gap-4 rounded-lg border p-3 ${
+                          selectedProductId === product.id
+                            ? 'border-accent bg-accentbg'
+                            : 'border-border'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="negotiationProduct"
+                          value={product.id}
+                          checked={selectedProductId === product.id}
+                          onChange={(event) =>
+                            setSelectedProductId(event.target.value)
+                          }
+                        />
+
+                        <img
+                          src={product.mainImageUrl}
+                          alt={`${product.name}のメイン画像`}
+                          className="h-16 w-16 shrink-0 rounded object-cover"
+                        />
+
+                        <span className="min-w-0 text-left font-bold">
+                          {product.name}
+                        </span>
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              </fieldset>
+            ) : !negotiationError ? (
+              <p className="py-8 text-center">
+                商談希望に使用できる公開中の商品がありません。
+                <br />
+                商品を登録するか、非表示の商品を公開してください。
+              </p>
+            ) : null}
+
+            {negotiationError && (
+              <p role="alert" className="mt-4 text-center text-error">
+                {negotiationError}
+              </p>
+            )}
+
+            <div className="mt-6 flex justify-center gap-3">
+              <button
+                type="button"
+                className="rounded-full border border-accent px-5 py-2 disabled:cursor-not-allowed disabled:opacity-50"
+                onClick={() => negotiationDialogRef.current?.close()}
+                disabled={isSubmittingNegotiation}
+              >
+                キャンセル
+              </button>
+
+              <button
+                type="button"
+                className="rounded-full bg-accent px-5 py-2 text-bg disabled:cursor-not-allowed disabled:opacity-50"
+                onClick={() => void handleCreateNegotiationRequest()}
+                disabled={
+                  isLoadingSelectableProducts ||
+                  isSubmittingNegotiation ||
+                  !selectedProductId
+                }
+              >
+                {isSubmittingNegotiation ? '送信中...' : '商談希望を送る'}
+              </button>
+            </div>
+          </>
+        )}
+      </dialog>
+
+      {/* 募集情報削除確認モーダル */}
       <dialog
         ref={deleteDialogRef}
         aria-labelledby="delete-procurement-request-title"

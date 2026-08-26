@@ -30,7 +30,7 @@ const initialSearchConditions: ProductSearchConditions = {
   mainIngredientRegionIds: [],
 }
 
-const PAGE_SIZE = 6
+const PAGE_SIZE = 20
 
 function ProductSearchPage() {
   const [searchConditions, setSearchConditions] =
@@ -46,6 +46,8 @@ function ProductSearchPage() {
   const searchConditionsRef = useRef<HTMLElement>(null)
   const [isSearching, setIsSearching] = useState(false)
   const searchConditionsDialogRef = useRef<HTMLDialogElement>(null)
+  const [appliedSearchConditions, setAppliedSearchConditions] =
+    useState<ProductSearchConditions>(initialSearchConditions)
 
   useEffect(() => {
     let isCancelled = false
@@ -186,6 +188,7 @@ function ProductSearchPage() {
     try {
       const result = await getProductSearchData(searchConditions, 1, PAGE_SIZE)
       setSearchResult(result)
+      setAppliedSearchConditions(searchConditions)
 
       if (searchConditionsDialogRef.current?.open) {
         handleCloseSearchConditions()
@@ -213,7 +216,7 @@ function ProductSearchPage() {
 
     try {
       const result = await getProductSearchData(
-        searchConditions,
+        appliedSearchConditions,
         page,
         searchResult.pagination.pageSize,
       )
@@ -294,7 +297,7 @@ function ProductSearchPage() {
           主原料産地
         </h3>
         <div className="grid grid-cols-3 justify-items-start gap-3">
-          {[...searchOptions.mainIngredientRegions]
+          {[...searchOptions.mainIngredientOriginRegions]
             .sort((a, b) => a.id - b.id)
             .map((region) => (
               <label
@@ -387,10 +390,10 @@ function ProductSearchPage() {
                             </h3>
                             <div className="flex flex-wrap gap-2">
                               <span className="px-3 py-1 rounded-full bg-badgearea">
-                                {product.mainIngredientRegionName}
+                                {product.mainIngredientOriginPrefectureName}
                               </span>
                               <span className="px-3 py-1 rounded-full bg-badgesto">
-                                product.storageType
+                                {product.storageTypeLabel}
                               </span>
                               <span className="px-3 py-1 rounded-full bg-badgecate">
                                 {product.productCategoryName}
@@ -493,7 +496,7 @@ function ProductSearchPage() {
       </button>
 
       <MobileSearchFilterDialog
-        title='商品'
+        title="商品"
         dialogRef={searchConditionsDialogRef}
         isSearching={isSearching}
         onSubmit={handleSearch}
