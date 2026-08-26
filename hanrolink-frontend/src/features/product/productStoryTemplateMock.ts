@@ -9,7 +9,6 @@ export const productStoryTemplateMock = [
       産地、品種、収穫時期、鮮度、栽培方法など、素材の良さが伝わる内容があれば入力してください。`,
     bodyExample:
       '青森県産のりんごを使用しています。寒暖差のある地域で育ったりんごを、香りと酸味のバランスが良い時期に収穫しています。',
-    sortOrder: 1,
   },
   {
     id: 2,
@@ -19,7 +18,6 @@ export const productStoryTemplateMock = [
       地域の気候、文化、地元食材、地域フェアで伝えやすい背景などがあれば入力してください`,
     bodyExample:
       '地元で長く親しまれている果物を使った商品です。地域フェアや観光向けの売場で、産地の魅力を伝えやすい商品です。',
-    sortOrder: 2,
   },
   {
     id: 3,
@@ -30,7 +28,6 @@ export const productStoryTemplateMock = [
 なぜこの商品を作ったのか、どんな人に届けたいのかなどを書いてください。`,
     bodyExample:
       '地元の果物のおいしさを、季節を問わず楽しんでもらいたいという想いから作りました。素材の味を残すことを大切にしています。',
-    sortOrder: 3,
   },
   {
     id: 4,
@@ -41,6 +38,5 @@ export const productStoryTemplateMock = [
 味や品質を保つために行っている作業、手間をかけている工程などがあれば入力してください。`,
     bodyExample:
       '果実感を残すため、加熱時間を調整しながら少量ずつ仕上げています。香りが残るよう、素材の状態を見ながら加工しています。',
-    sortOrder: 4,
   },
 ] satisfies ProductStoryTemplate[]

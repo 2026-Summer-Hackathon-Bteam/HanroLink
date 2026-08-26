@@ -21,3 +21,5 @@ export type SupplierMyPageData = {
   products: SupplierProduct[]
   chats: MyChat[]
 }
+
+export type AcceptNegotiationResponse = components['schemas']['NegotiationRequestAcceptResponse']

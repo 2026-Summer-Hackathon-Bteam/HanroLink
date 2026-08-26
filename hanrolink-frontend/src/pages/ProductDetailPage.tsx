@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, useParams } from 'react-router-dom'
 import type { ProductDetail } from '../features/product/productDetailTypes'
 import {
   getProductDetailData,
@@ -7,7 +7,6 @@ import {
   updateProductVisibility,
 } from '../features/product/productDetailService'
 import { formatTargetMonth } from '../shared/utils/yearMonth'
-import mainVisual from '../assets/mainvisual.png'
 import DataRow from '../components/DataRow'
 import ProductStorySection from '../features/product/components/ProductStorySection'
 
@@ -21,20 +20,27 @@ function ProductDetailPage() {
   const [deleteError, setDeleteError] = useState('')
   const [isUpdatingVisibility, setIsUpdatingVisibility] = useState(false)
   const [visibilityError, setVisibilityError] = useState('')
+  const { productId } = useParams()
 
   useEffect(() => {
+    if (!productId) return
+
     let isCancelled = false
 
     const loadProductDetailData = async () => {
       try {
-        const result = await getProductDetailData(1)
+        const result = await getProductDetailData(productId)
 
         if (!isCancelled) {
           setProductDetailData(result)
         }
-      } catch {
+      } catch (error: unknown) {
         if (!isCancelled) {
-          setError('商品情報詳細データの取得に失敗しました。')
+          setError(
+            error instanceof Error
+              ? error.message
+              : '商品情報詳細データの取得に失敗しました。',
+          )
         }
       }
     }
@@ -44,7 +50,7 @@ function ProductDetailPage() {
     return () => {
       isCancelled = true
     }
-  }, [])
+  }, [productId])
 
   const handleDelete = async () => {
     if (isDeleting || !productDetailData) return
@@ -56,8 +62,10 @@ function ProductDetailPage() {
       await deleteProduct(productDetailData.id)
       deleteDialogRef.current?.close()
       navigate('/mypage/supplier')
-    } catch {
-      setDeleteError('商品の削除に失敗しました。')
+    } catch (error: unknown) {
+      setDeleteError(
+        error instanceof Error ? error.message : '商品の削除に失敗しました。',
+      )
       setIsDeleting(false)
     }
   }
@@ -76,11 +84,23 @@ function ProductDetailPage() {
       setProductDetailData((current) =>
         current ? { ...current, hidden: nextHidden } : current,
       )
-    } catch {
-      setVisibilityError('商品の公開状態の変更に失敗しました。')
+    } catch (error: unknown) {
+      setVisibilityError(
+        error instanceof Error
+          ? error.message
+          : '商品の公開状態の変更に失敗しました。',
+      )
     } finally {
       setIsUpdatingVisibility(false)
     }
+  }
+
+  if (!productId) {
+    return (
+      <p role="alert" className="py-10 text-center text-error">
+        商品IDが取得できませんでした。
+      </p>
+    )
   }
 
   if (error) {
@@ -178,7 +198,8 @@ function ProductDetailPage() {
         <p>{productDetailData.supplier.businessName}</p>
         <p>
           カテゴリー：{productDetailData.productCategory.name}&nbsp;
-          &#47;&emsp;地域：{productDetailData.mainIngredientRegion.name}&nbsp;
+          &#47;&emsp;地域：
+          {productDetailData.mainIngredientOriginPrefecture.name}&nbsp;
           &#47;&emsp;提供時期：{availableMonths}
         </p>
       </div>
@@ -193,14 +214,18 @@ function ProductDetailPage() {
       {/* 商品概要 */}
       <section className="mb-20 flex flex-col items-center gap-4 lg:flex-row">
         <div className="aspect-4/3 w-full shrink-0 overflow-hidden md:w-[42%]">
-          <img src={mainVisual} className="h-full w-full object-cover" />
+          <img
+            src={productDetailData.mainImageUrl}
+            className="h-full w-full object-cover"
+            alt={`${productDetailData.name}のメイン画像`}
+          />
         </div>
         <div>
           <p className="text-left">{productDetailData.supplier.businessName}</p>
           <h3 className="text-2xl text-left mb-3">{productDetailData.name}</h3>
           <div className="flex gap-2 mb-3">
             <span className="px-3 py-1 rounded-full bg-badgearea">
-              {productDetailData.mainIngredientRegion.name}
+              {productDetailData.mainIngredientOriginPrefecture.name}
             </span>
             <span className="px-3 py-1 rounded-full bg-badgesto">
               {productDetailData.storageType.label}
@@ -303,7 +328,7 @@ function ProductDetailPage() {
             </DataRow>
 
             <DataRow itemName="主原料産地">
-              {productDetailData.mainIngredientRegion.name}
+              {productDetailData.mainIngredientOriginPrefecture.name}
             </DataRow>
 
             <DataRow itemName="内容量">
@@ -406,9 +431,13 @@ function ProductDetailPage() {
 
         <p className="mt-2 text-sm text-error">
           削除した商品は復元できません。
+          <br />
+          商品を削除すると、関連する商談希望も取り消されます。
+          <br />
+          この操作は元に戻せません。
         </p>
 
-        <div className="mt-6 flex justify-end gap-3">
+        <div className="mt-6 flex justify-center gap-3">
           <button
             type="button"
             onClick={() => deleteDialogRef.current?.close()}

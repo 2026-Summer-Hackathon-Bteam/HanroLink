@@ -1,11 +1,23 @@
-import { useEffect, useState } from 'react'
-import { getSupplierMyPageData } from '../features/supplier/supplierMyPageService'
-import type { SupplierMyPageData } from '../features/supplier/supplierMyPageTypes'
-import { Link } from 'react-router-dom'
+import { useEffect, useState, useRef } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import {
+  getSupplierMyPageData,
+  acceptNegotiationRequest,
+} from '../features/supplier/supplierMyPageService'
+import type {
+  SupplierMyPageData,
+  ReceivedNegotiation,
+} from '../features/supplier/supplierMyPageTypes'
 
 function SupplierMyPage() {
   const [data, setData] = useState<SupplierMyPageData | null>(null)
   const [error, setError] = useState('')
+  const negotiationDialogRef = useRef<HTMLDialogElement>(null)
+  const [selectedNegotiation, setSelectedNegotiation] =
+    useState<ReceivedNegotiation | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [acceptError, setAcceptError] = useState('')
+  const navigate = useNavigate()
 
   useEffect(() => {
     let isCancelled = false
@@ -17,9 +29,13 @@ function SupplierMyPage() {
         if (!isCancelled) {
           setData(result)
         }
-      } catch {
+      } catch (error: unknown) {
         if (!isCancelled) {
-          setError('マイページの情報を取得できませんでした。')
+          setError(
+            error instanceof Error
+              ? error.message
+              : 'マイページの情報を取得できませんでした。',
+          )
         }
       }
     }
@@ -30,6 +46,32 @@ function SupplierMyPage() {
       isCancelled = true
     }
   }, [])
+
+  const handleAcceptNegotiation = async () => {
+    if (!selectedNegotiation || isSubmitting) return
+
+    setIsSubmitting(true)
+    setAcceptError('')
+
+    try {
+      const result = await acceptNegotiationRequest(selectedNegotiation.id)
+
+      negotiationDialogRef.current?.close()
+      navigate(`/chats/${result.channel.id}`)
+    } catch (error: unknown) {
+      setAcceptError(
+        error instanceof Error ? error.message : '商談の開始に失敗しました。',
+      )
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleOpenNegotiationDialog = (negotiation: ReceivedNegotiation) => {
+    setAcceptError('')
+    setSelectedNegotiation(negotiation)
+    negotiationDialogRef.current?.showModal()
+  }
 
   if (error) {
     return (
@@ -56,7 +98,7 @@ function SupplierMyPage() {
               商談希望一覧（受信）：{`${data.receivedNegotiations.length}件`}
             </h3>
             <p className="text-xs">
-              承諾ボタンを押すと商談希望を送信したバイヤーとのチャットが作成されます
+              商談開始ボタンを押すと商談希望を送信したバイヤーとのチャットが作成されます
             </p>
           </div>
           <div className="min-h-0 flex-1  overflow-x-hidden overflow-y-auto">
@@ -65,7 +107,7 @@ function SupplierMyPage() {
                 <col />
                 <col />
                 <col />
-                <col className="w-20" />
+                <col className="w-30" />
               </colgroup>
               <thead>
                 <tr className="border-b">
@@ -73,12 +115,11 @@ function SupplierMyPage() {
                   <th scope="col">バイヤー名</th>
                   <th scope="col">表示期限</th>
                   <th scope="col">
-                    <span className="sr-only">承諾</span>
+                    <span className="sr-only">商談開始</span>
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {/* ここをmapで繰り返す */}
                 {data.receivedNegotiations.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="py-4 text-center!">
@@ -92,31 +133,36 @@ function SupplierMyPage() {
                         new Date(b.expiresAt).getTime() -
                         new Date(a.expiresAt).getTime(),
                     )
-                    .map((rn) => (
+                    .map((negotiation) => (
                       <tr
-                        key={rn.productNegotiationRequestId}
+                        key={negotiation.id}
                         className="border-b border-dashed"
                       >
                         <td>
-                          <Link to={`/products/${rn.product.id}`}>
-                            {rn.product.name}
+                          <Link to={`/products/${negotiation.product.id}`}>
+                            {negotiation.product.name}
                           </Link>
                         </td>
                         <td>
-                          <Link to={`/buyer/${rn.buyer.accountId}`}>
-                            {rn.buyer.businessName}
+                          <Link to={`/buyer/${negotiation.buyer.accountId}`}>
+                            {negotiation.buyer.businessName}
                           </Link>
                         </td>
                         <td>
-                          {new Date(rn.expiresAt).toLocaleString('ja-JP')}
+                          {new Date(negotiation.expiresAt).toLocaleString(
+                            'ja-JP',
+                          )}
                         </td>
                         <td>
                           <button
                             type="button"
                             className="border border-accent bg-accentbg rounded-full px-2"
-                            aria-label={`${rn.buyer.businessName}から届いた${rn.product.name}への商談希望を承諾`}
+                            aria-label={`${negotiation.buyer.businessName}と${negotiation.product.name}に関する商談を開始する`}
+                            onClick={() =>
+                              handleOpenNegotiationDialog(negotiation)
+                            }
                           >
-                            承諾
+                            商談開始
                           </button>
                         </td>
                       </tr>
@@ -131,7 +177,7 @@ function SupplierMyPage() {
           <div className="mb-4 flex flex-col items-start gap-1 sm:justify-between sm:flex-row sm:items-center">
             <h3>商談希望一覧（送信）：{`${data.sentNegotiations.length}件`}</h3>
             <p className="text-xs">
-              募集情報を作成したバイヤーが承諾するとチャットが作成されます
+              募集情報を作成したバイヤーが商談開始ボタンを押すとチャットが作成されます
             </p>
           </div>
           <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto">
@@ -144,7 +190,6 @@ function SupplierMyPage() {
                 </tr>
               </thead>
               <tbody>
-                {/* ここをmapで繰り返す */}
                 {data.sentNegotiations.length === 0 ? (
                   <tr>
                     <td colSpan={3} className="py-4 text-center!">
@@ -158,25 +203,27 @@ function SupplierMyPage() {
                         new Date(b.expiresAt).getTime() -
                         new Date(a.expiresAt).getTime(),
                     )
-                    .map((sn) => (
+                    .map((negotiation) => (
                       <tr
-                        key={sn.procurementNegotiationRequestId}
+                        key={negotiation.id}
                         className="border-b border-dashed"
                       >
                         <td>
                           <Link
-                            to={`/procurement-requests/${sn.procurementRequest.id}`}
+                            to={`/procurement-requests/${negotiation.procurementRequest.id}`}
                           >
-                            {sn.procurementRequest.title}
+                            {negotiation.procurementRequest.title}
                           </Link>
                         </td>
                         <td>
-                          <Link to={`/products/${sn.product.id}`}>
-                            {sn.product.name}
+                          <Link to={`/products/${negotiation.product.id}`}>
+                            {negotiation.product.name}
                           </Link>
                         </td>
                         <td>
-                          {new Date(sn.expiresAt).toLocaleString('ja-JP')}
+                          {new Date(negotiation.expiresAt).toLocaleString(
+                            'ja-JP',
+                          )}
                         </td>
                       </tr>
                     ))
@@ -190,13 +237,15 @@ function SupplierMyPage() {
           <div className="mb-4 flex items-center">
             <h3>商品情報一覧： {`${data.products.length}件`}</h3>
           </div>
-          <Link to={'/products/new'} className="bg-border text-bg rounded-lg mb-2 mx-1 text-center py-1">
+          <Link
+            to={'/products/new'}
+            className="bg-border text-bg rounded-lg mb-2 mx-1 text-center py-1"
+          >
             + 商品情報を登録する
           </Link>
           <div className="min-h-0 flex-1 space-y-3 overflow-x-hidden overflow-y-auto p-1">
-            {/* ここをmapで繰り返す */}
             {data.products.length === 0 ? (
-              <p className='text-center'>まずは商品を登録しましょう！</p>
+              <p className="text-center">まずは商品を登録しましょう！</p>
             ) : (
               [...data.products]
                 .sort(
@@ -276,6 +325,64 @@ function SupplierMyPage() {
           </div>
         </section>
       </div>
+      {/* 商談開始モーダル */}
+      <dialog
+        ref={negotiationDialogRef}
+        aria-labelledby="start-negotiation-title"
+        aria-describedby="start-negotiation-description"
+        onClose={() => setSelectedNegotiation(null)}
+        className="m-auto w-[min(90vw,32rem)] rounded-lg border-0 bg-bg p-6 shadow-xl backdrop:bg-black/50"
+      >
+        <h3 id="start-negotiation-title" className="text-lg font-bold">
+          商談を開始しますか？
+        </h3>
+
+        {selectedNegotiation && (
+          <>
+            <p id="start-negotiation-description" className="mt-4">
+              「{selectedNegotiation.product.name}」について、
+              {selectedNegotiation.buyer.businessName}との商談を開始します。
+            </p>
+
+            <ul className="mt-4 list-disc space-y-2 pl-5 text-left text-sm">
+              <li>
+                商談を開始すると相手とのチャットが作成され、相手のチャット一覧にも表示されます。
+              </li>
+              <li>
+                商談の開始は、取引条件への同意または契約成立を意味するものではありません。
+              </li>
+              <li>取引条件はチャット内で改めてご確認ください。</li>
+            </ul>
+          </>
+        )}
+
+        {acceptError && (
+          <p role="alert" className="text-center pt-2 text-error">
+            {acceptError}
+          </p>
+        )}
+
+        <div className="mt-6 flex justify-end gap-3">
+          <button
+            type="button"
+            className="rounded-full border border-accent px-5 py-2"
+            onClick={() => negotiationDialogRef.current?.close()}
+            disabled={isSubmitting}
+          >
+            キャンセル
+          </button>
+          <button
+            type="button"
+            className="rounded-full bg-accent px-5 py-2 text-bg"
+            onClick={() => {
+              void handleAcceptNegotiation()
+            }}
+            disabled={isSubmitting || !selectedNegotiation}
+          >
+            {isSubmitting ? '商談開始中...' : '商談を開始する'}
+          </button>
+        </div>
+      </dialog>
     </div>
   )
 }

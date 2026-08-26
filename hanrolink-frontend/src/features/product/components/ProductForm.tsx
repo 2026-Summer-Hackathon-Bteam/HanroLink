@@ -12,7 +12,15 @@ import ProductStoryFieldset from './ProductStoryFieldset'
 import { formatTargetMonth } from '../../../shared/utils/yearMonth'
 import type { ProductFormProps } from '../productFormTypes'
 
-function ProductForm({ mode, initialValues, onSubmit, onCancel }: ProductFormProps) {
+function ProductForm({
+  mode,
+  initialValues,
+  onSubmit,
+  onCancel,
+  isSubmitting,
+  submitProgress,
+  submitError,
+}: ProductFormProps) {
   const [stories, setStories] = useState<StoryFormData[]>(initialValues.stories)
   const [productInformations, setProductInformations] =
     useState<ProductInformationFormData>(initialValues.productInformations)
@@ -45,10 +53,12 @@ function ProductForm({ mode, initialValues, onSubmit, onCancel }: ProductFormPro
             selectedCategory?.productCategoryGroupId ?? '',
           )
         }
-      } catch {
+      } catch (error: unknown) {
         if (!isCancelled) {
           setFormOptionsError(
-            'ストーリーのテンプレートおよびフォーム選択肢の取得に失敗しました。',
+            error instanceof Error
+              ? error.message
+              : 'ストーリーのテンプレートおよびフォーム選択肢の取得に失敗しました。',
           )
         }
       }
@@ -146,7 +156,7 @@ function ProductForm({ mode, initialValues, onSubmit, onCancel }: ProductFormPro
               id="mainImageFile"
               name="mainImageFile"
               type="file"
-              accept="image/png,image/jpeg,image/webp"
+              accept="image/png,image/jpeg,image/webp,image/heic,image/heif"
               className="file:text-bg file:rounded-full file:bg-border file:px-4 file:py-2 min-w-0 w-full max-w-full"
               onChange={(e) => {
                 setProductInformations((prev) => ({
@@ -205,7 +215,7 @@ function ProductForm({ mode, initialValues, onSubmit, onCancel }: ProductFormPro
               >
                 <option value="">選択してください</option>
                 {[...productFormOptions.productCategoryGroups]
-                  .sort((a, b) => a.sortOrder - b.sortOrder)
+                  .sort((a, b) => a.id - b.id)
                   .map((option) => (
                     <option key={option.id} value={option.id}>
                       {option.name}
@@ -246,7 +256,7 @@ function ProductForm({ mode, initialValues, onSubmit, onCancel }: ProductFormPro
                       option.productCategoryGroupId ===
                       selectedProductCategoryGroupId,
                   )
-                  .sort((a, b) => a.sortOrder - b.sortOrder)
+                  .sort((a, b) => a.id - b.id)
                   .map((option) => (
                     <option key={option.id} value={option.id}>
                       {option.name}
@@ -319,24 +329,25 @@ function ProductForm({ mode, initialValues, onSubmit, onCancel }: ProductFormPro
           </div>
         </FormRow>
 
-        <FormRow label="主原料産地" htmlFor="mainIngredientRegionId">
+        <FormRow label="主原料産地" htmlFor="mainIngredientOriginPrefectureId">
           <select
-            id="mainIngredientRegionId"
-            name="mainIngredientRegionId"
-            value={productInformations.mainIngredientRegionId}
+            id="mainIngredientOriginPrefectureId"
+            name="mainIngredientOriginPrefectureId"
+            value={productInformations.mainIngredientOriginPrefectureId}
             onChange={(e) => {
               const value = e.target.value
               setProductInformations((prev) => ({
                 ...prev,
-                mainIngredientRegionId: value === '' ? '' : Number(value),
+                mainIngredientOriginPrefectureId:
+                  value === '' ? '' : Number(value),
               }))
             }}
             required
             className="h-11 w-full md:w-1/3 rounded-lg border-[0.5px] border-text px-3 shadow-sm"
           >
             <option value="">選択してください</option>
-            {[...productFormOptions.mainIngredientRegions]
-              .sort((a, b) => a.sortOrder - b.sortOrder)
+            {[...productFormOptions.mainIngredientOriginPrefectures]
+              .sort((a, b) => a.id - b.id)
               .map((option) => (
                 <option key={option.id} value={option.id}>
                   {option.name}
@@ -596,7 +607,7 @@ function ProductForm({ mode, initialValues, onSubmit, onCancel }: ProductFormPro
                     id={inputId}
                     name={inputId}
                     type="number"
-                    min={1}
+                    min={0}
                     required
                     value={capacity.availableQuantity}
                     onChange={(event) => {
@@ -619,18 +630,36 @@ function ProductForm({ mode, initialValues, onSubmit, onCancel }: ProductFormPro
           <button
             type="button"
             onClick={onCancel}
-            className="flex h-9 w-45 items-center justify-center rounded-full border border-accent bg-bg"
+            className="flex h-9 w-45 items-center justify-center rounded-full border border-accent bg-bg disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={isSubmitting}
           >
             キャンセル
           </button>
         )}
-      <button
-        type="submit"
-        className="h-9 w-45 rounded-full border border-accent bg-accentbg"
-      >
-        {mode === 'create' ? '登録する' : '更新する'}
-      </button>
+        <button
+          type="submit"
+          className="h-9 w-45 rounded-full border border-accent bg-accentbg disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={isSubmitting}
+        >
+          {mode === 'create'
+            ? isSubmitting
+              ? '登録中...'
+              : '登録する'
+            : '更新する'}
+        </button>
       </div>
+      {/* ProductFormのボタンの下に進捗とエラーを表示 */}
+      {submitProgress && (
+        <p role="status" aria-live="polite" className="mb-3 text-center">
+          {submitProgress}
+        </p>
+      )}
+
+      {submitError && (
+        <p role="alert" className="mb-3 text-center text-error">
+          {submitError}
+        </p>
+      )}
     </form>
   )
 }
