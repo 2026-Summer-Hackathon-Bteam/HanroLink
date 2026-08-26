@@ -156,3 +156,23 @@ export async function getChatNegotiationSnapshot(
 
   return data
 }
+
+export async function createChatFileAccess(
+  channelId: string,
+): Promise<void> {
+  const { response } = await authenticatedApi.POST(
+    '/api/v1/chats/{channelId}/file-access',
+    {
+      params: {
+        path: {
+          channelId,
+        },
+      },
+      credentials: 'include',
+    },
+  )
+
+  if (!response.ok || response.status !== 204) {
+    throw new Error('添付ファイルの閲覧準備に失敗しました。')
+  }
+}

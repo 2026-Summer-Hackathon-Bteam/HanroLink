@@ -18,6 +18,7 @@ import {
   createChatMessage,
   uploadPreparedChatFile,
   getChatNegotiationSnapshot,
+  createChatFileAccess,
 } from '../features/chat/ChatService'
 import { convertImageToWebp } from '../shared/utils/imageConversion'
 import NegotiationSnapshotComparison from '../features/chat/components/NegotiationSnapshotComparison'
@@ -59,6 +60,8 @@ const createWebpFilename = (filename: string): string => {
 
 const MAX_PDF_FILE_SIZE_BYTES = 10 * 1024 * 1024
 
+const FILE_ACCESS_REFRESH_INTERVAL_MS = 25 * 60 * 1000
+
 function ChatPage() {
   const [sendMessage, setSendMessage] = useState('')
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
@@ -86,6 +89,7 @@ function ChatPage() {
   const [isLoadingNegotiationSnapshot, setIsLoadingNegotiationSnapshot] =
     useState(true)
   const [negotiationSnapshotError, setNegotiationSnapshotError] = useState('')
+  const [fileAccessError, setFileAccessError] = useState('')
 
   const handleMessageInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const textarea = e.currentTarget
@@ -163,6 +167,48 @@ function ChatPage() {
 
     return () => {
       isCancelled = true
+    }
+  }, [channelId])
+
+  useEffect(() => {
+    if (!channelId) return
+
+    let isCancelled = false
+
+    const prepareFileAccess = async () => {
+      if (document.visibilityState !== 'visible') return
+
+      try {
+        await createChatFileAccess(channelId)
+
+        if (!isCancelled) {
+          setFileAccessError('')
+        }
+      } catch {
+        if (!isCancelled) {
+          setFileAccessError('添付ファイルを閲覧するための準備に失敗しました。')
+        }
+      }
+    }
+
+    void prepareFileAccess()
+
+    const intervalId = window.setInterval(() => {
+      void prepareFileAccess()
+    }, FILE_ACCESS_REFRESH_INTERVAL_MS)
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        void prepareFileAccess()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      isCancelled = true
+      window.clearInterval(intervalId)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
   }, [channelId])
 
@@ -583,8 +629,14 @@ function ChatPage() {
           className="border-t border-border/30 bg-bg p-3"
         >
           {/* エラー・進捗表示 */}
+          {fileAccessError && (
+            <p role="alert" className="text-center mb-2 text-sm text-error">
+              {fileAccessError}
+            </p>
+          )}
+
           {sendError && (
-            <p role="alert" className="mb-2 text-sm text-error">
+            <p role="alert" className="text-center mb-2 text-sm text-error">
               {sendError}
             </p>
           )}
@@ -593,7 +645,7 @@ function ChatPage() {
             <p
               role="status"
               aria-live="polite"
-              className="mb-2 text-sm text-other"
+              className="text-center mb-2 text-sm text-other"
             >
               {submitProgress}
             </p>
