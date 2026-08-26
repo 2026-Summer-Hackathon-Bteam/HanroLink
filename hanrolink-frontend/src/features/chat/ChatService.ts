@@ -5,11 +5,14 @@ import type {
   ChatFileMimeType,
   ChatFileUploadCreateRequest,
   ChatFileUploadCreateResponse,
+  ChatMessageListQuery,
+  ChatNegotiationSnapshot,
 } from './ChatTypes'
 import { authenticatedApi } from '../../lib/api'
 
 export async function getChatMessages(
   channelId: string,
+  query: ChatMessageListQuery = { limit: 50 },
 ): Promise<ChatMessages> {
   const { data, response } = await authenticatedApi.GET(
     '/api/v1/chats/{channelId}/messages',
@@ -18,6 +21,7 @@ export async function getChatMessages(
         path: {
           channelId,
         },
+        query,
       },
     },
   )
@@ -70,11 +74,17 @@ export async function createChatMessage(
 }
 
 export async function createChatFileUploadInformation(
+  channelId: string,
   request: ChatFileUploadCreateRequest,
 ): Promise<ChatFileUploadCreateResponse> {
   const { data, response } = await authenticatedApi.POST(
-    '/api/v1/chats/file-uploads',
+    '/api/v1/chats/{channelId}/file-uploads',
     {
+      params: {
+        path: {
+          channelId,
+        },
+      },
       body: request,
     },
   )
@@ -105,18 +115,17 @@ export async function uploadChatFile(
 }
 
 export async function uploadPreparedChatFile(
+  channelId: string,
   file: Blob,
   displayFilename: string,
   mimeType: ChatFileMimeType,
 ): Promise<string> {
   if (file.type !== mimeType) {
-    throw new Error(
-      'アップロードするファイルの形式を確認できませんでした。',
-    )
+    throw new Error('アップロードするファイルの形式を確認できませんでした。')
   }
 
   const { uploadUrl, pendingFileUploadId } =
-    await createChatFileUploadInformation({
+    await createChatFileUploadInformation(channelId, {
       mimeType,
       displayFilename,
       fileSizeBytes: file.size,
@@ -125,4 +134,25 @@ export async function uploadPreparedChatFile(
   await uploadChatFile(uploadUrl, file, mimeType)
 
   return pendingFileUploadId
+}
+
+export async function getChatNegotiationSnapshot(
+  channelId: string,
+): Promise<ChatNegotiationSnapshot> {
+  const { data, response } = await authenticatedApi.GET(
+    '/api/v1/chats/{channelId}/negotiation-snapshots',
+    {
+      params: {
+        path: {
+          channelId,
+        },
+      },
+    },
+  )
+
+  if (!response.ok || !data) {
+    throw new Error('商談条件の取得に失敗しました。')
+  }
+
+  return data
 }

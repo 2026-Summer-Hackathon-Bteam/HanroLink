@@ -7,14 +7,20 @@ import {
   useLayoutEffect,
 } from 'react'
 import { useParams } from 'react-router-dom'
-import type { ChatDetail, ChatMessages } from '../features/chat/ChatTypes'
+import type {
+  ChatDetail,
+  ChatMessages,
+  ChatNegotiationSnapshot,
+} from '../features/chat/ChatTypes'
 import {
   getChatDetail,
   getChatMessages,
   createChatMessage,
   uploadPreparedChatFile,
+  getChatNegotiationSnapshot,
 } from '../features/chat/ChatService'
 import { convertImageToWebp } from '../shared/utils/imageConversion'
+import NegotiationSnapshotComparison from '../features/chat/components/NegotiationSnapshotComparison'
 
 const formatChatDateTime = (createdAt: string) =>
   new Date(createdAt).toLocaleString('ja-JP', {
@@ -66,6 +72,20 @@ function ChatPage() {
   const [isSending, setIsSending] = useState(false)
   const [sendError, setSendError] = useState('')
   const [submitProgress, setSubmitProgress] = useState('')
+  const latestMessageIdRef = useRef<number | null>(null)
+  const isPollingRef = useRef(false)
+  const [isLoadingOlderMessages, setIsLoadingOlderMessages] = useState(false)
+  const [hasOlderMessages, setHasOlderMessages] = useState(false)
+  const [olderMessagesError, setOlderMessagesError] = useState('')
+  const previousScrollPositionRef = useRef<{
+    scrollHeight: number
+    scrollTop: number
+  } | null>(null)
+  const [negotiationSnapshot, setNegotiationSnapshot] =
+    useState<ChatNegotiationSnapshot | null>(null)
+  const [isLoadingNegotiationSnapshot, setIsLoadingNegotiationSnapshot] =
+    useState(true)
+  const [negotiationSnapshotError, setNegotiationSnapshotError] = useState('')
 
   const handleMessageInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const textarea = e.currentTarget
@@ -77,6 +97,8 @@ function ChatPage() {
   useEffect(() => {
     if (!channelId) return
 
+    latestMessageIdRef.current = null
+
     let isCancelled = false
 
     const loadChatData = async () => {
@@ -85,14 +107,18 @@ function ChatPage() {
           getChatDetail(channelId),
           getChatMessages(channelId),
         ])
+        const chronologicalMessages = [...messagesResult].reverse()
 
         if (!isCancelled) {
+          setHasOlderMessages(messagesResult.length === 50)
           setError('')
           setChatDetail(detailResult)
-          setMessages(messagesResult)
+          setMessages(chronologicalMessages)
         }
       } catch {
         if (!isCancelled) {
+          setChatDetail(null)
+          setMessages([])
           setError('チャット情報の取得に失敗しました')
         }
       } finally {
@@ -108,13 +134,170 @@ function ChatPage() {
     }
   }, [channelId])
 
+  useEffect(() => {
+    if (!channelId) return
+
+    let isCancelled = false
+
+    const loadNegotiationSnapshot = async () => {
+      try {
+        const result = await getChatNegotiationSnapshot(channelId)
+
+        if (!isCancelled) {
+          setNegotiationSnapshot(result)
+          setNegotiationSnapshotError('')
+        }
+      } catch {
+        if (!isCancelled) {
+          setNegotiationSnapshot(null)
+          setNegotiationSnapshotError('商談条件の取得に失敗しました。')
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoadingNegotiationSnapshot(false)
+        }
+      }
+    }
+
+    void loadNegotiationSnapshot()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [channelId])
+
   useLayoutEffect(() => {
     const container = messagesContainerRef.current
 
     if (!container || messages.length === 0) return
 
+    const previousPosition = previousScrollPositionRef.current
+
+    if (previousPosition) {
+      container.scrollTop =
+        previousPosition.scrollTop +
+        (container.scrollHeight - previousPosition.scrollHeight)
+
+      previousScrollPositionRef.current = null
+      return
+    }
+
     container.scrollTop = container.scrollHeight
   }, [messages])
+
+  useEffect(() => {
+    latestMessageIdRef.current = messages[messages.length - 1]?.id ?? null
+  }, [messages])
+
+  useEffect(() => {
+    if (!channelId) return
+
+    let isCancelled = false
+
+    const pollNewMessages = async () => {
+      if (document.visibilityState !== 'visible' || isPollingRef.current) {
+        return
+      }
+
+      isPollingRef.current = true
+
+      const latestMessageId = latestMessageIdRef.current
+
+      try {
+        const receivedMessages =
+          latestMessageId === null
+            ? await getChatMessages(channelId, { limit: 50 })
+            : await getChatMessages(channelId, {
+                afterMessageId: latestMessageId,
+                limit: 50,
+              })
+
+        if (isCancelled || receivedMessages.length === 0) return
+
+        const chronologicalMessages =
+          latestMessageId === null
+            ? [...receivedMessages].reverse()
+            : receivedMessages
+
+        setMessages((prev) => {
+          const existingIds = new Set(prev.map((message) => message.id))
+          const newMessages = chronologicalMessages.filter(
+            (message) => !existingIds.has(message.id),
+          )
+
+          return [...prev, ...newMessages]
+        })
+      } catch {
+        // 一時的に失敗しても、次回のポーリングで再試行する
+      } finally {
+        isPollingRef.current = false
+      }
+    }
+
+    const intervalId = window.setInterval(() => {
+      void pollNewMessages()
+    }, 5000)
+
+    return () => {
+      isCancelled = true
+      window.clearInterval(intervalId)
+    }
+  }, [channelId])
+
+  const handleLoadOlderMessages = async () => {
+    if (!channelId || isLoadingOlderMessages || !hasOlderMessages) {
+      return
+    }
+
+    const oldestMessageId = messages[0]?.id
+
+    if (oldestMessageId === undefined) {
+      setHasOlderMessages(false)
+      return
+    }
+
+    setOlderMessagesError('')
+    setIsLoadingOlderMessages(true)
+
+    try {
+      const olderMessages = await getChatMessages(channelId, {
+        beforeMessageId: oldestMessageId,
+        limit: 50,
+      })
+
+      if (olderMessages.length === 0) {
+        setHasOlderMessages(false)
+        return
+      }
+
+      const container = messagesContainerRef.current
+
+      if (container) {
+        previousScrollPositionRef.current = {
+          scrollHeight: container.scrollHeight,
+          scrollTop: container.scrollTop,
+        }
+      }
+
+      const chronologicalMessages = [...olderMessages].reverse()
+
+      setMessages((prev) => {
+        const existingIds = new Set(prev.map((message) => message.id))
+        const messagesToAdd = chronologicalMessages.filter(
+          (message) => !existingIds.has(message.id),
+        )
+
+        return [...messagesToAdd, ...prev]
+      })
+
+      setHasOlderMessages(olderMessages.length === 50)
+    } catch {
+      previousScrollPositionRef.current = null
+      setOlderMessagesError('過去のメッセージの取得に失敗しました。')
+    } finally {
+      setIsLoadingOlderMessages(false)
+    }
+  }
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newFiles = Array.from(e.currentTarget.files ?? [])
@@ -175,6 +358,7 @@ function ChatPage() {
           }
 
           const pendingFileUploadId = await uploadPreparedChatFile(
+            channelId,
             file,
             file.name,
             'application/pdf',
@@ -188,6 +372,7 @@ function ChatPage() {
         const webpFilename = createWebpFilename(file.name)
 
         const pendingFileUploadId = await uploadPreparedChatFile(
+          channelId,
           webpBlob,
           webpFilename,
           'image/webp',
@@ -212,8 +397,27 @@ function ChatPage() {
       }
 
       try {
-        const updatedMessages = await getChatMessages(channelId)
-        setMessages(updatedMessages)
+        const latestMessageId = latestMessageIdRef.current
+
+        const newMessages =
+          latestMessageId === null
+            ? await getChatMessages(channelId, { limit: 50 })
+            : await getChatMessages(channelId, {
+                afterMessageId: latestMessageId,
+                limit: 50,
+              })
+
+        const chronologicalMessages =
+          latestMessageId === null ? [...newMessages].reverse() : newMessages
+
+        setMessages((prev) => {
+          const existingIds = new Set(prev.map((message) => message.id))
+          const messagesToAdd = chronologicalMessages.filter(
+            (message) => !existingIds.has(message.id),
+          )
+
+          return [...prev, ...messagesToAdd]
+        })
       } catch {
         setSendError('メッセージは送信されましたが、表示の更新に失敗しました。')
       }
@@ -248,7 +452,7 @@ function ChatPage() {
       <section className="mx-auto flex flex-1 w-full max-w-5xl flex-col overflow-hidden rounded-xl bg-bg shadow-md ring-1 ring-text/10 min-h-0">
         <header className="border-b border-border/30 bg-textbg/30 p-2 md:p-4 text-left">
           <h2 className="my-0! text-xl! md:text-3xl! truncate">
-            {chatDetail?.name ?? 'チャット'}
+            {chatDetail?.channelName ?? 'チャット'}
           </h2>
 
           {chatDetail && (
@@ -262,6 +466,39 @@ function ChatPage() {
           className="min-h-0 flex-1 space-y-5 overflow-y-auto bg-textbg/10 p-4 md:p-6"
           ref={messagesContainerRef}
         >
+          {/* 過去メッセージ取得ボタン */}
+          {hasOlderMessages && messages.length > 0 && (
+            <button
+              type="button"
+              onClick={() => void handleLoadOlderMessages()}
+              disabled={isLoadingOlderMessages}
+              className="button-base button-secondary mx-auto rounded-full px-4 py-2 text-sm"
+            >
+              {isLoadingOlderMessages
+                ? '過去のメッセージを読み込んでいます...'
+                : '過去のメッセージを読み込む'}
+            </button>
+          )}
+
+          {olderMessagesError && (
+            <p role="alert" className="text-center text-sm text-error">
+              {olderMessagesError}
+            </p>
+          )}
+
+          {/* 商談希望送信時と商談開始時の条件比較 */}
+          {isLoadingNegotiationSnapshot ? (
+            <p className="text-center text-sm text-other">
+              商談条件を読み込んでいます...
+            </p>
+          ) : negotiationSnapshotError ? (
+            <p role="alert" className="text-center text-sm text-error">
+              {negotiationSnapshotError}
+            </p>
+          ) : negotiationSnapshot ? (
+            <NegotiationSnapshotComparison snapshot={negotiationSnapshot} />
+          ) : null}
+
           {/* メッセージ */}
           {!error && messages.length === 0 && (
             <p className="text-center text-other">
