@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.hanrolink.account.exception.UnsupportedJwtAccountRoleException;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
 import com.hanrolink.account.repository.projection.BusinessProfileAccessProjection;
 import com.hanrolink.business.entity.Business;
@@ -16,6 +17,7 @@ import com.hanrolink.business.enums.BusinessReviewStatus;
 import com.hanrolink.business.enums.BusinessRole;
 import com.hanrolink.business.repository.BusinessRepository;
 import com.hanrolink.business.response.BuyerProfileGetResponse;
+import com.hanrolink.security.authorization.enums.JwtAccountRole;
 
 @Service
 public class BuyerBusinessService {
@@ -40,10 +42,11 @@ public class BuyerBusinessService {
    */
   @Transactional(readOnly = true)
   public BuyerProfileGetResponse get(
+    JwtAccountRole authenticatedJwtAccountRole,
     String identityProviderSubject,
     UUID businessPublicId
   ) {
-    checkBuyerAccess(identityProviderSubject, businessPublicId);
+    checkBuyerAccess(authenticatedJwtAccountRole, identityProviderSubject, businessPublicId);
 
     Business targetBusiness =
       businessRepository
@@ -64,20 +67,22 @@ public class BuyerBusinessService {
   }
 
   private void checkBuyerAccess(
+    JwtAccountRole authenticatedJwtAccountRole,
     String identityProviderSubject,
     UUID businessPublicId
   ) {
-    Optional<BusinessProfileAccessProjection> optionalViewerAccess =
-      businessUserAccountRepository
-        .findBusinessProfileAccessByIdentityProviderSubject(identityProviderSubject);
-
-    // DBにアカウントがない場合はAdmin
-    if (optionalViewerAccess.isEmpty()) {
+    if (authenticatedJwtAccountRole == JwtAccountRole.ADMIN) {
       return;
     }
 
+    if (authenticatedJwtAccountRole == null) {
+      throw new UnsupportedJwtAccountRoleException();
+    }
+
     BusinessProfileAccessProjection viewerAccess =
-      optionalViewerAccess.orElseThrow();
+      businessUserAccountRepository
+        .findBusinessProfileAccessByIdentityProviderSubject(identityProviderSubject)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     if (viewerAccess.businessRole() == BusinessRole.SUPPLIER) {
       return;

@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hanrolink.business.api.BusinessApi;
 import com.hanrolink.business.response.BuyerProfileGetResponse;
 import com.hanrolink.business.service.BuyerBusinessService;
+import com.hanrolink.security.authorization.AuthenticatedAccountRoleResolver;
+import com.hanrolink.security.authorization.enums.JwtAccountRole;
 import com.hanrolink.security.authorization.policy.RequiresAdminOrApprovedBusiness;
 
 @RestController
@@ -19,10 +21,14 @@ public class BuyerBusinessController {
 
   private final BuyerBusinessService buyerBusinessService;
 
+  private final AuthenticatedAccountRoleResolver authenticatedAccountRoleResolver;
+
   public BuyerBusinessController(
-    BuyerBusinessService buyerBusinessService
+    BuyerBusinessService buyerBusinessService,
+    AuthenticatedAccountRoleResolver authenticatedAccountRoleResolver
   ) {
     this.buyerBusinessService = buyerBusinessService;
+    this.authenticatedAccountRoleResolver = authenticatedAccountRoleResolver;
   }
 
   /**
@@ -37,8 +43,11 @@ public class BuyerBusinessController {
     @AuthenticationPrincipal Jwt jwt,
     @PathVariable UUID businessId
   ) {
+    JwtAccountRole authenticatedJwtAccountRole = authenticatedAccountRoleResolver.resolve(jwt);
+
     return ResponseEntity.ok(
       buyerBusinessService.get(
+        authenticatedJwtAccountRole,
         jwt.getSubject(),
         businessId
       )
