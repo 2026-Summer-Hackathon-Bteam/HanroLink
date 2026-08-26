@@ -2,7 +2,7 @@ name: Deploy Frontend to S3/CloudFront
 
 on:
   push:
-    branches: [main, 'chore/kyon/prod_AWS_ecr_setup_and_ci/cd_2'] # Todo:のちにmainブランチのみに変更する
+    branches: [main, 'chore/kyon/prod_AWS_ecr_setup_and_ci/cd'] # Todo:のちにmainブランチのみに変更する
     paths:
       - 'hanrolink-frontend/**'
       - '.github/workflows/deploy-frontend.yml'
@@ -34,7 +34,8 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Configure AWS credentials via OIDC
+      # --- S3(アカウント: 278835524539)への同期 ---
+      - name: Configure AWS credentials for S3 (278835524539)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ vars.FRONTEND_AWS_ROLE_ARN }}
@@ -43,6 +44,14 @@ jobs:
       - name: Sync to S3
         run: |
           aws s3 sync ./dist s3://${{ vars.FRONTEND_S3_BUCKET_NAME }} --delete
+
+      # --- CloudFront(アカウント: 364847289585)のキャッシュ無効化 ---
+      # 別アカウントのロールを引き受けるため、認証をし直す(前段の認証情報を上書きする)
+      - name: Configure AWS credentials for CloudFront (364847289585)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.FRONTEND_CLOUDFRONT_AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Invalidate CloudFront cache
         run: |
