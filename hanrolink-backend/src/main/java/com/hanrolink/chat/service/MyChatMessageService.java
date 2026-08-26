@@ -145,7 +145,7 @@ public class MyChatMessageService {
       )
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-    // メッセージと添付ファイル情報の取得およびレスポンス用の分類
+    // 指定されたメッセージより後に作成されたメッセージの取得
     if (request.afterMessageId() != null) {
       Pageable pageable = PageRequest.of(0, request.limit());
       List<ChatMessageProjection> messageProjections =
@@ -162,24 +162,23 @@ public class MyChatMessageService {
       );
     }
 
-    Pageable pageable = PageRequest.of(0, request.limit() + 1);
+    Pageable pageableWithLookahead = PageRequest.of(0, request.limit() + 1);
     List<ChatMessageProjection> messageProjectionsWithLookahead =
       messageRepository.findLatestOrBeforeByChannelId(
         channelParticipantContext.channelId(),
         channelParticipantContext.businessUserAccountId(),
         request.beforeMessageId(),
-        pageable
+        pageableWithLookahead
       );
 
+    // 最古のメッセージへの到達判定とレスポンス対象件数への制限
     boolean hasReachedOldestMessage =
       messageProjectionsWithLookahead.size() <= request.limit();
-
     List<ChatMessageProjection> messageProjections =
       messageProjectionsWithLookahead
         .stream()
         .limit(request.limit())
         .toList();
-
 
     return new MyChatMessageListResponse(
       toMessageResponses(messageProjections),
@@ -234,6 +233,7 @@ public class MyChatMessageService {
   private List<ChatMessageResponse> toMessageResponses(
     List<ChatMessageProjection> messageProjections
   ) {
+    // 取得したメッセージに紐づく添付ファイル情報の一括取得
     List<Long> messageIds = messageProjections
       .stream()
       .map(message -> message.id())
