@@ -53,7 +53,7 @@ public interface ProductNegotiationRequestRepository extends JpaRepository<Produ
   );
 
   @Query("""
-    SELECT COUNT(productNegotiationRequest) > 0
+    SELECT COUNT(productNegotiationRequest.id) > 0
     FROM ProductNegotiationRequest productNegotiationRequest
     JOIN Product product
       ON product.id = productNegotiationRequest.productId
