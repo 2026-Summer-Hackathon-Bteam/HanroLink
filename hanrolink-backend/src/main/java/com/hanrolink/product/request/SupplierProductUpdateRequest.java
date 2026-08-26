@@ -143,6 +143,27 @@ public record SupplierProductUpdateRequest(
       .count() == ProductStoryPolicy.REQUIRED_COUNT;
   }
 
+  @AssertTrue(message = "同じ商品ストーリーのタイトルを複数指定することはできません")
+  public boolean hasUniqueStorySectionTemplateIds() {
+    if (productStories == null
+      || productStories.size() != ProductStoryPolicy.REQUIRED_COUNT
+      || productStories.stream().anyMatch(
+        productStory -> productStory == null
+        || productStory.productStorySectionTemplateId() == null
+      )
+    ) {
+      return true;
+    }
+
+    return productStories
+      .stream()
+      .map(productStory ->
+        productStory.productStorySectionTemplateId()
+      )
+      .distinct()
+      .count() == productStories.size();
+  }
+
   @AssertTrue(message = "同じ画像を複数指定することはできません")
   public boolean hasUniquePendingFileUploadIds() {
     if (productStories == null
