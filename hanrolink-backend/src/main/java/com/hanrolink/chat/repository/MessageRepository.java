@@ -9,13 +9,13 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.hanrolink.chat.entity.Message;
-import com.hanrolink.chat.repository.projection.MyChatMessageListProjection;
+import com.hanrolink.chat.repository.projection.ChatMessageProjection;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
   @Query("""
-    SELECT new com.hanrolink.chat.repository.projection.MyChatMessageListProjection(
+    SELECT new com.hanrolink.chat.repository.projection.ChatMessageProjection(
       message.id,
       business.name,
       CASE
@@ -38,7 +38,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
       )
     ORDER BY message.id DESC
     """)
-  List<MyChatMessageListProjection> findLatestOrBeforeByChannelId(
+  List<ChatMessageProjection> findLatestOrBeforeByChannelId(
     @Param("channelId")
     Long channelId,
     @Param("viewerBusinessUserAccountId")
@@ -49,7 +49,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
   );
 
   @Query("""
-    SELECT new com.hanrolink.chat.repository.projection.MyChatMessageListProjection(
+    SELECT new com.hanrolink.chat.repository.projection.ChatMessageProjection(
       message.id,
       business.name,
       CASE
@@ -69,7 +69,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
       AND message.id > :afterMessageId
     ORDER BY message.id ASC
     """)
-  List<MyChatMessageListProjection> findAfterByChannelId(
+  List<ChatMessageProjection> findAfterByChannelId(
     @Param("channelId")
     Long channelId,
     @Param("viewerBusinessUserAccountId")

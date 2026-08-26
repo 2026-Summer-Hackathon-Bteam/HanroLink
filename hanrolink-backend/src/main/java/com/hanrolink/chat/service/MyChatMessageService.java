@@ -20,12 +20,13 @@ import com.hanrolink.chat.repository.ChannelRepository;
 import com.hanrolink.chat.repository.MessageFileRepository;
 import com.hanrolink.chat.repository.MessageRepository;
 import com.hanrolink.chat.repository.projection.ChatMessageFileProjection;
-import com.hanrolink.chat.repository.projection.MyChatMessageListProjection;
+import com.hanrolink.chat.repository.projection.ChatMessageProjection;
 import com.hanrolink.chat.repository.projection.MyChatParticipantContextProjection;
 import com.hanrolink.chat.request.MyChatMessageCreateRequest;
 import com.hanrolink.chat.request.MyChatMessageListRequest;
 import com.hanrolink.chat.response.MyChatMessageListResponse;
 import com.hanrolink.chat.response.component.ChatMessageFileResponse;
+import com.hanrolink.chat.response.component.ChatMessageResponse;
 import com.hanrolink.file.entity.PendingFileUpload;
 import com.hanrolink.file.enums.FileUploadUsage;
 import com.hanrolink.file.repository.PendingFileUploadRepository;
@@ -131,7 +132,7 @@ public class MyChatMessageService {
    * @return 添付ファイル情報を含むメッセージ一覧
    */
   @Transactional(readOnly = true)
-  public List<MyChatMessageListResponse> list(
+  public MyChatMessageListResponse list(
     String identityProviderSubject,
     UUID channelPublicId,
     MyChatMessageListRequest request
@@ -145,71 +146,45 @@ public class MyChatMessageService {
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     // メッセージと添付ファイル情報の取得およびレスポンス用の分類
-    Pageable pageable = PageRequest.of(0, request.limit());
-    List<MyChatMessageListProjection> messages;
     if (request.afterMessageId() != null) {
-      messages = messageRepository.findAfterByChannelId(
-        channelParticipantContext.channelId(),
-        channelParticipantContext.businessUserAccountId(),
-        request.afterMessageId(),
-        pageable
+      Pageable pageable = PageRequest.of(0, request.limit());
+      List<ChatMessageProjection> messageProjections =
+        messageRepository.findAfterByChannelId(
+          channelParticipantContext.channelId(),
+          channelParticipantContext.businessUserAccountId(),
+          request.afterMessageId(),
+          pageable
+        );
+
+      return new MyChatMessageListResponse(
+        toMessageResponses(messageProjections),
+        false
       );
-    } else {
-      messages = messageRepository.findLatestOrBeforeByChannelId(
+    }
+
+    Pageable pageable = PageRequest.of(0, request.limit() + 1);
+    List<ChatMessageProjection> messageProjectionsWithLookahead =
+      messageRepository.findLatestOrBeforeByChannelId(
         channelParticipantContext.channelId(),
         channelParticipantContext.businessUserAccountId(),
         request.beforeMessageId(),
         pageable
       );
-    }
 
-    List<Long> messageIds = messages
-      .stream()
-      .map(message -> message.id())
-      .toList();
-    List<ChatMessageFileProjection> messageFiles = List.of();
-    if (!messageIds.isEmpty()) {
-      messageFiles = messageFileRepository
-        .findAllByMessageIds(messageIds);
-    }
-    Map<Long, List<ChatMessageFileResponse>> messageFilesByMessageId =
-      messageFiles
+    boolean hasReachedOldestMessage =
+      messageProjectionsWithLookahead.size() <= request.limit();
+
+    List<ChatMessageProjection> messageProjections =
+      messageProjectionsWithLookahead
         .stream()
-        .collect(
-          Collectors.groupingBy(
-            messageFile -> messageFile.messageId(),
-            Collectors.mapping(
-              messageFile ->
-                new ChatMessageFileResponse(
-                  messageFile.displayFilename(),
-                  cloudFrontResourceUrlGenerator.generate(
-                    messageFile.storageKey()
-                  ),
-                  messageFile.fileSizeBytes()
-                ),
-              Collectors.toList()
-            )
-          )
-        );
+        .limit(request.limit())
+        .toList();
 
-    // 添付ファイル情報を含むメッセージ一覧の生成
-    return messages
-      .stream()
-      .map(message ->
-        new MyChatMessageListResponse(
-          message.id(),
-          message.senderBusinessName(),
-          message.isMine(),
-          message.body(),
-          message.createdAt(),
-          messageFilesByMessageId
-            .getOrDefault(
-              message.id(),
-              List.of()
-            )
-        )
-      )
-      .toList();
+
+    return new MyChatMessageListResponse(
+      toMessageResponses(messageProjections),
+      hasReachedOldestMessage
+    );
   }
 
   private List<PendingFileUpload> findUsableFileUploads(
@@ -254,5 +229,57 @@ public class MyChatMessageService {
     }
 
     return pendingFileUploads;
+  }
+
+  private List<ChatMessageResponse> toMessageResponses(
+    List<ChatMessageProjection> messageProjections
+  ) {
+    List<Long> messageIds = messageProjections
+      .stream()
+      .map(message -> message.id())
+      .toList();
+    List<ChatMessageFileProjection> messageFiles = List.of();
+    if (!messageIds.isEmpty()) {
+      messageFiles = messageFileRepository
+        .findAllByMessageIds(messageIds);
+    }
+    Map<Long, List<ChatMessageFileResponse>> messageFilesByMessageId =
+      messageFiles
+        .stream()
+        .collect(
+          Collectors.groupingBy(
+            messageFile -> messageFile.messageId(),
+            Collectors.mapping(
+              messageFile ->
+                new ChatMessageFileResponse(
+                  messageFile.displayFilename(),
+                  cloudFrontResourceUrlGenerator.generate(
+                    messageFile.storageKey()
+                  ),
+                  messageFile.fileSizeBytes()
+                ),
+              Collectors.toList()
+            )
+          )
+        );
+
+    // 添付ファイル情報を含むメッセージ一覧の生成
+    return messageProjections
+      .stream()
+      .map(message ->
+        new ChatMessageResponse(
+          message.id(),
+          message.senderBusinessName(),
+          message.isMine(),
+          message.body(),
+          message.createdAt(),
+          messageFilesByMessageId
+            .getOrDefault(
+              message.id(),
+              List.of()
+            )
+        )
+      )
+      .toList();
   }
 }

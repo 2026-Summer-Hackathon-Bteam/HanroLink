@@ -1,6 +1,5 @@
 package com.hanrolink.chat.controller;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springdoc.core.annotations.ParameterObject;
@@ -74,7 +73,7 @@ public class MyChatMessageController {
    */
   @RequiresApprovedBusiness
   @GetMapping(ChatApi.V1.MESSAGES)
-  public ResponseEntity<List<MyChatMessageListResponse>> list(
+  public ResponseEntity<MyChatMessageListResponse> list(
     @AuthenticationPrincipal Jwt jwt,
     @PathVariable UUID channelId,
     @Valid
