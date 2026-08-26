@@ -40,15 +40,12 @@ services:
     volumes:
       - ./hanrolink-backend/.secrets/cloudfront-private-key.pem:/run/secrets/cloudfront-private-key.pem:ro
       - ${HOME}/.aws:/root/.aws:ro
+      - ./hanrolink-backend:/app
 
     container_name: hanrolink-backend
 
     ports:
       - "${BACKEND_PORT}:8080"
-
-    # 開発中の変更を即時反映するため、ホストのソースコードをコンテナにマウントする
-    volumes:
-      - ./hanrolink-backend:/app
 
     depends_on:
       postgres:
