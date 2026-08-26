@@ -75,7 +75,7 @@ public class BuyerBusinessService {
       return;
     }
 
-    if (authenticatedJwtAccountRole == null) {
+    if (authenticatedJwtAccountRole != null) {
       throw new UnsupportedJwtAccountRoleException();
     }
 

@@ -63,6 +63,7 @@ class BuyerBusinessServiceTest {
       AccessDeniedException.class,
       () ->
         buyerBusinessService.get(
+          null,
           IDENTITY_PROVIDER_SUBJECT,
           targetBusinessId
         )
