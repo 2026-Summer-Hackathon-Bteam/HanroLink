@@ -1,6 +1,7 @@
 package com.hanrolink.onboarding.request.component;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record OnboardingBusinessUserAccountRequest(
@@ -13,10 +14,18 @@ public record OnboardingBusinessUserAccountRequest(
   String firstName,
 
   @NotBlank
+  @Pattern(
+    regexp = "^[ァ-ヶー・]+$",
+    message = "全角カタカナで入力してください"
+  )
   @Size(max = 255)
   String lastNameKana,
 
   @NotBlank
+  @Pattern(
+    regexp = "^[ァ-ヶー・]+$",
+    message = "全角カタカナで入力してください"
+  )
   @Size(max = 255)
   String firstNameKana,
 

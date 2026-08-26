@@ -18,6 +18,10 @@ public record OnboardingBusinessRequest(
   String name,
 
   @NotBlank
+  @Pattern(
+    regexp = "^[ァ-ヶー・]+$",
+    message = "全角カタカナで入力してください"
+  )
   @Size(max = 255)
   String nameKana,
 
