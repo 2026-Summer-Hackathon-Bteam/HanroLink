@@ -6,6 +6,7 @@ import {
   approveBusiness,
   getAdminBusinessApprovalDetail,
 } from '../features/admin/adminApprovalService'
+import { getSafeExternalUrl } from '../shared/utils/urlValidation'
 
 const roleInKana: Record<
   AdminBusinessApprovalDetail['business']['role'],
@@ -103,6 +104,8 @@ function AdminBusinessApprovalDetailPage() {
     return <p className="py-10 text-center">読み込み中...</p>
   }
 
+  const safeWebsiteUrl = getSafeExternalUrl(data.business.websiteUrl)
+
   return (
     <div className="mx-auto max-w-300 px-4 text-center md:px-6 lg:px-8">
       <h2>新規登録者詳細</h2>
@@ -128,15 +131,17 @@ function AdminBusinessApprovalDetailPage() {
         </DataRow>
         <DataRow itemName="会社電話番号">{data.business.phoneNumber}</DataRow>
         <DataRow itemName="ホームページ">
-          {data.business.websiteUrl ? (
+          {safeWebsiteUrl ? (
             <a
-              href={data.business.websiteUrl}
+              href={safeWebsiteUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="break-all text-other underline"
+              className="break-all text-other underline underline-offset-2 hover:no-underline"
             >
-              {data.business.websiteUrl}
+              {safeWebsiteUrl}
             </a>
+          ) : data.business.websiteUrl ? (
+            'URLを確認できません'
           ) : (
             '未登録'
           )}

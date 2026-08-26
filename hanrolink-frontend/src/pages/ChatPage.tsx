@@ -22,6 +22,7 @@ import {
 } from '../features/chat/ChatService'
 import { convertImageToWebp } from '../shared/utils/imageConversion'
 import NegotiationSnapshotComparison from '../features/chat/components/NegotiationSnapshotComparison'
+import { getSafeChatFileUrl } from '../shared/utils/urlValidation'
 
 const formatChatDateTime = (createdAt: string) =>
   new Date(createdAt).toLocaleString('ja-JP', {
@@ -585,27 +586,34 @@ function ChatPage() {
                   {/* 添付ファイル */}
                   {message.messageFiles && message.messageFiles.length > 0 && (
                     <ul className="mt-2 space-y-1 border-t border-border/20 pt-2">
-                      {message.messageFiles.map((file, index) => (
-                        <li key={`${file.url}-${index}`} className="flex">
-                          <span className="shrink-0">添付：</span>
-                          <a
-                            href={file.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="group flex min-w-0 flex-1 text-other"
-                            title={file.displayFilename ?? '添付ファイル'}
-                          >
-                            <span className="min-w-0 truncate border-b border-current group-hover:border-transparent">
-                              {file.displayFilename ?? '添付ファイル'}
-                            </span>
-                            <span className="shrink-0  border-b border-current group-hover:border-transparent">
-                              {typeof file.fileSizeBytes === 'number'
-                                ? `（${formatFileSize(file.fileSizeBytes)}）`
-                                : '（ファイルサイズ不明）'}
-                            </span>
-                          </a>
-                        </li>
-                      ))}
+                      {message.messageFiles.map((file, index) => {
+                        const safeChatFileUrl = getSafeChatFileUrl(file.url)
+                        return (
+                          <li key={`${file.url}-${index}`} className="flex">
+                            <span className="shrink-0">添付：</span>
+                            {safeChatFileUrl ? (
+                              <a
+                                href={safeChatFileUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group flex min-w-0 flex-1 text-other"
+                                title={file.displayFilename ?? '添付ファイル'}
+                              >
+                                <span className="min-w-0 truncate border-b border-current group-hover:border-transparent">
+                                  {file.displayFilename ?? '添付ファイル'}
+                                </span>
+                                <span className="shrink-0  border-b border-current group-hover:border-transparent">
+                                  {typeof file.fileSizeBytes === 'number'
+                                    ? `（${formatFileSize(file.fileSizeBytes)}）`
+                                    : '（ファイルサイズ不明）'}
+                                </span>
+                              </a>
+                            ) : (
+                              '添付ファイルのURLを確認できません'
+                            )}
+                          </li>
+                        )
+                      })}
                     </ul>
                   )}
                 </div>

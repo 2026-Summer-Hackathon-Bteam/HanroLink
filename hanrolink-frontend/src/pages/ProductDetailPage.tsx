@@ -10,6 +10,7 @@ import { formatTargetMonth } from '../shared/utils/yearMonth'
 import DataRow from '../components/DataRow'
 import ProductStorySection from '../features/product/components/ProductStorySection'
 import { createProductNegotiationRequest } from '../features/negotiation/negotiationRequestService'
+import { getSafeExternalUrl } from '../shared/utils/urlValidation'
 
 function ProductDetailPage() {
   const [productDetailData, setProductDetailData] =
@@ -173,6 +174,8 @@ function ProductDetailPage() {
       return `${Number(month)}月`
     })
     .join('、')
+
+  const safeWebsiteUrl = getSafeExternalUrl(productDetailData.supplier.businessWebsiteUrl)
 
   return (
     <div className="mx-auto max-w-300 px-4 text-center md:px-6 lg:px-8">
@@ -446,14 +449,14 @@ function ProductDetailPage() {
               .join('')}
           </DataRow>
           <DataRow itemName="ホームページ">
-            {productDetailData.supplier.businessWebsiteUrl ? (
+            {safeWebsiteUrl ? (
               <a
-                href={productDetailData.supplier.businessWebsiteUrl}
+                href={safeWebsiteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-other underline"
+                className="break-all text-other underline underline-offset-2 hover:no-underline"
               >
-                {productDetailData.supplier.businessWebsiteUrl}
+                {safeWebsiteUrl}
               </a>
             ) : (
               '-'
