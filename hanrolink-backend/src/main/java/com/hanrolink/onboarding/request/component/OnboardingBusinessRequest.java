@@ -25,7 +25,7 @@ public record OnboardingBusinessRequest(
   @Size(max = 255)
   String nameKana,
 
-  @URL
+  @URL(protocol = "https")
   @Size(max = 255)
   String websiteUrl,
 
