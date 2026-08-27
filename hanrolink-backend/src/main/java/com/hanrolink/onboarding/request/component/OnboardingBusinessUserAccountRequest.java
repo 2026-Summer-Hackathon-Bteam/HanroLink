@@ -31,5 +31,9 @@ public record OnboardingBusinessUserAccountRequest(
 
   @NotBlank
   @Size(max = 20)
+  @Pattern(
+    regexp = "[0-9]+",
+    message = "半角数字のみで入力してください"
+  )
   String phoneNumber
 ) {}
