@@ -6,12 +6,17 @@ import java.util.UUID;
 
 import org.springframework.util.StringUtils;
 
+import com.hanrolink.chat.policy.ChatMessagePolicy;
+
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public record MyChatMessageCreateRequest(
+  @Size(max = ChatMessagePolicy.MAX_BODY_LENGTH)
   String body,
 
+  @Size(max = ChatMessagePolicy.MAX_ATTACHED_FILE_COUNT)
   List<@NotNull UUID> pendingFileUploadIds
 ) {
   @AssertTrue(message = "本文またはファイルのどちらかは必須です")
