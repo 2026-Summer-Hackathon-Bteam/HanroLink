@@ -213,12 +213,6 @@ CREATE TABLE product_stories (
       position
     )
     DEFERRABLE INITIALLY DEFERRED,
-  CONSTRAINT uq_product_stories_product_id_product_story_section_template
-    UNIQUE (
-      product_id,
-      product_story_section_template_id
-    )
-    DEFERRABLE INITIALLY DEFERRED,
 
   CONSTRAINT chk_product_stories_position
     CHECK (position BETWEEN 1 AND 4),
