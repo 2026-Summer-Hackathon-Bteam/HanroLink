@@ -23,7 +23,7 @@ public class CurrentBusinessController {
   }
 
   /**
-   * 認証済みユーザーに紐づく事業者情報を取得する
+   * 認証済みユーザーに紐づく事業者情報を返す
    * @param jwt 認証済みユーザーのJWT
    * @return 認証済みユーザーに紐づく事業者情報
    */

@@ -28,7 +28,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   boolean existsByPublicIdAndHiddenAtIsNull(UUID productPublicId);
 
   @Query("""
-    SELECT COUNT(product) > 0
+    SELECT COUNT(product.id) > 0
     FROM Product product
     JOIN BusinessUserAccount businessUserAccount
       ON businessUserAccount.businessId = product.supplierBusinessId

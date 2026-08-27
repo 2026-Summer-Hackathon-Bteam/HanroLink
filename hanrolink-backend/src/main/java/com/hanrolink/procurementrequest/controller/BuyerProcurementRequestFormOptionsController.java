@@ -21,7 +21,7 @@ public class BuyerProcurementRequestFormOptionsController {
   }
 
   /**
-   * 募集情報入力フォームで使用する選択肢を取得する
+   * 募集情報入力フォームで使用する選択肢を返す
    * @return 募集情報入力フォームの選択肢
    */
   @RequiresApprovedBuyer

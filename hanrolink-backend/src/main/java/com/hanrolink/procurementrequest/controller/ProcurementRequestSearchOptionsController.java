@@ -21,7 +21,7 @@ public class ProcurementRequestSearchOptionsController {
   }
 
   /**
-   * 募集情報検索フォームで使用する選択肢を取得する
+   * 募集情報検索フォームで使用する選択肢を返す
    * @return 募集情報検索フォームの選択肢
    */
   @RequiresAdminOrApprovedSupplier

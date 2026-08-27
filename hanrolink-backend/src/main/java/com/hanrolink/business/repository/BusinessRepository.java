@@ -19,18 +19,10 @@ public interface BusinessRepository extends JpaRepository<Business, Long> {
 
   Optional<Business> findByPublicId(UUID publicId);
 
-  @Query("""
-    SELECT business
-    FROM Business business
-    WHERE business.publicId = :publicId
-      AND business.role = :role
-      AND business.reviewStatus = com.hanrolink.business.enums.BusinessReviewStatus.APPROVED
-    """)
-  Optional<Business> findApprovedByPublicIdAndRole(
-    @Param("publicId")
+  Optional<Business> findByPublicIdAndRoleAndReviewStatus(
     UUID publicId,
-    @Param("role")
-    BusinessRole role
+    BusinessRole role,
+    BusinessReviewStatus reviewStatus
   );
 
   @Query("""

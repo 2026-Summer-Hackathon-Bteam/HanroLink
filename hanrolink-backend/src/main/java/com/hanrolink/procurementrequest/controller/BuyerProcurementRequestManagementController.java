@@ -66,7 +66,7 @@ public class BuyerProcurementRequestManagementController {
   }
 
   /**
-   * 自社に紐づく募集情報一覧の取得を受け付ける
+   * 自社に紐づく募集情報一覧を返す
    * @param jwt 認証済みユーザーのJWT
    * @return 募集情報の一覧
    */

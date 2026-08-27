@@ -10,6 +10,7 @@ import java.util.stream.IntStream;
 import com.hanrolink.product.enums.ProductExpirationType;
 import com.hanrolink.product.enums.StorageType;
 import com.hanrolink.product.policy.MonthlySupplyCapacityPolicy;
+import com.hanrolink.product.policy.ProductPolicy;
 import com.hanrolink.product.policy.ProductStoryPolicy;
 import com.hanrolink.product.request.component.MonthlySupplyCapacityRequest;
 import com.hanrolink.product.request.component.ProductStoryUpdateRequest;
@@ -24,7 +25,7 @@ import jakarta.validation.constraints.Size;
 
 public record SupplierProductUpdateRequest(
   @NotBlank
-  @Size(max = 255)
+  @Size(max = ProductPolicy.MAX_NAME_LENGTH)
   String name,
 
   @NotNull
@@ -38,7 +39,7 @@ public record SupplierProductUpdateRequest(
   UUID mainImagePendingFileUploadId,
 
   @NotBlank
-  @Size(max = 255)
+  @Size(max = ProductPolicy.MAX_CONTENT_QUANTITY_LENGTH)
   String contentQuantity,
 
   @NotNull
@@ -54,12 +55,15 @@ public record SupplierProductUpdateRequest(
   @Positive
   Integer desiredRetailPrice,
 
-  @Size(max = 255)
+  @Size(max = ProductPolicy.MAX_ALLERGY_INFORMATION_LENGTH)
   String allergyInformation,
 
+  @Size(
+    max = ProductPolicy.MAX_CERTIFICATION_INFORMATION_LENGTH
+  )
   String certificationInformation,
 
-  @Size(max = 255)
+  @Size(max = ProductPolicy.MAX_CASE_SIZE_LENGTH)
   String caseSize,
 
   @Positive
@@ -71,7 +75,7 @@ public record SupplierProductUpdateRequest(
   @PositiveOrZero
   Short shippingLeadTimeDays,
 
-  @Size(max = 255)
+  @Size(max = ProductPolicy.MAX_SALES_AREA_RESTRICTION_LENGTH)
   String salesAreaRestriction,
 
   @NotNull

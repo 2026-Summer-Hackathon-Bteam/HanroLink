@@ -18,10 +18,14 @@ public record OnboardingBusinessRequest(
   String name,
 
   @NotBlank
+  @Pattern(
+    regexp = "^[ァ-ヶー・]+$",
+    message = "全角カタカナで入力してください"
+  )
   @Size(max = 255)
   String nameKana,
 
-  @URL
+  @URL(protocol = "https")
   @Size(max = 255)
   String websiteUrl,
 
@@ -45,5 +49,9 @@ public record OnboardingBusinessRequest(
 
   @NotBlank
   @Size(max = 20)
+  @Pattern(
+    regexp = "[0-9]+",
+    message = "半角数字のみで入力してください"
+  )
   String phoneNumber
 ) {}

@@ -17,6 +17,7 @@ import org.springframework.security.access.AccessDeniedException;
 
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
 import com.hanrolink.account.repository.projection.BusinessProfileAccessProjection;
+import com.hanrolink.business.enums.BusinessReviewStatus;
 import com.hanrolink.business.enums.BusinessRole;
 import com.hanrolink.business.repository.BusinessRepository;
 
@@ -62,15 +63,17 @@ class BuyerBusinessServiceTest {
       AccessDeniedException.class,
       () ->
         buyerBusinessService.get(
+          null,
           IDENTITY_PROVIDER_SUBJECT,
           targetBusinessId
         )
     );
 
     verify(businessRepository, never())
-      .findApprovedByPublicIdAndRole(
+      .findByPublicIdAndRoleAndReviewStatus(
         targetBusinessId,
-        BusinessRole.BUYER
+        BusinessRole.BUYER,
+        BusinessReviewStatus.APPROVED
       );
   }
 }

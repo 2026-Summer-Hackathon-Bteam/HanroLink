@@ -34,7 +34,7 @@ public class OnboardingController {
   }
 
   /**
-   * 初期登録に必要な情報を取得する
+   * 初期登録に必要な情報を返す
    * @param jwt 認証済みユーザーのJWT
    * @return 初期登録に必要な情報
    */

@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.IntStream;
 
 import com.hanrolink.procurementrequest.policy.MonthlyProcurementQuantityPolicy;
+import com.hanrolink.procurementrequest.policy.ProcurementRequestPolicy;
 import com.hanrolink.procurementrequest.request.component.MonthlyProcurementQuantityRequest;
 import com.hanrolink.product.enums.StorageType;
 
@@ -20,16 +21,22 @@ import jakarta.validation.constraints.Size;
 
 public record BuyerProcurementRequestUpdateRequest(
   @NotBlank
-  @Size(max = 255)
+  @Size(max = ProcurementRequestPolicy.MAX_TITLE_LENGTH)
   String title,
 
   @NotBlank
+  @Size(
+    max = ProcurementRequestPolicy.MAX_DESCRIPTION_LENGTH
+  )
   String description,
 
   @NotNull
   @Positive
   Short productCategoryId,
 
+  @Size(
+    max = ProcurementRequestPolicy.MAX_REQUIRED_TRADE_TERMS_LENGTH
+  )
   String requiredTradeTerms,
 
   @Positive

@@ -54,7 +54,7 @@ public interface ProcurementNegotiationRequestRepository extends JpaRepository<P
   );
 
   @Query("""
-    SELECT COUNT(procurementNegotiationRequest) > 0
+    SELECT COUNT(procurementNegotiationRequest.id) > 0
     FROM ProcurementNegotiationRequest procurementNegotiationRequest
     JOIN ProcurementRequest procurementRequest
       ON procurementRequest.id = procurementNegotiationRequest.procurementRequestId

@@ -23,13 +23,16 @@ public interface PendingFileUploadRepository extends JpaRepository<PendingFileUp
       ON businessUserAccount.id = pendingFileUpload.businessUserAccountId
     WHERE pendingFileUpload.publicId = :pendingFileUploadPublicId
       AND businessUserAccount.identityProviderSubject = :identityProviderSubject
+      AND pendingFileUpload.usage = :usage
       AND pendingFileUpload.expiresAt > :currentTime
     """)
-  Optional<PendingFileUpload> findByPublicIdAndIdentityProviderSubject(
+  Optional<PendingFileUpload> findAvailableByPublicIdAndIdentityProviderSubjectAndUsage(
     @Param("pendingFileUploadPublicId")
     UUID pendingFileUploadPublicId,
     @Param("identityProviderSubject")
     String identityProviderSubject,
+    @Param("usage")
+    FileUploadUsage usage,
     @Param("currentTime")
     Instant currentTime
   );

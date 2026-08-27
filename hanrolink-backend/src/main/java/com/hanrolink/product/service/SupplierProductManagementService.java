@@ -451,18 +451,17 @@ public class SupplierProductManagementService {
     String identityProviderSubject,
     FileUploadUsage expectedUsage
   ) {
+    // 指定されたすべてのアップロード待ち情報について、所有者・用途・有効期限の確認
     PendingFileUpload pendingFileUpload = pendingFileUploadRepository
-      .findByPublicIdAndIdentityProviderSubject(
+      .findAvailableByPublicIdAndIdentityProviderSubjectAndUsage(
         pendingFileUploadId,
         identityProviderSubject,
+        expectedUsage,
         Instant.now()
       )
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-    if (pendingFileUpload.getUsage() != expectedUsage) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-    }
-
+    // S3上のファイル内容の形式別検証
     boolean isValidWebp = s3UploadedFileVerifier.isValidWebp(
       pendingFileUpload.getStorageKey(),
       pendingFileUpload.getFileSizeBytes()
