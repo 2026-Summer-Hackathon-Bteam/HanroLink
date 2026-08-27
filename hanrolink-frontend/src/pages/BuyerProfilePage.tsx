@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import DataRow from '../components/DataRow'
 import { getBuyerProfile } from '../features/buyer/buyerProfileService'
 import type { BuyerProfile } from '../features/buyer/buyerProfileTypes'
+import { getSafeExternalUrl } from '../shared/utils/urlValidation'
 
 function BuyerProfilePage() {
   const [buyerProfile, setBuyerProfile] = useState<BuyerProfile | null>(null)
@@ -57,6 +58,8 @@ function BuyerProfilePage() {
     return <p className="py-10 text-center">読み込み中...</p>
   }
 
+  const safeWebsiteUrl = getSafeExternalUrl(buyerProfile.websiteUrl)
+
   return (
     <div className="mx-auto max-w-300 px-4 text-center md:px-6 lg:px-8">
       <h2>バイヤー情報</h2>
@@ -72,14 +75,14 @@ function BuyerProfilePage() {
             .join('')}
         </DataRow>
         <DataRow itemName="ホームページ">
-          {buyerProfile.websiteUrl ? (
+          {safeWebsiteUrl ? (
             <a
-              href={buyerProfile.websiteUrl}
+              href={safeWebsiteUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-other underline"
+              className="break-all text-other underline underline-offset-2 hover:no-underline"
             >
-              {buyerProfile.websiteUrl}
+              {safeWebsiteUrl}
             </a>
           ) : (
             '-'
@@ -89,7 +92,7 @@ function BuyerProfilePage() {
       <button
         type="button"
         onClick={() => navigate(-1)}
-        className="mx-auto mt-16 h-9 w-45 rounded-full border border-accent bg-accentbg"
+        className="mx-auto mt-16 h-9 w-45 rounded-full button-base button-form"
       >
         前のページに戻る
       </button>

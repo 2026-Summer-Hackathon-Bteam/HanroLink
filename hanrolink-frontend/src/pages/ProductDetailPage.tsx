@@ -9,6 +9,8 @@ import {
 import { formatTargetMonth } from '../shared/utils/yearMonth'
 import DataRow from '../components/DataRow'
 import ProductStorySection from '../features/product/components/ProductStorySection'
+import { createProductNegotiationRequest } from '../features/negotiation/negotiationRequestService'
+import { getSafeExternalUrl } from '../shared/utils/urlValidation'
 
 function ProductDetailPage() {
   const [productDetailData, setProductDetailData] =
@@ -21,6 +23,10 @@ function ProductDetailPage() {
   const [isUpdatingVisibility, setIsUpdatingVisibility] = useState(false)
   const [visibilityError, setVisibilityError] = useState('')
   const { productId } = useParams()
+  const negotiationDialogRef = useRef<HTMLDialogElement>(null)
+  const [isSubmittingNegotiation, setIsSubmittingNegotiation] = useState(false)
+  const [negotiationError, setNegotiationError] = useState('')
+  const [negotiationSucceeded, setNegotiationSucceeded] = useState(false)
 
   useEffect(() => {
     if (!productId) return
@@ -95,6 +101,52 @@ function ProductDetailPage() {
     }
   }
 
+  const handleOpenNegotiationDialog = () => {
+    if (
+      !productDetailData ||
+      !productDetailData.permissions.canCreateNegotiationRequest ||
+      productDetailData.hasMyActiveNegotiationRequest
+    ) {
+      return
+    }
+
+    setNegotiationError('')
+    setNegotiationSucceeded(false)
+    negotiationDialogRef.current?.showModal()
+  }
+
+  const handleCreateNegotiationRequest = async () => {
+    if (
+      isSubmittingNegotiation ||
+      !productDetailData ||
+      !productDetailData.permissions.canCreateNegotiationRequest ||
+      productDetailData.hasMyActiveNegotiationRequest
+    ) {
+      return
+    }
+
+    setIsSubmittingNegotiation(true)
+    setNegotiationError('')
+
+    try {
+      await createProductNegotiationRequest(productDetailData.id)
+
+      setProductDetailData((current) =>
+        current ? { ...current, hasMyActiveNegotiationRequest: true } : current,
+      )
+
+      setNegotiationSucceeded(true)
+    } catch (error: unknown) {
+      setNegotiationError(
+        error instanceof Error
+          ? error.message
+          : '商談希望の送信に失敗しました。',
+      )
+    } finally {
+      setIsSubmittingNegotiation(false)
+    }
+  }
+
   if (!productId) {
     return (
       <p role="alert" className="py-10 text-center text-error">
@@ -123,6 +175,8 @@ function ProductDetailPage() {
     })
     .join('、')
 
+  const safeWebsiteUrl = getSafeExternalUrl(productDetailData.supplier.businessWebsiteUrl)
+
   return (
     <div className="mx-auto max-w-300 px-4 text-center md:px-6 lg:px-8">
       {productDetailData.permissions.canManage && (
@@ -141,7 +195,7 @@ function ProductDetailPage() {
             <div className="flex flex-wrap gap-3">
               <Link
                 to={`/products/${productDetailData.id}/edit`}
-                className="rounded-full bg-accent px-5 py-2 text-bg"
+                className="rounded-full button-base button-primary px-5 py-2 text-bg hover:bg-accent/80"
               >
                 編集する
               </Link>
@@ -150,8 +204,8 @@ function ProductDetailPage() {
                 type="button"
                 className={
                   productDetailData.hidden
-                    ? 'rounded-full bg-accent px-5 py-2 text-bg disabled:cursor-not-allowed disabled:opacity-50'
-                    : 'rounded-full border border-error px-5 py-2 disabled:cursor-not-allowed disabled:opacity-50'
+                    ? 'rounded-full button-base button-primary px-5 py-2 text-bg'
+                    : 'rounded-full button-danger-outline text-text px-5 py-2 button-base'
                 }
                 onClick={handleVisibilityChange}
                 disabled={isUpdatingVisibility}
@@ -165,7 +219,7 @@ function ProductDetailPage() {
 
               <button
                 type="button"
-                className="rounded-full border border-error px-5 py-2 text-error"
+                className="rounded-full px-5 py-2 button-base button-danger-outline"
                 onClick={() => deleteDialogRef.current?.showModal()}
               >
                 削除する
@@ -287,17 +341,18 @@ function ProductDetailPage() {
           <div className="lg:flex lg:items-baseline">
             <button
               type="button"
-              className="h-9 w-45 block mx-auto lg:ml-0 lg:mr-auto mt-8 rounded-full bg-accent text-bg textaccent disabled:cursor-not-allowed disabled:opacity-50"
+              className="h-9 w-45 block mx-auto lg:ml-0 lg:mr-auto mt-8 rounded-full button-base button-primary textaccent"
               disabled={
                 !productDetailData.permissions.canCreateNegotiationRequest ||
                 productDetailData.hasMyActiveNegotiationRequest
               }
+              onClick={handleOpenNegotiationDialog}
             >
               商談希望を送る
             </button>
             {productDetailData.hasMyActiveNegotiationRequest ? (
               <p className="pt-2 lg:flex-1 lg:text-left lg:pl-2 lg:pt-0">
-                すでに有効な商談希望があります。
+                この商品には商談希望を送信済みです。
               </p>
             ) : !productDetailData.permissions.canCreateNegotiationRequest ? (
               <p className="pt-2 lg:flex-1 lg:text-left lg:pl-2 lg:pt-0">
@@ -394,14 +449,14 @@ function ProductDetailPage() {
               .join('')}
           </DataRow>
           <DataRow itemName="ホームページ">
-            {productDetailData.supplier.businessWebsiteUrl ? (
+            {safeWebsiteUrl ? (
               <a
-                href={productDetailData.supplier.businessWebsiteUrl}
+                href={safeWebsiteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-other underline"
+                className="break-all text-other underline underline-offset-2 hover:no-underline"
               >
-                {productDetailData.supplier.businessWebsiteUrl}
+                {safeWebsiteUrl}
               </a>
             ) : (
               '-'
@@ -413,11 +468,101 @@ function ProductDetailPage() {
       <button
         type="button"
         onClick={() => navigate(-1)}
-        className="mx-auto mt-16 h-9 w-45 rounded-full border border-accent bg-accentbg"
+        className="mx-auto mt-16 h-9 w-45 rounded-full button-base button-form"
       >
         前のページに戻る
       </button>
 
+      {/* 商談希望確認モーダル */}
+      <dialog
+        ref={negotiationDialogRef}
+        aria-labelledby="create-negotiation-request-title"
+        aria-describedby="create-negotiation-request-description"
+        className="m-auto w-[min(90vw,32rem)] rounded-lg border-0 bg-bg p-6 shadow-xl backdrop:bg-black/50"
+      >
+        {negotiationSucceeded ? (
+          // 送信成功時
+          <>
+            <h3
+              id="create-negotiation-request-title"
+              className="text-lg font-bold"
+            >
+              商談希望を送信しました
+            </h3>
+
+            <p
+              id="create-negotiation-request-description"
+              role="status"
+              className="mt-4"
+            >
+              「{productDetailData.name}」への商談希望を送信しました。
+            </p>
+
+            <div className="mt-6 flex justify-center">
+              <button
+                type="button"
+                className="rounded-full button-base button-primary px-5 py-2 text-bg"
+                onClick={() => negotiationDialogRef.current?.close()}
+              >
+                閉じる
+              </button>
+            </div>
+          </>
+        ) : (
+          // 送信前
+          <>
+            <h3
+              id="create-negotiation-request-title"
+              className="text-lg font-bold"
+            >
+              商談希望を送りますか？
+            </h3>
+
+            <p id="create-negotiation-request-description" className="mt-4">
+              {productDetailData.supplier.businessName}の「
+              {productDetailData.name}」に商談希望を送ります。
+            </p>
+
+            <ul className="mt-4 list-disc space-y-2 pl-5 text-left text-sm">
+              <li>商談希望を送ると、相手のマイページに表示されます。</li>
+              <li>
+                相手が商談を開始すると、メッセージをやり取りするためのチャットが作成されます。
+              </li>
+              <li>
+                商談希望の送信は、取引条件への同意または契約成立を意味するものではありません。
+              </li>
+            </ul>
+
+            {negotiationError && (
+              <p role="alert" className="mt-4 text-center text-error">
+                {negotiationError}
+              </p>
+            )}
+
+            <div className="mt-6 flex justify-center gap-3">
+              <button
+                type="button"
+                className="rounded-full px-5 py-2 button-base button-secondary"
+                onClick={() => negotiationDialogRef.current?.close()}
+                disabled={isSubmittingNegotiation}
+              >
+                キャンセル
+              </button>
+
+              <button
+                type="button"
+                className="rounded-full button-base button-primary px-5 py-2 text-bg"
+                onClick={() => void handleCreateNegotiationRequest()}
+                disabled={isSubmittingNegotiation}
+              >
+                {isSubmittingNegotiation ? '送信中...' : '商談希望を送る'}
+              </button>
+            </div>
+          </>
+        )}
+      </dialog>
+
+      {/* 商品削除確認モーダル */}
       <dialog
         ref={deleteDialogRef}
         aria-labelledby="delete-product-title"
@@ -441,7 +586,7 @@ function ProductDetailPage() {
           <button
             type="button"
             onClick={() => deleteDialogRef.current?.close()}
-            className="rounded-full border border-accent px-5 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="rounded-full px-5 py-2 button-base button-secondary"
             disabled={isDeleting}
           >
             キャンセル
@@ -449,7 +594,7 @@ function ProductDetailPage() {
 
           <button
             type="button"
-            className="rounded-full bg-error px-5 py-2 text-bg  disabled:opacity-50 disabled:cursor-not-allowed"
+            className="rounded-full px-5 py-2 button-base button-danger"
             onClick={handleDelete}
             disabled={isDeleting}
           >
