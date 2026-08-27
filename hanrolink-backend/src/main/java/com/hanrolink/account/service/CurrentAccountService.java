@@ -30,7 +30,7 @@ public class CurrentAccountService {
    * 認証済みユーザーのアカウント状態を取得する
    * @param authenticatedAccountRole JWTから取得したアカウントロール
    * @param identityProviderSubject 認証プロバイダーのユーザー識別子
-   * @return 認証済みユーザーのアカウント状態
+   * @return 現在のアカウント情報
    */
   @Transactional(readOnly = true)
   public CurrentAccountGetResponse get(

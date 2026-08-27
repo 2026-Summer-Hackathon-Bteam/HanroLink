@@ -43,7 +43,7 @@ public class ProcurementRequestReadController {
   }
 
   /**
-   * 募集詳細情報を取得することを受け付ける
+   * 募集詳細情報を返す
    * @param jwt 認証済みユーザーのJWT
    * @param procurementRequestId 取得対象の募集の公開識別子
    * @return 募集詳細情報
@@ -67,7 +67,7 @@ public class ProcurementRequestReadController {
   }
 
   /**
-   * 指定された条件に基づく募集一覧の取得を受け付ける
+   * 指定された条件に基づく募集一覧を返す
    * @param request 募集の検索条件
    * @return 募集一覧
    */

@@ -28,7 +28,7 @@ public class CurrentAccountController {
   }
 
   /**
-   * 認証済みユーザーのアカウント状態を取得する
+   * 認証済みユーザーのアカウント状態を返す
    * @param jwt 認証済みユーザーのJWT
    * @return 現在のアカウント情報
    */

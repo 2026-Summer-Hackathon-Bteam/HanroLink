@@ -29,7 +29,7 @@ public class AdminBusinessApprovalController {
   }
 
   /**
-   * 審査待ちの事業者一覧を取得する
+   * 審査待ちの事業者一覧を返す
    * @return 審査待ちの事業者一覧
    */
   @RequiresAdmin
@@ -41,7 +41,7 @@ public class AdminBusinessApprovalController {
   }
 
   /**
-   * 審査対象の詳細情報を取得する
+   * 審査対象の詳細情報を返す
    * @param businessId 事業者の公開識別子
    * @return 審査対象の詳細情報
    */

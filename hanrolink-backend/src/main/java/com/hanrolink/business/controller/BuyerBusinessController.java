@@ -32,7 +32,7 @@ public class BuyerBusinessController {
   }
 
   /**
-   * 指定されたバイヤーのプロフィール情報を取得する
+   * 指定されたバイヤーのプロフィール情報を返す
    * @param jwt 認証済みユーザーのJWT
    * @param businessId 取得対象事業者の公開識別子
    * @return 取得対象のバイヤープロフィール
