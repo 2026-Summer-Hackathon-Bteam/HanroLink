@@ -24,7 +24,9 @@ import com.hanrolink.chat.repository.projection.ChatMessageProjection;
 import com.hanrolink.chat.repository.projection.MyChatParticipantContextProjection;
 import com.hanrolink.chat.request.MyChatMessageCreateRequest;
 import com.hanrolink.chat.request.MyChatMessageListRequest;
+import com.hanrolink.chat.request.MyChatMessageNewListRequest;
 import com.hanrolink.chat.response.MyChatMessageListResponse;
+import com.hanrolink.chat.response.MyChatMessageNewListResponse;
 import com.hanrolink.chat.response.component.ChatMessageFileResponse;
 import com.hanrolink.chat.response.component.ChatMessageResponse;
 import com.hanrolink.file.entity.PendingFileUpload;
@@ -145,23 +147,7 @@ public class MyChatMessageService {
       )
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-    // 指定されたメッセージより後に作成されたメッセージの取得
-    if (request.afterMessageId() != null) {
-      Pageable pageable = PageRequest.of(0, request.limit());
-      List<ChatMessageProjection> messageProjections =
-        messageRepository.findAfterByChannelId(
-          channelParticipantContext.channelId(),
-          channelParticipantContext.businessUserAccountId(),
-          request.afterMessageId(),
-          pageable
-        );
-
-      return new MyChatMessageListResponse(
-        toMessageResponses(messageProjections),
-        false
-      );
-    }
-
+    // 最新または指定されたメッセージより前のメッセージを取得
     Pageable pageableWithLookahead = PageRequest.of(0, request.limit() + 1);
     List<ChatMessageProjection> messageProjectionsWithLookahead =
       messageRepository.findLatestOrBeforeByChannelId(
@@ -183,6 +169,42 @@ public class MyChatMessageService {
     return new MyChatMessageListResponse(
       toMessageResponses(messageProjections),
       hasReachedOldestMessage
+    );
+  }
+
+  /**
+   * 指定された位置より後の新着メッセージ一覧を取得する
+   * @param identityProviderSubject 認証プロバイダーのユーザー識別子
+   * @param channelPublicId 取得対象のチャンネル公開識別子
+   * @param request メッセージ一覧の取得条件
+   * @return 添付ファイル情報を含む新着メッセージ一覧
+   */
+  @Transactional(readOnly = true)
+  public MyChatMessageNewListResponse listNew(
+    String identityProviderSubject,
+    UUID channelPublicId,
+    MyChatMessageNewListRequest request
+  ) {
+    // 対象チャンネルの当事者確認
+    MyChatParticipantContextProjection channelParticipantContext = channelRepository
+      .findParticipantContextByPublicIdAndIdentityProviderSubject(
+        channelPublicId,
+        identityProviderSubject
+      )
+      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+    // 指定されたメッセージより後の新着メッセージを取得
+    Pageable pageable = PageRequest.of(0, request.limit());
+    List<ChatMessageProjection> messageProjections =
+      messageRepository.findAfterByChannelId(
+        channelParticipantContext.channelId(),
+        channelParticipantContext.businessUserAccountId(),
+        request.afterMessageId(),
+        pageable
+      );
+
+    return new MyChatMessageNewListResponse(
+      toMessageResponses(messageProjections)
     );
   }
 

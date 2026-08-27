@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hanrolink.chat.api.ChatApi;
 import com.hanrolink.chat.request.MyChatMessageCreateRequest;
 import com.hanrolink.chat.request.MyChatMessageListRequest;
+import com.hanrolink.chat.request.MyChatMessageNewListRequest;
 import com.hanrolink.chat.response.MyChatMessageListResponse;
+import com.hanrolink.chat.response.MyChatMessageNewListResponse;
 import com.hanrolink.chat.service.MyChatMessageService;
 import com.hanrolink.security.authorization.policy.RequiresApprovedBusiness;
 
@@ -88,4 +90,30 @@ public class MyChatMessageController {
       )
     );
   }
+
+  /**
+   * 指定された位置より後の新着メッセージ一覧を返す
+   * @param jwt 認証済みユーザーのJWT
+   * @param channelId 取得対象のチャンネル公開識別子
+   * @param request メッセージ一覧の取得条件
+   * @return 添付ファイル情報を含む新着メッセージ一覧
+   */
+  @RequiresApprovedBusiness
+  @GetMapping(ChatApi.V1.NEW_MESSAGES)
+  public ResponseEntity<MyChatMessageNewListResponse> listNew(
+    @AuthenticationPrincipal Jwt jwt,
+    @PathVariable UUID channelId,
+    @Valid
+    @ParameterObject
+    @ModelAttribute MyChatMessageNewListRequest request
+  ) {
+    return ResponseEntity.ok(
+      myChatMessageService.listNew(
+        jwt.getSubject(),
+        channelId,
+        request
+      )
+    );
+  }
+
 }

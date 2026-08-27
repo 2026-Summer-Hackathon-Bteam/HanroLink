@@ -10,6 +10,7 @@ public final class ChatApi {
     public static final String MINE = ApiPath.API_V1 + "/me/chats";
     public static final String BY_ID = BASE + "/{channelId}";
     public static final String MESSAGES = BY_ID + "/messages";
+    public static final String NEW_MESSAGES = MESSAGES + "/new";
     public static final String FILE_UPLOADS = BY_ID + "/file-uploads";
     public static final String FILE_ACCESS = BY_ID + "/file-access";
     public static final String NEGOTIATION_SNAPSHOTS = BY_ID + "/negotiation-snapshots";
