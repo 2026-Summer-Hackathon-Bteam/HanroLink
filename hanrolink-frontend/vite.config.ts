@@ -20,7 +20,7 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     headers: {
-      'Content-Security-Policy': contentSecurityPolicy,
+      'Content-Security-Policy-Report-Only': contentSecurityPolicy,
     },
     proxy: {
       '/api': {
