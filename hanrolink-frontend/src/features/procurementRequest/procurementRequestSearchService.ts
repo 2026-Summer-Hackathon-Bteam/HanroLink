@@ -3,30 +3,55 @@ import type {
   ProcurementRequestSearchOptions,
   ProcurementRequestSearchResult,
 } from './procurementRequestSearchTypes'
-import {
-  procurementRequestSearchMock,
-  procurementRequestSearchOptionsMock,
-} from './procurementRequestSearchMock'
+import { authenticatedApi } from '../../lib/api'
 
-export function getProcurementRequestSearchData(
+export async function getProcurementRequestSearchData(
   searchConditions: ProcurementRequestSearchConditions,
   page = 1,
   pageSize = 20,
 ): Promise<ProcurementRequestSearchResult> {
-  // 実API実装時にクエリパラメーターとして使用する
-  void searchConditions
+  const keyword = searchConditions.keyword.trim()
 
-  return Promise.resolve({
-    ...procurementRequestSearchMock,
-    pagination: {
-      ...procurementRequestSearchMock.pagination,
-      page,
-      pageSize,
+  const { data, response } = await authenticatedApi.GET(
+    '/api/v1/procurement-requests',
+    {
+      params: {
+        query: {
+          desiredProcurementMonths:
+            searchConditions.desiredProcurementMonths.length > 0
+              ? searchConditions.desiredProcurementMonths
+              : undefined,
+          productCategoryIds:
+            searchConditions.productCategoryIds.length > 0
+              ? searchConditions.productCategoryIds
+              : undefined,
+          storageTypes:
+            searchConditions.storageTypes.length > 0
+              ? searchConditions.storageTypes
+              : undefined,
+          keyword: keyword.length > 0 ? keyword : undefined,
+          page,
+          pageSize,
+        },
+      },
     },
-  })
+  )
+
+  if (!response.ok || !data) {
+    throw new Error('募集情報一覧の取得に失敗しました。')
+  }
+
+  return data
 }
 
-export function getProcurementRequestSearchOptions():
-  Promise<ProcurementRequestSearchOptions> {
-  return Promise.resolve(procurementRequestSearchOptionsMock)
+export async function getProcurementRequestSearchOptions(): Promise<ProcurementRequestSearchOptions> {
+  const { data, response } = await authenticatedApi.GET(
+    '/api/v1/procurement-requests/search-options',
+  )
+
+  if (!response.ok || !data) {
+    throw new Error('募集情報検索条件の取得に失敗しました。')
+  }
+
+  return data
 }

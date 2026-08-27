@@ -4,10 +4,10 @@ export type CurrentBusiness =
   components['schemas']['CurrentBusinessGetResponse']
 
 export type ReceivedNegotiation =
-  components['schemas']['SupplierProductNegotiationRequestListResponse']
+  components['schemas']['SupplierReceivedNegotiationRequestListResponse']
 
 export type SentNegotiation =
-  components['schemas']['SupplierProcurementNegotiationRequestListResponse']
+  components['schemas']['SupplierSentNegotiationRequestListResponse']
 
 export type SupplierProduct =
   components['schemas']['SupplierProductListResponse']

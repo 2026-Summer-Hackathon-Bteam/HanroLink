@@ -81,7 +81,7 @@ export async function getSupplierMyPageData(): Promise<SupplierMyPageData> {
 }
 
 export async function acceptNegotiationRequest(
-  productNegotiationRequestId: number,
+  productNegotiationRequestId: string,
 ): Promise<AcceptNegotiationResponse> {
   const { data, response } = await authenticatedApi.POST(
     '/api/v1/me/supplier/product-negotiation-requests/{productNegotiationRequestId}/accept', {

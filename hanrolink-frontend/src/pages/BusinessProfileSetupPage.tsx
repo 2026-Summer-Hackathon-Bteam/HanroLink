@@ -417,7 +417,7 @@ function BusinessProfileSetupPage() {
           <p className='text-left'>※事業者名、事業者住所、建物名、WebサイトURLは、事業者情報として公開されます。</p>
           <button
             type="submit"
-            className="h-9 w-45 mx-auto mt-16 rounded-full border border-accent bg-accentbg disabled:cursor-not-allowed disabled:opacity-50"
+            className="h-9 w-45 mx-auto mt-16 rounded-full button-base button-form"
             disabled={isSubmitting}
           >
             {isSubmitting ? '送信中...' : '送信する'}

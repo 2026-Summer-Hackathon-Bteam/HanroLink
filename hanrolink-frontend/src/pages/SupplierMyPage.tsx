@@ -139,13 +139,19 @@ function SupplierMyPage() {
                         className="border-b border-dashed"
                       >
                         <td>
-                          <Link to={`/products/${negotiation.product.id}`}>
+                          <Link
+                            to={`/products/${negotiation.product.id}`}
+                            className="text-other underline underline-offset-2 hover:no-underline"
+                          >
                             {negotiation.product.name}
                           </Link>
                         </td>
                         <td>
-                          <Link to={`/buyer/${negotiation.buyer.accountId}`}>
-                            {negotiation.buyer.businessName}
+                          <Link
+                            to={`/buyer/${negotiation.senderBusiness.id}`}
+                            className="text-other underline underline-offset-2 hover:no-underline"
+                          >
+                            {negotiation.senderBusiness.name}
                           </Link>
                         </td>
                         <td>
@@ -156,8 +162,8 @@ function SupplierMyPage() {
                         <td>
                           <button
                             type="button"
-                            className="border border-accent bg-accentbg rounded-full px-2"
-                            aria-label={`${negotiation.buyer.businessName}と${negotiation.product.name}に関する商談を開始する`}
+                            className="button-base button-form rounded-full px-2"
+                            aria-label={`${negotiation.senderBusiness.name}と${negotiation.product.name}に関する商談を開始する`}
                             onClick={() =>
                               handleOpenNegotiationDialog(negotiation)
                             }
@@ -211,12 +217,16 @@ function SupplierMyPage() {
                         <td>
                           <Link
                             to={`/procurement-requests/${negotiation.procurementRequest.id}`}
+                            className="text-other underline underline-offset-2 hover:no-underline"
                           >
                             {negotiation.procurementRequest.title}
                           </Link>
                         </td>
                         <td>
-                          <Link to={`/products/${negotiation.product.id}`}>
+                          <Link
+                            to={`/products/${negotiation.product.id}`}
+                            className="text-other underline underline-offset-2 hover:no-underline"
+                          >
                             {negotiation.product.name}
                           </Link>
                         </td>
@@ -239,7 +249,7 @@ function SupplierMyPage() {
           </div>
           <Link
             to={'/products/new'}
-            className="bg-border text-bg rounded-lg mb-2 mx-1 text-center py-1"
+            className="button-base button-search rounded-lg mb-2 mx-1 text-center py-1 hover:bg-border/80"
           >
             + 商品情報を登録する
           </Link>
@@ -316,7 +326,14 @@ function SupplierMyPage() {
                     )
                     .map((chat) => (
                       <tr key={chat.id} className="border-b border-dashed">
-                        <td>{chat.name}</td>
+                        <td>
+                          <Link
+                            to={`/chats/${chat.id}`}
+                            className="text-other underline underline-offset-2 hover:no-underline"
+                          >
+                            {chat.name}
+                          </Link>
+                        </td>
                       </tr>
                     ))
                 )}
@@ -341,7 +358,7 @@ function SupplierMyPage() {
           <>
             <p id="start-negotiation-description" className="mt-4">
               「{selectedNegotiation.product.name}」について、
-              {selectedNegotiation.buyer.businessName}との商談を開始します。
+              {selectedNegotiation.senderBusiness.name}との商談を開始します。
             </p>
 
             <ul className="mt-4 list-disc space-y-2 pl-5 text-left text-sm">
@@ -365,7 +382,7 @@ function SupplierMyPage() {
         <div className="mt-6 flex justify-end gap-3">
           <button
             type="button"
-            className="rounded-full border border-accent px-5 py-2"
+            className="rounded-full px-5 py-2 button-base button-secondary"
             onClick={() => negotiationDialogRef.current?.close()}
             disabled={isSubmitting}
           >
@@ -373,7 +390,7 @@ function SupplierMyPage() {
           </button>
           <button
             type="button"
-            className="rounded-full bg-accent px-5 py-2 text-bg"
+            className="rounded-full button-base button-primary px-5 py-2 text-bg"
             onClick={() => {
               void handleAcceptNegotiation()
             }}

@@ -421,7 +421,7 @@ function ProcurementRequestForm({
           <button
             type="button"
             onClick={onCancel}
-            className="flex h-9 w-45 items-center justify-center rounded-full border border-accent bg-bg disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-9 w-45 items-center justify-center rounded-full button-base button-secondary"
             disabled={isSubmitting}
           >
             キャンセル
@@ -429,7 +429,7 @@ function ProcurementRequestForm({
         )}
         <button
           type="submit"
-          className="h-9 w-45 rounded-full border border-accent bg-accentbg disabled:cursor-not-allowed disabled:opacity-50"
+          className="h-9 w-45 rounded-full button-base button-form"
           disabled={isSubmitting}
         >
           {isSubmitting ? mode=== 'create'? '登録中...': '更新中...' : mode === 'create' ? '登録する' : '更新する'}

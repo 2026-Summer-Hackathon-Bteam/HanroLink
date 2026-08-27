@@ -59,7 +59,7 @@ function MobileSearchFilterDialog({
               type="button"
               disabled={isSearching}
               onClick={onReset}
-              className="rounded-full border border-border py-2 disabled:opacity-50"
+              className="rounded-full border border-border py-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
               条件をリセット
             </button>

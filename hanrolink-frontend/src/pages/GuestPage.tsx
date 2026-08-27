@@ -82,14 +82,14 @@ function GuestPage() {
           <div className="flex flex-wrap justify-center gap-4 md:gap-12">
             <Link
               to="/signup"
-              className="flex h-9 w-30 items-center justify-center rounded-full border border-accent bg-accent text-bg"
+              className="flex h-9 w-30 items-center justify-center rounded-full border border-accent button-base button-primary hover:bg-accent/80"
             >
               新規登録
             </Link>
 
             <Link
               to="/login"
-              className="flex h-9 w-30 items-center justify-center rounded-full border border-accent bg-bg text-accent"
+              className="flex h-9 w-30 items-center justify-center rounded-full button-base button-secondary text-accent hover:bg-accentbg/40"
             >
               ログイン
             </Link>

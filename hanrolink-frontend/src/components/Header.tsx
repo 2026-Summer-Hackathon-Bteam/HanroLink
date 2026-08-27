@@ -201,7 +201,7 @@ function Header(props: HeaderProps) {
                 >
                   <Link
                     to={menu.path}
-                    className="flex items-center h-12 textaccent text-bg px-7 bg-border transition hover:bg-border/80"
+                    className="flex items-center h-12 textaccent text-bg px-7 underline-offset-2 hover:underline focus-visible:underline decoration-1"
                   >
                     {menu.label}
                   </Link>
@@ -217,7 +217,7 @@ function Header(props: HeaderProps) {
                 >
                   <button
                     type="button"
-                    className="flex h-12 w-full items-center text-bg textaccent px-7 transition hover:bg-border/80 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+                    className="flex h-12 w-full items-center text-bg textaccent px-7 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 underline-offset-2 enabled:hover:underline focus-visible:underline decoration-1"
                     onClick={handleSignOut}
                     disabled={isSigningOut}
                   >

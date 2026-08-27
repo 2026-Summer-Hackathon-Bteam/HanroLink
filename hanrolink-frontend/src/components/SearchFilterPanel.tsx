@@ -30,7 +30,7 @@ function SearchFilterPanel({
         <div className="mt-5 grid gap-2">
           <button
             type="submit"
-            className="rounded-full bg-border py-2 font-bold text-bg disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-full py-2 font-bold button-base button-search"
             disabled={isSearching}
           >
             {isSearching ? '検索中...' : 'この条件で検索'}
@@ -38,7 +38,7 @@ function SearchFilterPanel({
 
           <button
             type="button"
-            className="py-1 text-sm text-other underline underline-offset-2  disabled:cursor-not-allowed disabled:opacity-50"
+            className="py-1 text-sm text-other underline underline-offset-2 button-base enabled:hover:no-underline"
             onClick={onReset}
             disabled={isSearching}
           >

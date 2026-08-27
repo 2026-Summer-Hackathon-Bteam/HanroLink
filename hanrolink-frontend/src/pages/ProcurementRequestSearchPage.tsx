@@ -8,7 +8,10 @@ import {
   getProcurementRequestSearchData,
   getProcurementRequestSearchOptions,
 } from '../features/procurementRequest/procurementRequestSearchService'
-import { formatTargetMonth } from '../shared/utils/yearMonth'
+import {
+  formatTargetMonth,
+  createTargetMonths,
+} from '../shared/utils/yearMonth'
 import { Link } from 'react-router-dom'
 import SearchPagination from '../components/SearchPagination'
 import ProductCategoryFilter from '../components/ProductCategoryFilter'
@@ -24,11 +27,12 @@ const toggleSelectedValue = <T,>(currentValues: T[], selectedValue: T): T[] => {
 
 const initialSearchConditions: ProcurementRequestSearchConditions = {
   keyword: '',
+  desiredProcurementMonths: [],
   productCategoryIds: [],
   storageTypes: [],
 }
 
-const PAGE_SIZE = 6
+const PAGE_SIZE = 20
 
 function ProcurementRequestSearchPage() {
   const [searchConditions, setSearchConditions] =
@@ -42,6 +46,9 @@ function ProcurementRequestSearchPage() {
   const searchConditionsRef = useRef<HTMLElement>(null)
   const [isSearching, setIsSearching] = useState(false)
   const searchConditionsDialogRef = useRef<HTMLDialogElement>(null)
+  const [targetMonths] = useState(createTargetMonths)
+  const [appliedSearchConditions, setAppliedSearchConditions] =
+    useState<ProcurementRequestSearchConditions>(initialSearchConditions)
 
   useEffect(() => {
     let isCancelled = false
@@ -100,6 +107,16 @@ function ProcurementRequestSearchPage() {
       behavior: 'smooth',
       block: 'start',
     })
+  }
+
+  const handleDesiredProcurementMonthToggle = (targetMonth: string) => {
+    setSearchConditions((prev) => ({
+      ...prev,
+      desiredProcurementMonths: toggleSelectedValue(
+        prev.desiredProcurementMonths,
+        targetMonth,
+      ),
+    }))
   }
 
   const handleProductCategoryToggle = (productCategory: number) => {
@@ -169,6 +186,7 @@ function ProcurementRequestSearchPage() {
         PAGE_SIZE,
       )
       setSearchResult(result)
+      setAppliedSearchConditions(searchConditions)
 
       if (searchConditionsDialogRef.current?.open) {
         handleCloseSearchConditions()
@@ -196,7 +214,7 @@ function ProcurementRequestSearchPage() {
 
     try {
       const result = await getProcurementRequestSearchData(
-        searchConditions,
+        appliedSearchConditions,
         page,
         searchResult.pagination.pageSize,
       )
@@ -251,6 +269,35 @@ function ProcurementRequestSearchPage() {
               className="bg-bg w-full"
             />
           </label>
+        </div>
+      </div>
+
+      <div className="pb-4">
+        <h3 className="mb-4 border-b-2 border-border px-2 text-left font-bold text-border textaccent">
+          希望時期
+        </h3>
+
+        <div className="grid grid-cols-2 gap-x-2 gap-y-3">
+          {targetMonths.map((targetMonth) => {
+            const isSelected =
+              searchConditions.desiredProcurementMonths.includes(targetMonth)
+
+            return (
+              <button
+                key={targetMonth}
+                type="button"
+                aria-pressed={isSelected}
+                onClick={() => handleDesiredProcurementMonthToggle(targetMonth)}
+                className={
+                  isSelected
+                    ? 'rounded-full border border-border bg-border px-2 py-1 text-bg'
+                    : 'rounded-full border border-border bg-bg px-2 py-1 hover:bg-textbg/40'
+                }
+              >
+                {formatTargetMonth(targetMonth)}
+              </button>
+            )
+          })}
         </div>
       </div>
 

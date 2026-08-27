@@ -1,23 +1,17 @@
 import type { components } from '../../shared/api/schema'
 
-type ProcurementRequestSearchItem = Omit<
-  components['schemas']['ProcurementRequestListResponse'],
-  'pagination'>
+type StorageType =
+  components['schemas']['StorageTypeOptionResponse']['value']
 
-type Pagination = components['schemas']['PaginationResponse']
-
-export type ProcurementRequestSearchResult = {
-  procurementRequests: ProcurementRequestSearchItem[]
-  pagination: Pagination
+export type ProcurementRequestSearchConditions = {
+  keyword: string
+  desiredProcurementMonths: string[]
+  productCategoryIds: number[]
+  storageTypes: StorageType[]
 }
 
 export type ProcurementRequestSearchOptions =
   components['schemas']['ProcurementRequestSearchOptionsResponse']
 
-export type ProcurementRequestSearchConditions = {
-  keyword: string
-  productCategoryIds: number[]
-  storageTypes: Array<
-    ProcurementRequestSearchOptions['storageTypes'][number]['value']
-  >
-}
+export type ProcurementRequestSearchResult =
+  components['schemas']['ProcurementRequestSearchResponse']

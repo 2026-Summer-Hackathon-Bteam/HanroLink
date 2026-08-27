@@ -45,3 +45,42 @@ textarea {
   box-shadow: 1px 1px 2px 0 rgb(0 0 0 / 0.10);
   border-radius: 8px;
 }
+
+@layer components {
+  .button-base {
+    @apply transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .button-primary {
+    @apply bg-accent text-bg enabled:hover:bg-accent/80;
+  }
+  .button-form {
+    @apply border border-accent bg-accentbg enabled:hover:bg-accent enabled:hover:text-bg;
+  }
+  .button-secondary {
+    @apply border border-accent bg-bg enabled:hover:bg-accentbg/40;
+  }
+  .button-search {
+    @apply bg-border text-bg enabled:hover:bg-border/80;
+  }
+  .button-danger {
+    @apply bg-error text-bg enabled:hover:bg-error/80;
+  }
+  .button-danger-outline {
+    @apply border border-error text-error enabled:hover:bg-error/10;
+  }
+}
+
+@layer base {
+  button:not(:disabled),
+  a[href] {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+}
+
+a[aria-disabled='true'] {
+  cursor: not-allowed;
+}

@@ -185,7 +185,8 @@ function SignupPage() {
           </div>
           <button
             type="submit"
-            className="h-9 w-45 mx-auto mt-8 rounded-full border border-accent bg-accentbg"
+            className="h-9 w-45 mx-auto mt-8 rounded-full 
+              button-base button-form"
             disabled={isSubmitting}
           >
             {isSubmitting ? '送信中...' : '新規登録'}

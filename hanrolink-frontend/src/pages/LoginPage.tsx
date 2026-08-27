@@ -131,7 +131,7 @@ function LoginPage() {
           </div>
           <button
             type="submit"
-            className="h-9 w-45 mx-auto mt-8 rounded-full border border-accent bg-accentbg disabled:cursor-not-allowed disabled:opacity-50"
+            className="h-9 w-45 mx-auto mt-8 rounded-full button-base button-form"
             disabled={isSubmitting}
           >
             {isSubmitting ? '送信中...' : 'ログイン'}
