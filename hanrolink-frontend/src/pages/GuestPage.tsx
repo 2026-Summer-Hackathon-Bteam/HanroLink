@@ -56,10 +56,9 @@ function GuestPage() {
 
     return (
       <div className="mx-auto grid max-w-300 grid-cols-1 justify-items-center gap-7 px-4 md:grid-cols-2 xl:grid-cols-3">
-        {productsData.map((product, index) => (
+        {productsData.map((product) => (
           <GuestCard
-            // バックエンドからのデータにidが追加されたら、keyをindexからidに変える
-            key={index}
+            key={product.id}
             name={product.name}
             supplierName={product.supplierBusinessName}
             mainImageUrl={product.mainImageUrl}
