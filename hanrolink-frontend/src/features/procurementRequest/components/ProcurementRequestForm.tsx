@@ -160,6 +160,7 @@ function ProcurementRequestForm({
               }))
             }
             required
+            maxLength={1000}
           />
         </FormRow>
 
@@ -342,6 +343,7 @@ function ProcurementRequestForm({
                 requiredTradeTerms: e.target.value,
               }))
             }
+            maxLength={1000}
           />
         </FormRow>
       </div>
@@ -436,7 +438,7 @@ function ProcurementRequestForm({
         </button>
       </div>
       {formError && (
-        <p role="alert" className="text-center mt-2 text-error">
+        <p role="alert" className="whitespace-pre-line text-center mt-2 text-error">
           {formError}
         </p>
       )}

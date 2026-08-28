@@ -9,6 +9,8 @@ import type {
   ChatNegotiationSnapshot,
 } from './ChatTypes'
 import { authenticatedApi } from '../../lib/api'
+import { chatFieldLabels } from './chatApiError'
+import { getApiErrorMessage } from '../../shared/api/apiError'
 
 export async function getChatMessages(
   channelId: string,
@@ -56,7 +58,7 @@ export async function createChatMessage(
   channelId: string,
   request: ChatMessageCreateRequest,
 ): Promise<void> {
-  const { response } = await authenticatedApi.POST(
+  const { error, response } = await authenticatedApi.POST(
     '/api/v1/chats/{channelId}/messages',
     {
       params: {
@@ -69,7 +71,13 @@ export async function createChatMessage(
   )
 
   if (!response.ok || response.status !== 201) {
-    throw new Error('メッセージの送信に失敗しました。')
+    throw new Error(
+      getApiErrorMessage(
+        error,
+        'メッセージの送信に失敗しました。',
+        chatFieldLabels,
+      ),
+    )
   }
 }
 
@@ -77,7 +85,7 @@ export async function createChatFileUploadInformation(
   channelId: string,
   request: ChatFileUploadCreateRequest,
 ): Promise<ChatFileUploadCreateResponse> {
-  const { data, response } = await authenticatedApi.POST(
+  const { data, error, response } = await authenticatedApi.POST(
     '/api/v1/chats/{channelId}/file-uploads',
     {
       params: {
@@ -90,7 +98,13 @@ export async function createChatFileUploadInformation(
   )
 
   if (!response.ok || response.status !== 201 || !data) {
-    throw new Error('ファイルアップロードURLの取得に失敗しました。')
+    throw new Error(
+      getApiErrorMessage(
+        error,
+        'ファイルアップロードURLの取得に失敗しました。',
+        chatFieldLabels,
+      ),
+    )
   }
 
   return data
@@ -157,9 +171,7 @@ export async function getChatNegotiationSnapshot(
   return data
 }
 
-export async function createChatFileAccess(
-  channelId: string,
-): Promise<void> {
+export async function createChatFileAccess(channelId: string): Promise<void> {
   const { response } = await authenticatedApi.POST(
     '/api/v1/chats/{channelId}/file-access',
     {

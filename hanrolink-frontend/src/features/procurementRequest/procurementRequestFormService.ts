@@ -1,6 +1,8 @@
 import type { ProcurementRequestFormOptions } from './procurementRequestFormTypes'
 import { authenticatedApi } from '../../lib/api'
 import type { components } from '../../shared/api/schema'
+import { procurementRequestFieldLabels } from './procurementRequestApiError'
+import { getApiErrorMessage } from '../../shared/api/apiError'
 
 type ProcurementRequestCreateSubmission =
   components['schemas']['BuyerProcurementRequestCreateRequest']
@@ -24,7 +26,7 @@ export async function getProcurementRequestFormOptions(): Promise<ProcurementReq
 export async function createProcurementRequest(
   request: ProcurementRequestCreateSubmission,
 ): Promise<ProcurementRequestCreateResponse> {
-  const { data, response } = await authenticatedApi.POST(
+  const { data, error, response } = await authenticatedApi.POST(
     '/api/v1/procurement-requests',
     {
       body: request,
@@ -33,7 +35,11 @@ export async function createProcurementRequest(
 
   if (!data || !response.ok) {
     throw new Error(
-      `募集情報の登録に失敗しました。（ステータス：${response.status}）`,
+      getApiErrorMessage(
+        error,
+        `募集情報の登録に失敗しました。（ステータス：${response.status}）`,
+        procurementRequestFieldLabels,
+      ),
     )
   }
   return data

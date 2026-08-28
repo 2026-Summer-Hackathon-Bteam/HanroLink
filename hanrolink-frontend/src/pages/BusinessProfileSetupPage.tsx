@@ -147,7 +147,7 @@ function BusinessProfileSetupPage() {
           <br />
           審査には通常3日程度お時間をいただきますので、あらかじめご了承ください。
           <br />
-          なお、１事業者につきサプライヤー、バイヤーの両方に登録することはできません。          
+          なお、１事業者につきサプライヤー、バイヤーの両方に登録することはできません。
         </p>
         <form onSubmit={handleSubmit} className="flex flex-col mx-auto">
           <div className="overflow-hidden border border-border divide-y divide-border">
@@ -237,7 +237,7 @@ function BusinessProfileSetupPage() {
                 maxLength={7}
                 pattern="[0-9]{7}"
               />
-              <p>（ハイフンなし）</p>
+              <p>（ハイフンなしの半角数字で入力してください）</p>
             </FormRow>
             <FormRow
               label="事業者住所（都道府県）"
@@ -291,6 +291,7 @@ function BusinessProfileSetupPage() {
                 required
                 maxLength={20}
               />
+              <p>（ハイフンなしの半角数字で入力してください）</p>
             </FormRow>
             <FormRow label="WebサイトURL（任意）" htmlFor="businessWebsiteUrl">
               <input
@@ -405,6 +406,7 @@ function BusinessProfileSetupPage() {
                 required
                 maxLength={20}
               />
+              <p>（ハイフンなしの半角数字で入力してください）</p>
             </FormRow>
 
             <div className="grid md:grid-cols-[16rem_1fr]">
@@ -412,9 +414,11 @@ function BusinessProfileSetupPage() {
                 担当者メールアドレス
               </div>
               <p className="p-5.5 text-left">{email}</p>
-            </div>            
+            </div>
           </div>
-          <p className='text-left'>※事業者名、事業者住所、建物名、WebサイトURLは、事業者情報として公開されます。</p>
+          <p className="text-left">
+            ※事業者名、事業者住所、建物名、WebサイトURLは、事業者情報として公開されます。
+          </p>
           <button
             type="submit"
             className="h-9 w-45 mx-auto mt-16 rounded-full button-base button-form"
@@ -422,7 +426,14 @@ function BusinessProfileSetupPage() {
           >
             {isSubmitting ? '送信中...' : '送信する'}
           </button>
-          {error && <p className="py-2 text-center text-error">{error}</p>}
+          {error && (
+            <p
+              role="alert"
+              className="whitespace-pre-line py-2 text-center text-error"
+            >
+              {error}
+            </p>
+          )}
         </form>
       </div>
     </>

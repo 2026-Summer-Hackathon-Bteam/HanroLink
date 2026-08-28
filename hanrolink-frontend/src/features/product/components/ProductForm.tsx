@@ -514,6 +514,7 @@ function ProductForm({
               }))
             }}
             className="w-full"
+            maxLength={1000}
           />
         </FormRow>
 
@@ -656,7 +657,10 @@ function ProductForm({
       )}
 
       {submitError && (
-        <p role="alert" className="mb-3 text-center text-error">
+        <p
+          role="alert"
+          className="mb-3 whitespace-pre-line text-center text-error"
+        >
           {submitError}
         </p>
       )}

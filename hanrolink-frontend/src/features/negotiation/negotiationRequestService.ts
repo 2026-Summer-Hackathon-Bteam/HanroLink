@@ -1,10 +1,15 @@
 import { authenticatedApi } from '../../lib/api'
 import type { NegotiationSelectableProduct } from './negotiationRequestTypes'
+import { getApiErrorMessage } from '../../shared/api/apiError'
+
+const negotiationRequestFieldLabels: Record<string, string> = {
+  productId: '商品',
+}
 
 export async function createProductNegotiationRequest(
   productId: string,
 ): Promise<void> {
-  const { response } = await authenticatedApi.POST(
+  const { error, response } = await authenticatedApi.POST(
     '/api/v1/products/{productId}/negotiation-requests',
     {
       params: {
@@ -16,7 +21,13 @@ export async function createProductNegotiationRequest(
   )
 
   if (!response.ok || response.status !== 201) {
-    throw new Error('商談希望の送信に失敗しました。')
+    throw new Error(
+      getApiErrorMessage(
+        error,
+        '商談希望の送信に失敗しました。',
+        negotiationRequestFieldLabels,
+      ),
+    )
   }
 }
 
@@ -38,7 +49,7 @@ export async function createProcurementNegotiationRequest(
   procurementRequestId: string,
   productId: string,
 ): Promise<void> {
-  const { response } = await authenticatedApi.POST(
+  const { error, response } = await authenticatedApi.POST(
     '/api/v1/procurement-requests/{procurementRequestId}/negotiation-requests',
     {
       params: {
@@ -53,6 +64,12 @@ export async function createProcurementNegotiationRequest(
   )
 
   if (!response.ok || response.status !== 201) {
-    throw new Error('商談希望の送信に失敗しました。')
+    throw new Error(
+      getApiErrorMessage(
+        error,
+        '商談希望の送信に失敗しました。',
+        negotiationRequestFieldLabels,
+      ),
+    )
   }
 }

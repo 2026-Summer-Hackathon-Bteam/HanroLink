@@ -1,5 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useOutletContext,
+} from 'react-router-dom'
 import type { ProcurementRequestDetailData } from '../features/procurementRequest/procurementRequestDetailTypes'
 import {
   deleteProcurementRequest,
@@ -12,6 +17,7 @@ import {
   createProcurementNegotiationRequest,
   getNegotiationSelectableProducts,
 } from '../features/negotiation/negotiationRequestService'
+import type { CurrentAccount } from '../features/auth/authRouting'
 
 function ProcurementRequestDetailPage() {
   const [procurementRequestDetailData, setProcurementRequestDetailData] =
@@ -32,6 +38,7 @@ function ProcurementRequestDetailPage() {
   const [isSubmittingNegotiation, setIsSubmittingNegotiation] = useState(false)
   const [negotiationError, setNegotiationError] = useState('')
   const [negotiationSucceeded, setNegotiationSucceeded] = useState(false)
+  const { account } = useOutletContext<{ account: CurrentAccount }>()
 
   useEffect(() => {
     if (procurementRequestId === undefined) return
@@ -332,7 +339,9 @@ function ProcurementRequestDetailPage() {
         ) : !procurementRequestDetailData.permissions
             .canCreateNegotiationRequest ? (
           <p className="pt-2">
-            バイヤーは募集情報に商談希望を送ることはできません。
+            {account.role === 'SUPPLIER'
+              ? '商談希望の送信上限（5件）に達しています。'
+              : 'このアカウントでは、募集情報に商談希望を送ることはできません。'}
           </p>
         ) : null}
       </div>
