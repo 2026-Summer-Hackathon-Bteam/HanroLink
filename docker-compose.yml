@@ -23,12 +23,14 @@ services:
       start_period: 10s
 
   backend:
-    build: ./hanrolink-backend
+    build:
+      context: ./hanrolink-backend
+      dockerfile: Dockerfile.dev
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-      SPRING_PROFILES_ACTIVE: "dev,cognito,cloudfront,s3"
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
       JAVA_TOOL_OPTIONS: "-Duser.timezone=UTC"
       AWS_PROFILE: hanrolink-app
 
@@ -38,6 +40,7 @@ services:
     volumes:
       - ./hanrolink-backend/.secrets/cloudfront-private-key.pem:/run/secrets/cloudfront-private-key.pem:ro
       - ${HOME}/.aws:/root/.aws:ro
+      - ./hanrolink-backend:/app
 
     container_name: hanrolink-backend
 

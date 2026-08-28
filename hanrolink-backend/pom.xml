@@ -47,7 +47,7 @@
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
 
-    <!-- アプリケーションの稼働状態の監視 -->
+    <!-- アプリケーションの稼働状態の監視、Health check / readiness endpoint for ECS -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-actuator</artifactId>
@@ -144,6 +144,13 @@
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
       <version>3.0.3</version>
+    </dependency>
+
+    <!-- 開発時の自動再起動 / ホットリロード -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-devtools</artifactId>
+      <optional>true</optional>
     </dependency>
 
     <!-- テスト -->
