@@ -1,5 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate, Link, useParams } from 'react-router-dom'
+import {
+  useNavigate,
+  Link,
+  useParams,
+  useOutletContext,
+} from 'react-router-dom'
 import type { ProductDetail } from '../features/product/productDetailTypes'
 import {
   getProductDetailData,
@@ -11,6 +16,7 @@ import DataRow from '../components/DataRow'
 import ProductStorySection from '../features/product/components/ProductStorySection'
 import { createProductNegotiationRequest } from '../features/negotiation/negotiationRequestService'
 import { getSafeExternalUrl } from '../shared/utils/urlValidation'
+import type { CurrentAccount } from '../features/auth/authRouting'
 
 function ProductDetailPage() {
   const [productDetailData, setProductDetailData] =
@@ -27,6 +33,7 @@ function ProductDetailPage() {
   const [isSubmittingNegotiation, setIsSubmittingNegotiation] = useState(false)
   const [negotiationError, setNegotiationError] = useState('')
   const [negotiationSucceeded, setNegotiationSucceeded] = useState(false)
+  const { account } = useOutletContext<{ account: CurrentAccount }>()
 
   useEffect(() => {
     if (!productId) return
@@ -175,7 +182,9 @@ function ProductDetailPage() {
     })
     .join('、')
 
-  const safeWebsiteUrl = getSafeExternalUrl(productDetailData.supplier.businessWebsiteUrl)
+  const safeWebsiteUrl = getSafeExternalUrl(
+    productDetailData.supplier.businessWebsiteUrl,
+  )
 
   return (
     <div className="mx-auto max-w-300 px-4 text-center md:px-6 lg:px-8">
@@ -356,7 +365,9 @@ function ProductDetailPage() {
               </p>
             ) : !productDetailData.permissions.canCreateNegotiationRequest ? (
               <p className="pt-2 lg:flex-1 lg:text-left lg:pl-2 lg:pt-0">
-                サプライヤーは商品に商談希望を送ることはできません。
+                {account.role === 'BUYER'
+                  ? '商談希望の送信上限（20件）に達しています。'
+                  : 'このアカウントでは、商品に商談希望を送ることはできません。'}
               </p>
             ) : null}
           </div>

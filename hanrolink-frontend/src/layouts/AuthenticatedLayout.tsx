@@ -6,8 +6,7 @@ import Header from '../components/Header'
 import { getCurrentAccount } from '../features/auth/currentAccountService'
 
 function AuthenticatedLayout() {
-  const [account, setAccount] =
-    useState<CurrentAccount | null>(null)
+  const [account, setAccount] = useState<CurrentAccount | null>(null)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -38,19 +37,23 @@ function AuthenticatedLayout() {
     }
   }, [])
 
-  if(error) {
-    return <p role='alert' className='text-error text-center py-10'>{error}</p>
+  if (error) {
+    return (
+      <p role="alert" className="text-error text-center py-10">
+        {error}
+      </p>
+    )
   }
 
-  if(!account){
-    return <p className='text-center py-10'>読み込み中...</p>
+  if (!account) {
+    return <p className="text-center py-10">読み込み中...</p>
   }
 
   return (
     <div className="flex min-h-dvh flex-col">
       <Header isLoggedIn={true} account={account} />
       <main className="flex flex-1 flex-col">
-        <Outlet />
+        <Outlet context={{ account }} />
       </main>
       <Footer />
     </div>
