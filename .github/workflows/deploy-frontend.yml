@@ -2,7 +2,7 @@ name: Deploy Frontend to S3/CloudFront
 
 on:
   push:
-    branches: [main]
+    branches: [main,'presentation']
     paths:
       - 'hanrolink-frontend/**'
       - '.github/workflows/deploy-frontend.yml'
