@@ -8,6 +8,8 @@ import type {
   SupplierProductUpdateRequest,
 } from './productFormTypes'
 import { authenticatedApi } from '../../lib/api'
+import { getApiErrorMessage } from '../../shared/api/apiError'
+import { productFieldLabels } from './productApiError'
 
 export async function getProductFormOptions(): Promise<SupplierProductFormOptions> {
   const { data, response } = await authenticatedApi.GET(
@@ -64,12 +66,21 @@ export async function uploadProductImage(
 export async function createProduct(
   request: SupplierProductCreateRequest,
 ): Promise<SupplierProductCreateResponse> {
-  const { data, response } = await authenticatedApi.POST('/api/v1/products', {
-    body: request,
-  })
+  const { data, error, response } = await authenticatedApi.POST(
+    '/api/v1/products',
+    {
+      body: request,
+    },
+  )
 
   if (!response.ok || !data) {
-    throw new Error('商品の登録に失敗しました。')
+    throw new Error(
+      getApiErrorMessage(
+        error,
+        '商品の登録に失敗しました。',
+        productFieldLabels,
+      ),
+    )
   }
 
   return data
@@ -98,7 +109,7 @@ export async function updateProduct(
   productId: string,
   request: SupplierProductUpdateRequest,
 ): Promise<void> {
-  const { response } = await authenticatedApi.PUT(
+  const { error, response } = await authenticatedApi.PUT(
     '/api/v1/products/{productId}',
     {
       params: {
@@ -111,6 +122,12 @@ export async function updateProduct(
   )
 
   if (!response.ok || response.status !== 204) {
-    throw new Error('商品の更新に失敗しました。')
+    throw new Error(
+      getApiErrorMessage(
+        error,
+        '商品の更新に失敗しました。',
+        productFieldLabels,
+      ),
+    )
   }
 }
