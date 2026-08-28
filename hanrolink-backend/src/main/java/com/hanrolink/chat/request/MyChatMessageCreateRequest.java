@@ -16,7 +16,10 @@ public record MyChatMessageCreateRequest(
   @Size(max = ChatMessagePolicy.MAX_BODY_LENGTH)
   String body,
 
-  @Size(max = ChatMessagePolicy.MAX_ATTACHED_FILE_COUNT)
+  @Size(
+    max = ChatMessagePolicy.MAX_ATTACHED_FILE_COUNT,
+    message = "最大{max}件までです"
+  )
   List<@NotNull UUID> pendingFileUploadIds
 ) {
   @AssertTrue(message = "本文またはファイルのどちらかは必須です")
