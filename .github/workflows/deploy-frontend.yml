@@ -33,9 +33,12 @@ jobs:
         run: npm ci
 
       - name: Build
-        env:
-          VITE_API_URL: ${{ vars.VITE_API_URL }}
         run: npm run build
+        env:
+          VITE_CLOUDFRONT_DOMAIN_NAME: ${{ vars.VITE_CLOUDFRONT_DOMAIN_NAME }}
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_COGNITO_USER_POOL_ID: ${{ vars.VITE_COGNITO_USER_POOL_ID }}
+          VITE_COGNITO_USER_POOL_CLIENT_ID: ${{ vars.VITE_COGNITO_USER_POOL_CLIENT_ID }}
 
       # --- S3(アカウント: 278835524539)への同期 ---
       - name: Configure AWS credentials for S3 (278835524539)
