@@ -375,6 +375,11 @@ function ChatPage() {
 
     if (!canSend || isSending || !channelId) return
 
+    if (selectedFiles.length > 5) {
+      setSendError('添付ファイルは5件以内にしてください。')
+      return
+    }
+
     const messageBody = sendMessage.trim()
     const pendingFileUploadIds: string[] = []
 
@@ -644,7 +649,10 @@ function ChatPage() {
           )}
 
           {sendError && (
-            <p role="alert" className="text-center mb-2 text-sm text-error">
+            <p
+              role="alert"
+              className="whitespace-pre-line text-center mb-2 text-sm text-error"
+            >
               {sendError}
             </p>
           )}
@@ -676,6 +684,7 @@ function ChatPage() {
               value={sendMessage}
               ref={messageInputRef}
               disabled={isSending}
+              maxLength={5000}
             />
             <div className="flex w-full items-center">
               <label
