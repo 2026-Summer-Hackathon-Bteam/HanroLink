@@ -55,13 +55,13 @@ const procurementRequestChangedFieldLabels = {
   MONTHLY_PROCUREMENT_QUANTITIES: '希望月・希望数量',
 } satisfies Record<ProcurementRequestChangedField, string>
 
-const formatOptionalText = (value: string | undefined): string =>
+const formatOptionalText = (value: string | null | undefined): string =>
   value && value.trim() ? value : '-'
 
 const formatOptionalNumber = (
-  value: number | undefined,
+  value: number | null | undefined,
   suffix = '',
-): string => (value === undefined ? '-' : `${value.toLocaleString()}${suffix}`)
+): string => (value === null || value === undefined ? '-' : `${value.toLocaleString()}${suffix}`)
 
 const formatTargetMonth = (targetMonth: string): string => {
   const [year, month] = targetMonth.split('-')
