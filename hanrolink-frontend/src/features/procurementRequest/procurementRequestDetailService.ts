@@ -1,6 +1,8 @@
 import type { ProcurementRequestDetailData } from './procurementRequestDetailTypes'
 import { authenticatedApi } from '../../lib/api'
 import type { components } from '../../shared/api/schema'
+import { procurementRequestFieldLabels } from './procurementRequestApiError'
+import { getApiErrorMessage } from '../../shared/api/apiError'
 
 type ProcurementRequestUpdateSubmission =
   components['schemas']['BuyerProcurementRequestUpdateRequest']
@@ -53,7 +55,7 @@ export async function updateProcurementRequest(
   procurementRequestId: string,
   request: ProcurementRequestUpdateSubmission,
 ): Promise<void> {
-  const { response } = await authenticatedApi.PUT(
+  const { error, response } = await authenticatedApi.PUT(
     '/api/v1/procurement-requests/{procurementRequestId}',
     {
       params: {
@@ -67,7 +69,11 @@ export async function updateProcurementRequest(
 
   if (!response.ok || response.status !== 204) {
     throw new Error(
-      `募集情報の更新に失敗しました。（ステータス：${response.status}）`,
+      getApiErrorMessage(
+        error,
+        `募集情報の更新に失敗しました。（ステータス：${response.status}）`,
+        procurementRequestFieldLabels,
+      ),
     )
   }
 }

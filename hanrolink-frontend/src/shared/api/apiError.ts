@@ -20,7 +20,10 @@ export const getApiErrorMessage = (
       ([field, messages]) => {
         if (!Array.isArray(messages)) return []
 
-        const label = fieldLabels[field] ?? field
+        const normalizedField = field.replace(/\[\d+\]/g, '[]')
+
+        const label =
+          fieldLabels[field] ?? fieldLabels[normalizedField] ?? field
 
         return messages
           .filter((message): message is string => typeof message === 'string')
