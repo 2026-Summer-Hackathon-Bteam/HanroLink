@@ -1,17 +1,12 @@
 import type { components } from '../../shared/api/schema'
 import { authenticatedApi } from '../../lib/api'
 import type { CurrentAccount } from './authRouting'
+import { getApiErrorMessage } from '../../shared/api/apiError'
 
-type CurrentAccountResponse =
-  components['schemas']['CurrentAccountGetResponse']
+type CurrentAccountResponse = components['schemas']['CurrentAccountGetResponse']
 
-function parseCurrentAccount(
-  response: CurrentAccountResponse,
-): CurrentAccount {
-  const {
-    role,
-    businessUserAccountRegistrationStatus: status,
-  } = response
+function parseCurrentAccount(response: CurrentAccountResponse): CurrentAccount {
+  const { role, businessUserAccountRegistrationStatus: status } = response
 
   if (role === 'ADMIN' && status === null) {
     return {
@@ -41,11 +36,14 @@ function parseCurrentAccount(
 }
 
 export async function getCurrentAccount(): Promise<CurrentAccount> {
-  const { data, response } = await authenticatedApi.GET('/api/v1/me')
+  const { data, error, response } = await authenticatedApi.GET('/api/v1/me')
 
   if (!response.ok || !data) {
     throw new Error(
-      `自己情報の取得に失敗しました。（ステータス: ${response.status}）`,
+      getApiErrorMessage(
+        error,
+        `自己情報の取得に失敗しました。（ステータス: ${response.status}）`,
+      ),
     )
   }
 
