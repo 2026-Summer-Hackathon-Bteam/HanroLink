@@ -1,0 +1,6 @@
+app:
+  storage:
+    s3:
+      region: ${AWS_REGION}
+      bucket-name: ${S3_BUCKET_NAME}
+      upload-url-valid-duration: 5m

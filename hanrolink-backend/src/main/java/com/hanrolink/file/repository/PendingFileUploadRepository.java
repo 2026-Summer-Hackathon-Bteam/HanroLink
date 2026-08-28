@@ -1,0 +1,61 @@
+package com.hanrolink.file.repository;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import com.hanrolink.file.entity.PendingFileUpload;
+import com.hanrolink.file.enums.FileUploadUsage;
+
+@Repository
+public interface PendingFileUploadRepository extends JpaRepository<PendingFileUpload, Long> {
+
+  @Query("""
+    SELECT pendingFileUpload
+    FROM PendingFileUpload pendingFileUpload
+    JOIN BusinessUserAccount businessUserAccount
+      ON businessUserAccount.id = pendingFileUpload.businessUserAccountId
+    WHERE pendingFileUpload.publicId = :pendingFileUploadPublicId
+      AND businessUserAccount.identityProviderSubject = :identityProviderSubject
+      AND pendingFileUpload.usage = :usage
+      AND pendingFileUpload.expiresAt > :currentTime
+    """)
+  Optional<PendingFileUpload> findAvailableByPublicIdAndIdentityProviderSubjectAndUsage(
+    @Param("pendingFileUploadPublicId")
+    UUID pendingFileUploadPublicId,
+    @Param("identityProviderSubject")
+    String identityProviderSubject,
+    @Param("usage")
+    FileUploadUsage usage,
+    @Param("currentTime")
+    Instant currentTime
+  );
+
+  @Query("""
+    SELECT pendingFileUpload
+    FROM PendingFileUpload pendingFileUpload
+    WHERE pendingFileUpload.publicId IN :pendingFileUploadPublicIds
+      AND pendingFileUpload.businessUserAccountId = :businessUserAccountId
+      AND pendingFileUpload.channelId = :channelId
+      AND pendingFileUpload.usage = :usage
+      AND pendingFileUpload.expiresAt > :currentTime
+    """)
+  List<PendingFileUpload> findAllAvailableByPublicIds(
+    @Param("pendingFileUploadPublicIds")
+    List<UUID> pendingFileUploadPublicIds,
+    @Param("businessUserAccountId")
+    Long businessUserAccountId,
+    @Param("channelId")
+    Long channelId,
+    @Param("usage")
+    FileUploadUsage usage,
+    @Param("currentTime")
+    Instant currentTime
+  );
+}

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- Spring Boot の親 -->
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>4.1.0</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>com.hanrolink</groupId>
+  <artifactId>hanrolink-backend</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>HanroLink Backend API</name>
+
+  <!-- Java バージョン -->
+  <properties>
+    <java.version>25</java.version>
+    <aws.sdk.version>2.49.3</aws.sdk.version>
+  </properties>
+
+  <!-- AWS SDKのバージョン管理 -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>bom</artifactId>
+        <version>${aws.sdk.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <!-- 依存関係 -->
+  <dependencies>
+
+    <!-- Web API -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <!-- アプリケーションの稼働状態の監視、Health check / readiness endpoint for ECS -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+
+    <!-- 認証・認可 -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+
+    <!-- Cognito JWTによる認証・認可 -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+    </dependency>
+
+    <!-- Cognito GetUser API -->
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>cognitoidentityprovider</artifactId>
+    </dependency>
+
+    <!-- Amazon S3連携（アップロード用署名付きURLの発行・ファイルの取得と検証） -->
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>s3</artifactId>
+    </dependency>
+
+    <!-- CloudFrontの署名付きURL生成 -->
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>cloudfront</artifactId>
+    </dependency>
+
+    <!-- IAM Identity Centerから一時的なAWS認証情報を取得するための依存関係 -->
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>sso</artifactId>
+    </dependency>
+
+    <!-- IAM Identity CenterのOIDC認証とトークン管理に必要な依存関係 -->
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>ssooidc</artifactId>
+    </dependency>
+
+    <!-- WebP画像の読み込み・検証 -->
+    <dependency>
+      <groupId>com.twelvemonkeys.imageio</groupId>
+      <artifactId>imageio-webp</artifactId>
+      <version>3.14.0</version>
+    </dependency>
+
+    <!-- PDFファイルの形式検証と解析 -->
+    <dependency>
+      <groupId>org.apache.pdfbox</groupId>
+      <artifactId>pdfbox</artifactId>
+      <version>3.0.8</version>
+    </dependency>
+
+    <!-- 入力値バリデーション（Bean Validation） -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+
+    <!-- ORM / Database access (JPA, Hibernate) -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+
+    <!-- Spring Boot向けDBマイグレーション管理（Flyway本体・自動構成） -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-flyway</artifactId>
+    </dependency>
+
+    <!-- PostgreSQL向けFlywayサポート -->
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-database-postgresql</artifactId>
+    </dependency>
+
+    <!-- JDBC driver for PostgreSQL -->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+    </dependency>
+
+    <!-- OpenAPI ドキュメント生成 / Swagger UI -->
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <version>3.0.3</version>
+    </dependency>
+
+    <!-- 開発時の自動再起動 / ホットリロード -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-devtools</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <!-- テスト -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Spring MVC テスト支援（@WebMvcTest / @AutoConfigureMockMvc） -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-webmvc-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+		<!-- Spring Boot Securityテスト支援（認証・CSRF・ユーザー擬似ログインなど） -->
+		<dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security-test</artifactId>
+      <scope>test</scope>
+		</dependency>
+
+    <!-- Spring Data JPAテスト支援（@DataJpaTest） -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-data-jpa-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Spring BootとTestcontainersの連携支援 -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-testcontainers</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- JUnit 5でTestcontainersを使用するためのテスト支援 -->
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- PostgreSQLコンテナを利用したDBテスト支援 -->
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <!-- ビルド設定 -->
+  <build>
+    <!-- 生成される jar のファイル名 -->
+    <finalName>hanrolink-backend</finalName>
+    <plugins>
+
+      <!-- Spring Boot fat jar を作るプラグイン -->
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+
+    </plugins>
+  </build>
+
+</project>

@@ -1,0 +1,67 @@
+name: Deploy Frontend to S3/CloudFront
+
+on:
+  push:
+    branches: [main,'presentation']
+    paths:
+      - 'hanrolink-frontend/**'
+      - '.github/workflows/deploy-frontend.yml'
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # OIDC認証に必須
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: hanrolink-frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: hanrolink-frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_CLOUDFRONT_DOMAIN_NAME: ${{ vars.VITE_CLOUDFRONT_DOMAIN_NAME }}
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_COGNITO_USER_POOL_ID: ${{ vars.VITE_COGNITO_USER_POOL_ID }}
+          VITE_COGNITO_USER_POOL_CLIENT_ID: ${{ vars.VITE_COGNITO_USER_POOL_CLIENT_ID }}
+
+      # --- S3(アカウント: 278835524539)への同期 ---
+      - name: Configure AWS credentials for S3 (278835524539)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.FRONTEND_AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Sync to S3
+        run: |
+          aws s3 sync ./dist s3://${{ vars.FRONTEND_S3_BUCKET_NAME }} --delete
+
+      # --- CloudFront(アカウント: 364847289585)のキャッシュ無効化 ---
+      # 別アカウントのロールを引き受けるため、認証をし直す(前段の認証情報を上書きする)
+      - name: Configure AWS credentials for CloudFront (364847289585)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.FRONTEND_CLOUDFRONT_AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ vars.FRONTEND_CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+      

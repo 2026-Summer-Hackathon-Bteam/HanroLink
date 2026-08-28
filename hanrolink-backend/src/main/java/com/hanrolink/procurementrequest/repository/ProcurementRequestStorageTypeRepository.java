@@ -1,0 +1,48 @@
+package com.hanrolink.procurementrequest.repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import com.hanrolink.procurementrequest.entity.ProcurementRequestStorageType;
+import com.hanrolink.procurementrequest.repository.projection.ProcurementRequestSearchStorageTypeProjection;
+import com.hanrolink.product.enums.StorageType;
+
+@Repository
+public interface ProcurementRequestStorageTypeRepository extends JpaRepository<ProcurementRequestStorageType, Long> {
+
+  List<ProcurementRequestStorageType> findAllByProcurementRequestId(Long procurementRequestId);
+
+  @Query("""
+    SELECT procurementRequestStorageType.storageType
+    FROM ProcurementRequestStorageType procurementRequestStorageType
+    WHERE procurementRequestStorageType.procurementRequestId =
+      :procurementRequestId
+    ORDER BY
+      procurementRequestStorageType.storageType ASC
+    """)
+  List<StorageType> findStorageTypesByProcurementRequestId(
+    @Param("procurementRequestId")
+    Long procurementRequestId
+  );
+
+  @Query("""
+    SELECT new com.hanrolink.procurementrequest.repository.projection.ProcurementRequestSearchStorageTypeProjection(
+      procurementRequestStorageType.procurementRequestId,
+      procurementRequestStorageType.storageType
+    )
+    FROM ProcurementRequestStorageType procurementRequestStorageType
+    WHERE procurementRequestStorageType.procurementRequestId IN :procurementRequestIds
+    ORDER BY
+      procurementRequestStorageType.procurementRequestId ASC,
+      procurementRequestStorageType.storageType ASC
+    """)
+  List<ProcurementRequestSearchStorageTypeProjection>
+    findSearchResultsByProcurementRequestIds(
+      @Param("procurementRequestIds")
+      List<Long> procurementRequestIds
+    );
+}

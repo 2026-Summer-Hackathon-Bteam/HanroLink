@@ -1,0 +1,31 @@
+INSERT INTO businesses (
+  public_id,
+  role,
+  review_status,
+  name,
+  name_kana,
+  website_url,
+  address_postal_code,
+  address_prefecture,
+  address_municipality_street,
+  address_building,
+  phone_number,
+  created_at,
+  updated_at
+)
+VALUES
+  (
+    '00000000-0000-0000-0000-000000000001',
+    'BUYER',
+    'PENDING',
+    'テスト株式会社',
+    'テストカブシキガイシャ',
+    'https://example.com',
+    '1000001',
+    '東京都',
+    '千代田区千代田1-1',
+    'テストビル',
+    '0312345678',
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+  );

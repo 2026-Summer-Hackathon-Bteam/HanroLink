@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: hanrolink-backend
+
+  profiles:
+    group:
+      prod:
+        - cognito
+        - s3
+        - cloudfront
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    enabled: true
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

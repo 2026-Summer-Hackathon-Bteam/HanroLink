@@ -1,0 +1,8 @@
+app:
+  storage:
+    cloudfront:
+      domain-name: ${CLOUDFRONT_DOMAIN_NAME}
+      cookie-domain: ${CLOUDFRONT_COOKIE_DOMAIN}
+      public-key-id: ${CLOUDFRONT_PUBLIC_KEY_ID}
+      private-key: ${CLOUDFRONT_PRIVATE_KEY:}
+      private-key-path: ${CLOUDFRONT_PRIVATE_KEY_PATH:}

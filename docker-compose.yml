@@ -1,0 +1,69 @@
+services:
+  postgres:
+    image: postgres:17.7
+    container_name: hanrolink-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+    ports:
+      - "${POSTGRES_PORT}:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  backend:
+    build:
+      context: ./hanrolink-backend
+      dockerfile: Dockerfile.dev
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      JAVA_TOOL_OPTIONS: "-Duser.timezone=UTC"
+      AWS_PROFILE: hanrolink-app
+
+    env_file:
+      - ./hanrolink-backend/.env
+
+    volumes:
+      - ./hanrolink-backend/.secrets/cloudfront-private-key.pem:/run/secrets/cloudfront-private-key.pem:ro
+      - ${HOME}/.aws:/root/.aws:ro
+      - ./hanrolink-backend:/app
+
+    container_name: hanrolink-backend
+
+    ports:
+      - "${BACKEND_PORT}:8080"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build: ./hanrolink-frontend
+    container_name: hanrolink-frontend
+
+    ports:
+      - "${FRONTEND_PORT}:5173"
+
+    volumes:
+      - ./hanrolink-frontend:/app
+      - /app/node_modules
+
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

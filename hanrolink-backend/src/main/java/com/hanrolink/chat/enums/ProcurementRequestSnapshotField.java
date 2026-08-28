@@ -1,0 +1,12 @@
+package com.hanrolink.chat.enums;
+
+public enum ProcurementRequestSnapshotField {
+  PRODUCT_CATEGORY,
+  TITLE,
+  DESCRIPTION,
+  REQUIRED_TRADE_TERMS,
+  DESIRED_UNIT_PRICE,
+  DELIVERY_SHELF_LIFE_DAYS,
+  STORAGE_TYPES,
+  MONTHLY_PROCUREMENT_QUANTITIES
+}
