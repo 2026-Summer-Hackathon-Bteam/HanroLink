@@ -22,6 +22,7 @@ import com.hanrolink.account.exception.UnsupportedJwtAccountRoleException;
 import com.hanrolink.account.repository.BusinessUserAccountRepository;
 import com.hanrolink.account.repository.projection.BusinessUserAccountAccessScopeProjection;
 import com.hanrolink.business.enums.BusinessRole;
+import com.hanrolink.negotiationrequest.policy.BuyerNegotiationRequestPolicy;
 import com.hanrolink.infrastructure.cloudfront.CloudFrontDownloadUrlGenerator;
 import com.hanrolink.negotiationrequest.repository.ProductNegotiationRequestRepository;
 import com.hanrolink.pagination.response.component.PaginationResponse;
@@ -153,9 +154,17 @@ public class ProductReadService {
     boolean hasMyActiveNegotiationRequest = false;
 
     if (viewer.role() == ApplicationRole.BUYER) {
-      canCreateNegotiationRequest = true;
-
       Instant currentTime = Instant.now();
+
+      long activeNegotiationRequestCount = productNegotiationRequestRepository
+        .countByBuyerAccountIdAndExpiresAtAfter(
+          viewer.businessUserAccountId(),
+          currentTime
+        );
+
+      canCreateNegotiationRequest =
+        activeNegotiationRequestCount < BuyerNegotiationRequestPolicy.MAX_ACTIVE_REQUEST_COUNT;
+
       hasMyActiveNegotiationRequest =
         productNegotiationRequestRepository
           .existsByProductIdAndBuyerAccountIdAndExpiresAtAfter(
