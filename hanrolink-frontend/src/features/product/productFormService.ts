@@ -29,7 +29,7 @@ export async function createProductImageUploadInformation({
   usage,
   fileSizeBytes,
 }: ProductImageUploadRequest): Promise<ProductImageUploadResponse> {
-  const { data, response } = await authenticatedApi.POST(
+  const { data, error, response } = await authenticatedApi.POST(
     '/api/v1/products/image-uploads',
     {
       body: {
@@ -40,7 +40,13 @@ export async function createProductImageUploadInformation({
   )
 
   if (!response.ok || !data) {
-    throw new Error('画像アップロードURLの取得に失敗しました。')
+    throw new Error(
+      getApiErrorMessage(
+        error,
+        '画像アップロードURLの取得に失敗しました。',
+        productFieldLabels,
+      ),
+    )
   }
 
   return data

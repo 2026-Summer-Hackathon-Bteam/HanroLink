@@ -27,4 +27,6 @@ export const productFieldLabels: Record<string, string> = {
   consecutiveSupplyMonthsFromCurrentMonth: '提供可能月',
   uniqueStoryPositions: 'ストーリーの位置',
   uniquePendingFileUploadIds: 'ストーリー画像',
+  usage: '画像の用途',
+  fileSizeBytes: '画像ファイル',
 }
