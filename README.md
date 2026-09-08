@@ -4,7 +4,7 @@
 
 ## デモ動画
 
-![サプライヤーが商談希望を送る操作デモ](https://github.com/user-attachments/assets/f1145da6-19ce-4e29-8bd7-967491fa75a7)
+![サプライヤーが商談希望を送る操作デモ](https://github.com/user-attachments/assets/9721eb28-125e-4ef9-8c66-1a68c27e52d8)
 
 ※短縮版GIFでは、検索条件の入力操作を省略し、検索結果の表示から掲載しています。
 
