@@ -81,7 +81,7 @@ Docker Desktopは起動した状態で作業してください。
    ```bash
    cp .env.example .env
    ```
-3. `.env` を開き、必要な環境変数を設定します。
+3. `.env`を開き、必要な環境変数を設定します。API全体を動作確認する場合は、ルートの`.env`に`SPRING_PROFILES_ACTIVE=dev,cognito,s3,cloudfront`を設定し、`hanrolink-backend/.env`に開発用AWS環境の設定値を入力してください。
 
 開発環境の起動方法は、次の「開発環境の起動」を参照してください。
 
