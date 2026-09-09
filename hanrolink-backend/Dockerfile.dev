@@ -14,4 +14,4 @@ COPY src src
 EXPOSE 8080
 
 # ソース変更をすぐ反映するため、java-jarをビルドして実行するのではなく、mvn spring-boot:runで起動する
-CMD ["./mvnw", "spring-boot:run", "-Dspring-boot.run.profiles=dev"]
+CMD ["./mvnw", "spring-boot:run"]
