@@ -1,21 +1,25 @@
 # バックエンド環境
 
-## Cognito認証の切り替え
+## Springプロファイルの設定
 
-Cognito認証はデフォルトで有効です。
+リポジトリ直下の`.env.example`をコピーして`.env`を作成し、使用するプロファイルを設定してください。
+
+### Cognito認証を利用する場合
+
+```dotenv
+SPRING_PROFILES_ACTIVE=dev,cognito
+```
 
 `hanrolink-backend/.env.example`をコピーして`.env`を作成し、Cognitoの設定値を入力してください。
 
 ```dotenv
 COGNITO_ISSUER_URI=https://cognito-idp.{リージョン}.amazonaws.com/{ユーザープールID}
 COGNITO_CLIENT_ID={クライアントID}
-COGNITO_REGION={リージョン}
+AWS_REGION={リージョン}
 ```
 
-### Cognito認証を無効にする場合
+S3・CloudFrontも利用する場合は、すべてのプロファイルを有効にします。
 
-```yaml
-backend:
-  environment:
-    SPRING_PROFILES_ACTIVE: "dev,local-no-auth"
+```dotenv
+SPRING_PROFILES_ACTIVE=dev,cognito,s3,cloudfront
 ```
