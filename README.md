@@ -2,13 +2,20 @@
 
 **食品関連の小規模サプライヤーとバイヤーが、商品検索や募集を通じて商談を始められるBtoBマッチングプラットフォーム**
 
+## スクリーンショット
+- 商品検索
+<img width="350" alt="スクリーンショット 2026-11-15 15 25 50" src="https://github.com/user-attachments/assets/7f786889-3add-4e52-b9e1-845c98150e92" />
+
+- 商品詳細
+<img width="350" alt="スクリーンショット 2026-11-15 15 13 12" src="https://github.com/user-attachments/assets/c93ba7e5-a416-4392-82e7-80d2ac9a7058" />
+
+- ダッシュボード
+<img width="350" alt="スクリーンショット 2026-11-15 15 14 02" src="https://github.com/user-attachments/assets/6a40559e-1ce0-431d-a1d3-89f93962c8ce" />
+
+
 ## デモ動画
 
-![サプライヤーが商談希望を送る操作デモ](https://github.com/user-attachments/assets/9721eb28-125e-4ef9-8c66-1a68c27e52d8)
-
-※短縮版GIFでは、検索条件の入力操作を省略し、検索結果の表示から掲載しています。
-
-**▶[完全版デモ動画を再生する](https://github.com/user-attachments/assets/d350e286-1576-42e7-b1e6-9cc21ef728cc)**
+**▶[デモ動画を見る（MP4、5分21秒）](https://github.com/2026-Summer-Hackathon-Bteam/HanroLink/releases/download/demo-video-1/HanroLink_demo.mp4)（クリックすると動画がダウンロードされます）**
 
 > プライバシー保護のため、動画内の一部に黒塗り処理を施しています。動画内に表示される `.test` ドメインのメールアドレスは、テスト用途に予約されたドメインを使用した架空のデモデータです。撮影に使用した環境内の登録データおよび認証情報は、撮影後に適切に削除または初期化しています。
 
