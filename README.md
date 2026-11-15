@@ -4,13 +4,13 @@
 
 ## スクリーンショット
 - 商品検索
-<img width="350" alt="スクリーンショット 2026-11-15 15 25 50" src="https://github.com/user-attachments/assets/7f786889-3add-4e52-b9e1-845c98150e92" />
+<img width="350" alt="商品検索画面" src="https://github.com/user-attachments/assets/7f786889-3add-4e52-b9e1-845c98150e92" />
 
 - 商品詳細
-<img width="350" alt="スクリーンショット 2026-11-15 15 13 12" src="https://github.com/user-attachments/assets/c93ba7e5-a416-4392-82e7-80d2ac9a7058" />
+<img width="350" alt="商品詳細画面" src="https://github.com/user-attachments/assets/c93ba7e5-a416-4392-82e7-80d2ac9a7058" />
 
 - ダッシュボード
-<img width="350" alt="スクリーンショット 2026-11-15 15 14 02" src="https://github.com/user-attachments/assets/6a40559e-1ce0-431d-a1d3-89f93962c8ce" />
+<img width="350" alt="ダッシュボード画面" src="https://github.com/user-attachments/assets/6a40559e-1ce0-431d-a1d3-89f93962c8ce" />
 
 
 ## デモ動画
